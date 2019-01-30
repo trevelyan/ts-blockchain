@@ -39,7 +39,7 @@ body {
   font-family: Courier, Sans-Serif;
   //height: 200px;
   //width: 390px;
-  font-size: 1.2em;
+  font-size: 1.1em;
   height:100px;
   width:170px;
   background-color: #fffccd;
