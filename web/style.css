@@ -1,7 +1,6 @@
 body {
  font-family: arial, helvetica, sans-serif;
- //font-size: 13px;
- font-size: 8px;
+ font-size: 13px;
  padding:0px;
  margin:0px;
 }
@@ -11,19 +10,15 @@ body {
   background-size: cover;
   //width: 5100px;
   //height: 3300px;
-  //width: 2550px;
-  //height: 1650px;
-  width: 1275px;
-  height: 825px;
+  width: 2550px;
+  height: 1650px;
 }
 .status {
   float: left;
   font-size: 1.8em;
   padding:10px;
-//  width: 390px;
-//  height: 425px;
-  width:170px;
-  height:212px;
+  width: 390px;
+  height: 425px;
   background-color: #fffccd;
   border: 2px solid #948f8b;
   border-bottom: 0px;
@@ -31,17 +26,14 @@ body {
 .log {
   overflow: hidden;
   position: absolute;
-  //top: 431px;
-  top: 215px;
+  top: 431px;
   left: 0px;
   float: left;
   padding:10px;
   font-family: Courier, Sans-Serif;
-  //height: 200px;
-  //width: 390px;
-  font-size: 1.2em;
-  height:100px;
-  width:170px;
+  height: 200px;
+  width: 390px;
+  font-size: 1.1em;
   background-color: #fffccd;
   border: 2px solid #948f8b; 
   border-top: 0px;
