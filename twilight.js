@@ -1,5 +1,5 @@
 var saito = require('../../../saito');
-var Game = require('../../game2');
+var Game = require('../../game');
 var util = require('util');
 
 
@@ -84,11 +84,11 @@ Twilight.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // adjust screen ratio
   //
-  $('.country').css('width', this.scale(202));
-  $('.us').css('width', this.scale(100));
-  $('.ussr').css('width', this.scale(100));
-  $('.us').css('height', this.scale(100));
-  $('.ussr').css('height', this.scale(100));
+  $('.country').css('width', this.scale(202)+"px");
+  $('.us').css('width', this.scale(100)+"px");
+  $('.ussr').css('width', this.scale(100)+"px");
+  $('.us').css('height', this.scale(100)+"px");
+  $('.ussr').css('height', this.scale(100)+"px");
 
   //
   // update defcon and milops and stuff
@@ -116,10 +116,10 @@ Twilight.prototype.initializeGame = async function initializeGame(game_id) {
     //
     // position divs
     //
-    $(divname).css('top', this.scale(this.countries[i].top));
-    $(divname).css('left', this.scale(this.countries[i].left));
-    $(divname_us).css('height', this.scale(100));
-    $(divname_ussr).css('height', this.scale(100));
+    $(divname).css('top', this.scale(this.countries[i].top)+"px");
+    $(divname).css('left', this.scale(this.countries[i].left)+"px");
+    $(divname_us).css('height', this.scale(100)+"px");
+    $(divname_ussr).css('height', this.scale(100)+"px");
 
     //
     // restore influence
@@ -2526,24 +2526,24 @@ Twilight.prototype.showInfluence = function showInfluence(country, player, mycal
     }
   }
 
-  $('.us_control').css('height', this.scale(100));
-  $('.us_uncontrol').css('height', this.scale(100));
-  $('.ussr_control').css('height', this.scale(100));
-  $('.ussr_uncontrol').css('height', this.scale(100));
+  $('.us_control').css('height', this.scale(100)+"px");
+  $('.us_uncontrol').css('height', this.scale(100)+"px");
+  $('.ussr_control').css('height', this.scale(100)+"px");
+  $('.ussr_uncontrol').css('height', this.scale(100)+"px");
 
-  $('.us_control').css('font-size', this.scale(100));
-  $('.us_uncontrol').css('font-size', this.scale(100));
-  $('.ussr_control').css('font-size', this.scale(100));
-  $('.ussr_uncontrol').css('font-size', this.scale(100));
+  $('.us_control').css('font-size', this.scale(100)+"px");
+  $('.us_uncontrol').css('font-size', this.scale(100)+"px");
+  $('.ussr_control').css('font-size', this.scale(100)+"px");
+  $('.ussr_uncontrol').css('font-size', this.scale(100)+"px");
 
   //
   // adjust screen ratio
   //
-  $('.country').css('width', this.scale(202));
-  $('.us').css('width', this.scale(100));
-  $('.ussr').css('width', this.scale(100));
-  $('.us').css('height', this.scale(100));
-  $('.ussr').css('height', this.scale(100));
+  $('.country').css('width', this.scale(202)+"px");
+  $('.us').css('width', this.scale(100)+"px");
+  $('.ussr').css('width', this.scale(100)+"px");
+  $('.us').css('height', this.scale(100)+"px");
+  $('.ussr').css('height', this.scale(100)+"px");
 
   //
   // update game state
@@ -8888,11 +8888,11 @@ Twilight.prototype.updateRound = function updateRound() {
     dl = this.game.state.round_ps[9].left; 
   }
 
-  dt = this.scale(dt);
-  dl = this.scale(dl);
+  dt = this.scale(dt)+"px";
+  dl = this.scale(dl)+"px";
 
-  $('.round').css('width', this.scale(140));
-  $('.round').css('height', this.scale(140));
+  $('.round').css('width', this.scale(140)+"px");
+  $('.round').css('height', this.scale(140)+"px");
   $('.round').css('top', dt);
   $('.round').css('left', dl);
 
@@ -8950,14 +8950,14 @@ Twilight.prototype.updateDefcon = function updateDefcon() {
     dl = this.game.state.defcon_ps[4].left; 
   }
 
-  dt = this.scale(dt);
-  dl = this.scale(dl);
+  dt = this.scale(dt) + "px";
+  dl = this.scale(dl) + "px";
 
   dt = dt;
   dl = dl;
 
-  $('.defcon').css('width', this.scale(120));
-  $('.defcon').css('height', this.scale(120));
+  $('.defcon').css('width', this.scale(120)+"px");
+  $('.defcon').css('height', this.scale(120)+"px");
   $('.defcon').css('top', dt);
   $('.defcon').css('left', dl);
 
@@ -9008,21 +9008,21 @@ Twilight.prototype.updateActionRound = function updateActionRound() {
     dl = this.game.state.ar_ps[7].left; 
   }
 
-  dt = this.scale(dt);
-  dl = this.scale(dl);
+  dt = this.scale(dt)+"px";
+  dl = this.scale(dl)+"px";
 
   if (this.game.state.turn == 0) {
     $('.action_round_us').hide();
     $('.action_round_ussr').show();
-    $('.action_round_ussr').css('width', this.scale(100));
-    $('.action_round_ussr').css('height', this.scale(100));
+    $('.action_round_ussr').css('width', this.scale(100)+"px");
+    $('.action_round_ussr').css('height', this.scale(100)+"px");
     $('.action_round_ussr').css('top', dt);
     $('.action_round_ussr').css('left', dl);
   } else {
     $('.action_round_ussr').hide();
     $('.action_round_us').show();
-    $('.action_round_us').css('width', this.scale(100));
-    $('.action_round_us').css('height', this.scale(100));
+    $('.action_round_us').css('width', this.scale(100)+"px");
+    $('.action_round_us').css('height', this.scale(100)+"px");
     $('.action_round_us').css('top', dt);
     $('.action_round_us').css('left', dl);
   }
@@ -9315,16 +9315,16 @@ Twilight.prototype.updateSpaceRace = function updateSpaceRace() {
 
   dt_us = this.scale(dt_us);
   dl_us = this.scale(dl_us);
-  dt_ussr = this.scale(dt_ussr+40);
-  dl_ussr = this.scale(dl_ussr+10);
+  dt_ussr = this.scale(dt_ussr+40)+"px";
+  dl_ussr = this.scale(dl_ussr+10)+"px";
 
-  $('.space_race_us').css('width', this.scale(100));
-  $('.space_race_us').css('height', this.scale(100));
+  $('.space_race_us').css('width', this.scale(100)+"px");
+  $('.space_race_us').css('height', this.scale(100)+"px");
   $('.space_race_us').css('top', dt_us);
   $('.space_race_us').css('left', dl_us);
 
-  $('.space_race_ussr').css('width', this.scale(100));
-  $('.space_race_ussr').css('height', this.scale(100));
+  $('.space_race_ussr').css('width', this.scale(100)+"px");
+  $('.space_race_ussr').css('height', this.scale(100)+"px");
   $('.space_race_ussr').css('top', dt_ussr);
   $('.space_race_ussr').css('left', dl_ussr);
 
@@ -9380,16 +9380,16 @@ Twilight.prototype.updateMilitaryOperations = function updateMilitaryOperations(
 
   dt_us = this.scale(dt_us);
   dl_us = this.scale(dl_us);
-  dt_ussr = this.scale(dt_ussr+40);
-  dl_ussr = this.scale(dl_ussr+10);
+  dt_ussr = this.scale(dt_ussr+40)+"px";
+  dl_ussr = this.scale(dl_ussr+10)+"px";
 
-  $('.milops_us').css('width', this.scale(100));
-  $('.milops_us').css('height', this.scale(100));
+  $('.milops_us').css('width', this.scale(100)+"px");
+  $('.milops_us').css('height', this.scale(100)+"px");
   $('.milops_us').css('top', dt_us);
   $('.milops_us').css('left', dl_us);
 
-  $('.milops_ussr').css('width', this.scale(100));
-  $('.milops_ussr').css('height', this.scale(100));
+  $('.milops_ussr').css('width', this.scale(100)+"px");
+  $('.milops_ussr').css('height', this.scale(100)+"px");
   $('.milops_ussr').css('top', dt_ussr);
   $('.milops_ussr').css('left', dl_ussr);
 
@@ -9577,11 +9577,11 @@ Twilight.prototype.updateVictoryPoints = function updateVictoryPoints() {
     dt = this.scale(dt);
     dl = this.scale(dl);
 
-    dt = dt;
-    dl = dl;
+    dt = dt + "px";
+    dl = dl + "px";
 
-    $('.vp').css('width', this.scale(120));
-    $('.vp').css('height', this.scale(120));
+    $('.vp').css('width', this.scale(120)+"px");
+    $('.vp').css('height', this.scale(120)+"px");
     $('.vp').css('top', dt);
     $('.vp').css('left', dl);
   }
