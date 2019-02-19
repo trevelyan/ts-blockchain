@@ -1,6 +1,6 @@
-var saito = require('../../../saito');
-var Game = require('../../game');
 var util = require('util');
+const saito = require('../../lib/saito/saito');
+const Game = require('../../lib/templates/game');
 
 
 //////////////////
