@@ -1,5 +1,5 @@
-var saito = require('../../../saito');
-var Game = require('../../game');
+var saito = require('../../lib/saito/saito');
+var Game = require('../../lib/templates/game');
 var util = require('util');
 
 
@@ -196,6 +196,12 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
       // che ussr country_of_target1
       // deal [1/2]  --- player decides how many cards they need, adds DEAL and clears when ready
       //
+      if (mv[0] === "turn") {
+	this.turn_in_round++;
+        this.game.state.events.china_card_eligible = 0;
+        this.game.queue.splice(qe, 1);
+	this.updateActionRound();
+      }
       if (mv[0] === "discard") {
         if (mv[2] === "china") { 
 	  //
@@ -1027,6 +1033,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
       }
       if (mv[0] === "round") {
 
+	this.updateLog("End of Round");
 	this.endRound();
 
 	//
@@ -1038,6 +1045,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 	if (this.game.state.round > 3) { rounds_in_turn = 7; }
 
 	for (let i = 0; i < rounds_in_turn; i++) {
+	  this.game.queue.push("turn");
 	  this.game.queue.push("play\t2");
 	  this.game.queue.push("play\t1");
 	}
@@ -1120,10 +1128,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
       }
       if (mv[0] === "play") {
 
-	if (mv[1] == 1) {
-          this.game.state.turn = 0; 
-          this.game.state.turn_in_round++;
-        }
+	if (mv[1] == 1) { this.game.state.turn = 0; }
 	if (mv[1] == 2) { this.game.state.turn = 1; }
 
 	//
@@ -1615,6 +1620,8 @@ Twilight.prototype.playMove = function playMove(msg) {
     	this.addMove("discard\tussr\t"+this.game.state.headline_card);
     	this.addMove("discard\tus\t"+this.game.state.opponent_headline_card);
     	this.removeCardFromHand(this.game.state.headline_card);
+	this.game.state.turn_in_round++;
+	this.updateActionRound();
       }
 
       if (this.game.state.events.missile_envy == 1) {
@@ -2996,6 +3003,11 @@ Twilight.prototype.endTurn = function endTurn() {
 
 }
 Twilight.prototype.endGame = function endGame(winner, method) {
+
+  this.game.over = 1;
+  if (winner == "us") { this.game.winner = 2; }
+  if (winner == "ussr") { this.game.winner = 1; }
+
   alert("The Game is Over - " + winner.toUpperCase() + " by " + method);
 }
 
@@ -4571,7 +4583,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	return 0;
       }
 
-      this.updateStatus('<div class="card inline" id="discard">Discard 3 OP card</div> or <div class="card inline" id="remove">Remove all US influence in West Germany</div>');
+      this.updateStatus('Blockade triggers:<p></p><ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>');
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -4583,7 +4595,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	  for (let i = 0; i < twilight_self.game.hand.length; i++) {
 	    if (twilight_self.modifyOps(twilight_self.game.cards[twilight_self.game.hand[i]].ops) >= 3) {
 	      if (choicehtml.length > 0) { choicehtml += ", "; }
-              choicehtml += '<div class="card inline" id="'+twilight_self.game.hand[i]+'">'+twilight_self.game.hand[i]+'</div>';
+              choicehtml += '<div class="card inline" id="'+twilight_self.game.hand[i]+'">'+twilight_self.game.cards[twilight_self.game.hand[i]].name+'</div>';
 	    }
 	  }
 
