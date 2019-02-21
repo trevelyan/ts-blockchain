@@ -49,7 +49,6 @@ Twilight.prototype.initializeGame = async function initializeGame(game_id) {
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
 
-
   //
   // initialize
   //
@@ -77,6 +76,9 @@ Twilight.prototype.initializeGame = async function initializeGame(game_id) {
     this.game.queue.push("DECKXOR\t1");
     this.game.queue.push("DECK\t"+JSON.stringify(this.returnEarlyWarCards()));
 
+  }
+  if (this.game.dice == "") {
+    this.initializeDice();
   }
 
   this.countries = this.game.countries;
@@ -127,8 +129,6 @@ Twilight.prototype.initializeGame = async function initializeGame(game_id) {
     if (this.countries[i].us > 0) { this.showInfluence(i, "us"); }
     if (this.countries[i].ussr > 0) { this.showInfluence(i, "ussr"); }
   } 
-
-
 
   //
   // if the browser is active, shift to the game that way
@@ -197,7 +197,7 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
       // deal [1/2]  --- player decides how many cards they need, adds DEAL and clears when ready
       //
       if (mv[0] === "turn") {
-	this.turn_in_round++;
+	this.game.state.turn_in_round++;
         this.game.state.events.china_card_eligible = 0;
         this.game.queue.splice(qe, 1);
 	this.updateActionRound();
@@ -1195,7 +1195,6 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 
 
   } // if cards in queue
-
   return 1;
 
 }
@@ -1615,7 +1614,6 @@ Twilight.prototype.playMove = function playMove(msg) {
   //
   if (this.game.state.turn == 0) {
     if (this.game.player == 1) {
-
       if (this.game.state.turn_in_round == 0) {
     	this.addMove("discard\tussr\t"+this.game.state.headline_card);
     	this.addMove("discard\tus\t"+this.game.state.opponent_headline_card);
@@ -1632,6 +1630,10 @@ Twilight.prototype.playMove = function playMove(msg) {
       }
     } else {
       this.updateStatus("Waiting for USSR to move");
+      if (this.game.state.turn_in_round == 0) {
+	this.game.state.turn_in_round++;
+	this.updateActionRound();
+      }
     }
     return;
   }
@@ -2111,6 +2113,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
         twilight_self.removeCardFromHand(card);
         twilight_self.endTurn();
 	return;
+
       }
 
       if (action == "ops") {
@@ -2185,7 +2188,6 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       }
 
       if (action == "space") {
-	twilight_self.addMove("discard\t"+player+"\t"+card);
 	twilight_self.addMove("space\t"+player+"\t"+card);
         twilight_self.removeCardFromHand(card);
         twilight_self.endTurn();
@@ -2290,12 +2292,10 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
   if (player == "ussr") {
 
-    console.log("USSR - RESOLVE");
     twilight_self.addMove("RESOLVE");
-    console.log("MV ARR: " + JSON.stringify(twilight_self.moves));
 
     let x = "Place six additional influence in Eastern Europe.<p></p>[cards: ";
-    for (i = 0; i < this.game.hand.length; i++) {
+    for (let i = 0; i < this.game.hand.length; i++) {
       if (i > 0) { x += ", "; }
       x += '<div class="showcard inline" id="'+this.game.hand[i]+'">'+this.game.cards[this.game.hand[i]].name.toLowerCase()+'</div>';
     }
@@ -2310,6 +2310,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
       let card = $(this).attr("id");
       twilight_self.hideCard(card);
     });
+
 
     var placeable = [];
     placeable.push("finland");
@@ -2329,7 +2330,6 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
       this.game.countries[placeable[i]].place = 1;
 
       let divname = "#"+placeable[i];
-
 
       $(divname).off();
       $(divname).on('click', function() {
@@ -2352,7 +2352,7 @@ console.log("USSR MOVES: " + JSON.stringify(twilight_self.moves));
       });
     }
   }
- 
+
 
   if (player == "us") {
 
@@ -2752,7 +2752,9 @@ Twilight.prototype.playerSpaceCard = function playerSpaceCard(card, player) {
   if (next_box == 6) { if (roll < 5) { successful = 1; } }
   if (next_box == 7) { if (roll < 4) { successful = 1; } }
   if (next_box == 8) { if (roll < 2) { successful = 1; } }
-  
+
+  this.updateLog(player.toUpperCase() + " rolls " + roll);  
+
   if (successful == 1) { 
     this.updateLog(player.toUpperCase() + " advances in the Space Race");
     this.advanceSpaceRace(player); 
@@ -3425,7 +3427,7 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
   deck['fiveyearplan']    = { img : "TNRnTS-05" , name : "Five Year Plan", scoring : 0 , player : "us"   , recurring : 1 , ops : 3 };
   deck['socgov']          = { img : "TNRnTS-07" , name : "Socialist Governments", scoring : 0 , player : "ussr" , recurring : 1 , ops : 3 };
   deck['fidel']           = { img : "TNRnTS-08" , name : "Fidel", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
-  deck['vietnam']         = { img : "TNRnTS-09" , name : "Vietnam", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
+  deck['vietnamrevolts']  = { img : "TNRnTS-09" , name : "Vietnam", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
   deck['blockade']        = { img : "TNRnTS-10" , name : "Blockade", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['koreanwar']       = { img : "TNRnTS-11" , name : "Korean War", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
   deck['romanianab']      = { img : "TNRnTS-12" , name : "Romanian Abdication", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
@@ -3720,12 +3722,12 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       if (scoring_cards.length == 0) {
 
-        this.addMove("notify\tus does not have any scoring cards");
+        this.addMove("notify\tUS does not have any scoring cards");
         this.endTurn();
 
       } else {
    
-        this.addMove("notify\tus has scoring cards for: " + scoring_cards);
+        this.addMove("notify\tUS has scoring cards for: " + scoring_cards);
         this.addMove(scoring_alert);
         this.endTurn();
 
@@ -4222,7 +4224,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   /////////////////////
   // Vietnam Revolts //
   /////////////////////
-  if (card == "vietnam") {
+  if (card == "vietnamrevolts") {
     this.game.state.events.vietnam_revolts = 1;
     this.placeInfluence("vietnam", 2, "ussr");
     return 1;
@@ -4706,10 +4708,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "easteuropean") {
 
     if (this.game.player == 1) {
-
       this.updateStatus("US is playing East European Uprising");
       return 0;
-
     }
     if (this.game.player == 2) {
 
@@ -4737,7 +4737,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       if (options_purge.length <= countries_to_purge) {
 	for (let i = 0; i < options_purge.length; i++) {
-	  twilight_self.addMove("remove\tus\tus\t"+options_purge[i]+"\t"+ops_to_purge);
+	  twilight_self.addMove("remove\tus\tussr\t"+options_purge[i]+"\t"+ops_to_purge);
 	  twilight_self.removeInfluence(options_purge[i], ops_to_purge, "us");
 	}
 	twilight_self.endTurn();
@@ -4768,7 +4768,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      } else {
                 twilight_self.countries[c].place = 0;
                 twilight_self.removeInfluence(c, ops_to_purge, "ussr", function() {
-	          twilight_self.addMove("remove\tus\tus\t"+c+"\t"+ops_to_purge);
+	          twilight_self.addMove("remove\tus\tussr\t"+c+"\t"+ops_to_purge);
                   countries_to_purge--;
 
                   if (countries_to_purge == 0) {
@@ -6374,37 +6374,28 @@ console.log("DOES US HAVE CC? " + us_cc);
       }
       if (this.game.player == 2) {
 
-
-console.log(" .... 1");
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
 
-console.log(" .... 2");
         var ops_to_place = 4;
         twilight_self.addMove("resolve\tussuri");
-console.log(" .... 3");
 
         this.updateStatus("US place four influence in Africa or Asia (1 per country)");
-console.log(" .... 4");
 
         for (var i in this.countries) {
 
           let countryname  = i;
           let divname      = '#'+i;
 	  let ops_placed   = [];
-console.log(" .... 5");
 
   	  if (this.countries[i].region.indexOf("asia") != -1) {
 
-console.log(" .... 6");
 	    ops_placed[i] = 0;
 
             twilight_self.countries[countryname].place = 1;
-console.log(" .... 7");
             $(divname).off();
             $(divname).on('click', function() {
 	      let countryname = $(this).attr('id');
-console.log(" .... 8");
               if (twilight_self.countries[countryname].place == 1) {
 		ops_placed[countryname]++;
                 twilight_self.addMove("place\tus\tus\t"+countryname+"\t1");
@@ -8847,7 +8838,7 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
 
   this.game.status = str;
   console.log("STATUS: " + this.game.status);
-  if (this.app.BROWSER == 1) { $('#status').html(this.game.status) }
+  if (this.app.BROWSER == 1) { $('#status').html(this.game.status); }
 
 }
 Twilight.prototype.updateRound = function updateRound() {
