@@ -1790,7 +1790,11 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
   if (this.browser_active == 0) { return; }
 
-  let x = "Pick a headline card: <p></p><ul>";
+  let player = "us";
+
+  if (this.game.player == 1) { player = "ussr"; }
+
+  let x = player.toUpperCase() + " pick your headline card: <p></p><ul>";
   for (i = 0; i < this.game.hand.length; i++) {
     x += '<li class="card showcard" id="'+this.game.hand[i]+'">'+this.game.cards[this.game.hand[i]].name+'</li>';
   }
@@ -2294,7 +2298,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "Place six additional influence in Eastern Europe.<p></p>[cards: ";
+    let x = "You are playing as the USSR. Start by placing six additional influence in Eastern Europe.<p></p>[cards: ";
     for (let i = 0; i < this.game.hand.length; i++) {
       if (i > 0) { x += ", "; }
       x += '<div class="showcard inline" id="'+this.game.hand[i]+'">'+this.game.cards[this.game.hand[i]].name.toLowerCase()+'</div>';
@@ -2356,10 +2360,9 @@ console.log("USSR MOVES: " + JSON.stringify(twilight_self.moves));
 
   if (player == "us") {
 
-console.log("US - RESOLVE");
     twilight_self.addMove("RESOLVE");
 
-    let x = "Place seven additional influence in Western Europe.<p></p>[cards: ";
+    let x = "You are playing as the US. Start by placing seven additional influence in Western Europe.<p></p>[cards: ";
     for (i = 0; i < this.game.hand.length; i++) {
       if (i > 0) { x += ", "; }
       x += '<div class="inline showcard" id="'+this.game.hand[i]+'">'+this.game.cards[this.game.hand[i]].name.toLowerCase()+'</div>';
@@ -3438,7 +3441,7 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
   deck['degaulle']        = { img : "TNRnTS-17" , name : "De Gaulle", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['naziscientist']   = { img : "TNRnTS-18" , name : "Nazi Scientist", scoring : 0 , player : "both" , recurring : 0 , ops : 1 };
   deck['truman']          = { img : "TNRnTS-19" , name : "Truman", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
-  deck['olympic']         = { img : "TNRnTS-20" , name : "Olympic", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+  deck['olympic']         = { img : "TNRnTS-20" , name : "Olympic Games", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['nato']            = { img : "TNRnTS-21" , name : "NATO", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
   deck['indreds']         = { img : "TNRnTS-22" , name : "Independent Reds", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
   deck['marshall']        = { img : "TNRnTS-23" , name : "Marshall Plan", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
@@ -4339,10 +4342,12 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         twilight_self.endTurn();
       }
 
+      twilight_self.updateStatus("Select a non-USSR controlled country in Europe to remove all USSR influence: ");
+
       for (let i = 0; i < options_purge.length; i++) {
 
         let countryname  = options_purge[i];
-        let divname      = '#'+i;
+        let divname      = '#'+countryname;
 
         twilight_self.countries[countryname].place = 1;
 
@@ -4350,10 +4355,10 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         $(divname).on('click', function() {
 
 	  let c = $(this).attr('id');
-	  let ussrpur = twilight_self.countries[countryname].ussr;
+	  let ussrpur = twilight_self.countries[c].ussr;
 
           twilight_self.removeInfluence(c, ussrpur, "ussr", function() {
-            twilight_self.addMove("remove\tussr\tussr\t"+c+"\t1");
+            twilight_self.addMove("remove\tus\tussr\t"+c+"\t1");
             twilight_self.playerFinishedPlacingInfluence();
             twilight_self.endTurn();
           });
@@ -7996,11 +8001,11 @@ console.log("MODIFY OPS: " + JSON.stringify(this.game.state.events));
     ops++;
   }
   if (this.game.state.events.redscare_player1 == 1 && this.game.player == 1) { 
-    this.updateLog("USSR is hurt by Red Purge");
+    this.updateLog("USSR is affected by Red Purge");
     ops--; 
   }
   if (this.game.state.events.redscare_player2 == 1 && this.game.player == 2) { 
-    this.updateLog("US is hurt by Red Scare");
+    this.updateLog("US is affected by Red Scare");
     ops--;
   }
   if (ops <= 0) { return 1; }
