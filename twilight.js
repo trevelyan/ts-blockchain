@@ -44,6 +44,13 @@ util.inherits(Twilight, Game);
 ////////////////
 Twilight.prototype.initializeGame = async function initializeGame(game_id) {
 
+  //
+  // enable chat
+  //
+  const chat = this.app.modules.returnModule("Chat");
+  chat.addPopUpChat();
+
+
   this.updateStatus("loading game...");
   this.loadGame(game_id);
 
@@ -855,10 +862,8 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
       if (mv[0] === "vp") {
         this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
         if (mv[1] === "us") {
-          this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
           this.game.state.vp += parseInt(mv[2]);
         } else {
-          this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
           this.game.state.vp -= parseInt(mv[2]);
         }
         this.updateVictoryPoints();
@@ -2814,35 +2819,39 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
       if (player == "us") {
         if (twilight_self.countries[countryname].ussr <= 0) { alert("Cannot Coup"); } else { valid_target = 1; }
       } else {
-	
-	//
-	// Coup Restrictions
-	//
-        if (twilight_self.game.state.events.limit_ignore_defcon == 0) {
+        if (twilight_self.countries[countryname].us <= 0)   { alert("Cannot Coup"); } else { valid_target = 1; }
+      }
+
+      //
+      // Coup Restrictions
+      //
+      if (twilight_self.game.state.events.limit_ignore_defcon == 0) {
         if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
-	  alert("Invalid Region for this Coup");
-	  valid_target = 0;
-	}
+          alert("Invalid Region for this Coup");
+          valid_target = 0;
+        }
         if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.defcon < 5) {
-	  alert("DEFCON prevents coups in Europe");
-	  valid_target = 0;
+          alert("DEFCON prevents coups in Europe");
+          valid_target = 0;
         }
         if (twilight_self.countries[countryname].region == "asia" && twilight_self.game.state.defcon < 4) {
-	  alert("DEFCON prevents coups in Asia");
-	  valid_target = 0;
+          alert("DEFCON prevents coups in Asia");
+          valid_target = 0;
+        }
+        if (twilight_self.countries[countryname].region == "seasia" && twilight_self.game.state.defcon < 4) {
+          alert("DEFCON prevents coups in Asia");
+          valid_target = 0;
         }
         if (twilight_self.countries[countryname].region == "mideast" && twilight_self.game.state.defcon < 3) {
-	  alert("DEFCON prevents coups in the Middle-East");
+          alert("DEFCON prevents coups in the Middle-East");
+          valid_target = 0;
+        }
+      }
+      if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.events.nato == 1) {
+	if ( (countryname == "westgermany" && twilight_self.game.state.events.nato_westgermany == 0) || (countryname == "france" && twilight_self.game.state.events.nato_france == 0) ) {} else { 
+	  alert("NATO prevents coups in Europe");
 	  valid_target = 0;
         }
-        }
-        if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.events.nato == 1) {
-	  if ( (countryname == "westgermany" && twilight_self.game.state.events.nato_westgermany == 0) || (countryname == "france" && twilight_self.game.state.events.nato_france == 0) ) {} else { 
-	    alert("NATO prevents coups in Europe");
-	    valid_target = 0;
-          }
-        }
-        if (twilight_self.countries[countryname].us <= 0)   { alert("Cannot Coup"); } else { valid_target = 1; }
       }
 
       if (valid_target == 1) {
