@@ -9611,6 +9611,10 @@ Twilight.prototype.webServer = function webServer(app, expressapp) {
     res.sendFile(__dirname + '/web/index.html');
     return;
   });
+  expressapp.get('/twilight/help', function (req, res) {
+    res.sendFile(__dirname + '/web/help.html');
+    return;
+  });
   expressapp.get('/twilight/style.css', function (req, res) {
     res.sendFile(__dirname + '/web/style.css');
     return;
