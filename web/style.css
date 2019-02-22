@@ -4,6 +4,10 @@ body {
  padding:0px;
  margin:0px;
 }
+.logcard {
+ font-weight:bold;
+ cursor: pointer;
+}
 .gameboard {
   position: absolute;
   background-image: url("images/TS Map-11.jpg");

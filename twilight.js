@@ -221,7 +221,7 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
               //
               // move to discard pile
               //
-              this.updateLog(mv[1].toUpperCase() + " discards " + this.game.cards[mv[2]].name);
+              this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.cards[mv[2]].name + "</span>");
 	      //
 	      // discard pile is parallel to normal
 	      //
@@ -847,7 +847,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 	return 0;
       }
       if (mv[0] === "ops") {
-        this.updateLog(mv[1].toUpperCase() + " plays " + this.game.cards[mv[2]].name + " for " + mv[3] + " OPS"); 
+        this.updateLog(mv[1].toUpperCase() + " plays <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.cards[mv[2]].name + "</span> for " + mv[3] + " OPS"); 
         this.playOps(mv[1], mv[3], mv[2]);
         this.game.queue.splice(qe, 1);
         shd_continue = 0;
@@ -906,7 +906,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
       }
       if (mv[0] === "event") {
         shd_continue = this.playEvent(mv[1], mv[2]);
-        this.updateLog(mv[1].toUpperCase() + " triggers " + this.game.cards[mv[2]].name + " event"); 
+        this.updateLog(mv[1].toUpperCase() + " triggers <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.cards[mv[2]].name + "</span> event"); 
         if (mv[1] == "china") {
         } else {
           //
@@ -1022,14 +1022,19 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 	return 0;
 
       }
+
       if (mv[0] === "headline") {
+
 	console.log("HEADLINE TRIGGERED: ");
+
 	// set to first player if needed
 	if (msg.extra == undefined) { msg.extra = {}; }
 	if (msg.extra.target == undefined) { msg.extra.target = 1; }
+
 	let x = this.playHeadline(msg);
         if (x == 1) { this.game.queue.splice(qe, 1); }
         else { return 0; }
+
       }
       if (mv[0] === "round") {
 
@@ -1050,6 +1055,14 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 	  this.game.queue.push("play\t1");
 	}
 	this.game.queue.push("headline");
+
+	// reset headline
+	this.game.state.headline1 = 0;
+	this.game.state.headline2 = 0;
+	this.game.state.headline3 = 0;
+	this.game.state.headline4 = 0;
+	this.game.state.headline5 = 0;
+
 
 	//
 	// END GAME IF WE MAKE IT !
@@ -1203,6 +1216,13 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 
 
 Twilight.prototype.playHeadline = function playHeadline(msg) {
+
+  if (	this.game.state.headline1 == 1 &&
+	this.game.state.headline2 == 1 &&
+	this.game.state.headline3 == 1 &&
+	this.game.state.headline4 == 1 &&
+	this.game.state.headline5 == 1) { return 1; }
+
 
   if (this.game.state.headline1 == 0) {
 
@@ -1462,15 +1482,15 @@ alert("PLAYER 2 HASH WRONG: " + this.game.state.headline_opponent_hash + " -- " 
 
     if (us_plays_defectors == 1) {
 
-      this.updateLog("US headlines Defectors");
+      this.updateLog("US headlines <span class=\"logcard\" id=\"defectors\">Defectors</span>");
 
       this.game.turn = [];
       this.addMove("discard\tus\tdefectors");
       if (my_card != "defectors") {
-        this.updateLog("USSR headlines "+this.game.cards[my_card].name);
+        this.updateLog("USSR headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.cards[my_card].name+"</span>");
         this.addMove("discard\tussr\t"+my_card);
       } else {
-        this.updateLog("USSR headlines "+this.game.cards[opponent_card].name);
+        this.updateLog("USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.cards[opponent_card].name+"</span>");
         this.addMove("discard\tussr\t"+opponent_card);
       }
 
@@ -1492,12 +1512,13 @@ alert("PLAYER 2 HASH WRONG: " + this.game.state.headline_opponent_hash + " -- " 
     } else {
 
       if (player_to_go == this.game.player) {
+
         if (this.game.state.headline_card !== my_card) { card_player = opponent; }
-        this.updateLog(player.toUpperCase() + " headlines " + this.game.cards[my_card].name);
+        this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.cards[my_card].name + "</span>");
         shd_continue = this.playEvent(card_player, my_card);
       } else {
         if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
-        this.updateLog(card_player.toUpperCase() + " headlines " + this.game.cards[opponent_card].name);
+        this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.cards[opponent_card].name + "</span>");
         shd_continue = this.playEvent(card_player, opponent_card);
       }
 
@@ -1508,7 +1529,6 @@ alert("PLAYER 2 HASH WRONG: " + this.game.state.headline_opponent_hash + " -- " 
       // only one player should trigger next round
       //
       if (card_player == player && shd_continue == 1) {
-console.log("HEADLINE 4 - RESOLVE");
       this.addMove("RESOLVE");
         let extra      = {};
           extra.skipqueue = 0;
@@ -1567,11 +1587,11 @@ console.log("HEADLINE 4 - RESOLVE");
 
     if (player_to_go == this.game.player) {
       if (this.game.state.headline_card !== my_card) { card_player = opponent; }
-      this.updateLog(player.toUpperCase() + " headlines " + this.game.cards[my_card].name);
+      this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.cards[my_card].name + "</span>");
       shd_continue = this.playEvent(player, my_card);
     } else {
       if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
-      this.updateLog(card_player.toUpperCase() + " headlines " + this.game.cards[opponent_card].name);
+      this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.cards[opponent_card].name + "</span>");
       shd_continue = this.playEvent(card_player, opponent_card);
     }
 
@@ -2606,6 +2626,9 @@ Twilight.prototype.playerRealign = function playerRealign(player, card, mycallba
     if (twilight_self.countries[countryname].region == "asia" && twilight_self.game.state.defcon < 4) {
       valid_target = 0;
     }
+    if (twilight_self.countries[countryname].region == "seasia" && twilight_self.game.state.defcon < 4) {
+      valid_target = 0;
+    }
     if (twilight_self.countries[countryname].region == "mideast" && twilight_self.game.state.defcon < 3) {
       valid_target = 0;
     }
@@ -2756,7 +2779,7 @@ Twilight.prototype.playerSpaceCard = function playerSpaceCard(card, player) {
   if (next_box == 7) { if (roll < 4) { successful = 1; } }
   if (next_box == 8) { if (roll < 2) { successful = 1; } }
 
-  this.updateLog(player.toUpperCase() + " rolls " + roll);  
+  this.updateLog(player.toUpperCase() + " attempts space race (rolls " + roll + ")");  
 
   if (successful == 1) { 
     this.updateLog(player.toUpperCase() + " advances in the Space Race");
@@ -3388,23 +3411,23 @@ Twilight.prototype.returnCountries = function returnCountries() {
 
   // AFRICA
   countries['morocco'] = { top : 1400, left : 1710, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'westafricanstates','algeria','spain' ], region : "africa" , name : "Morocco"};
-  countries['algeria'] = { top : 1330, left : 1935, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'tunisia','morocco','france','saharanstates' ], region : "africa" , name : "Algeria"};
+  countries['algeria'] = { top : 1330, left : 1935, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'tunisia','morocco','france','saharanstates' ], region : "africa" , name : "Algeria"};
   countries['tunisia'] = { top : 1310, left : 2160, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'libya','algeria' ], region : "africa" , name : "Tunisia"};
   countries['westafricanstates'] = { top : 1595, left : 1690, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ivorycoast','morocco' ], region : "africa" , name : "West African States"};
   countries['saharanstates'] = { top : 1650, left : 2025, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'algeria','nigeria' ], region : "africa" , name : "Saharan States"};
   countries['sudan'] = { top : 1690, left : 2550, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'egypt','ethiopia' ], region : "africa" , name : "Sudan"};
   countries['ivorycoast'] = { top : 1885, left : 1835, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'nigeria','westafricanstates' ], region : "africa" , name : "Ivory Coast"};
-  countries['nigeria'] = { top : 1859, left : 2110, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'ivorycoast','cameroon','saharanstates' ], region : "africa" , name : "Nigeria"};
+  countries['nigeria'] = { top : 1859, left : 2110, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'ivorycoast','cameroon','saharanstates' ], region : "africa" , name : "Nigeria"};
   countries['ethiopia'] = { top : 1845, left : 2710, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'sudan','somalia' ], region : "africa" , name : "Ethiopia"};
   countries['somalia'] = { top : 1910, left : 2955, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'ethiopia','kenya' ], region : "africa" , name : "Somalia"};
   countries['cameroon'] = { top : 2035, left : 2210, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'zaire','nigeria' ], region : "africa" , name : "Cameroon"};
-  countries['zaire'] = { top : 2110, left : 2470, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'angola','zimbabwe','cameroon' ], region : "africa" , name : "Zaire"};
+  countries['zaire'] = { top : 2110, left : 2470, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'angola','zimbabwe','cameroon' ], region : "africa" , name : "Zaire"};
   countries['kenya'] = { top : 2045, left : 2735, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'seafricanstates','somalia' ], region : "africa" , name : "Kenya"};
-  countries['angola'] = { top : 2290, left : 2280, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'southafrica','botswana','zaire' ], region : "africa" , name : "Angola"};
+  countries['angola'] = { top : 2290, left : 2280, us : 0 , ussr : 0 , control : 1 , bg : 1 , neighbours : [ 'southafrica','botswana','zaire' ], region : "africa" , name : "Angola"};
   countries['seafricanstates'] = { top : 2250, left : 2760, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'zimbabwe','kenya' ], region : "africa" , name : "Southeast African States"};
   countries['zimbabwe'] = { top : 2365, left : 2545, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'seafricanstates','botswana','zaire' ], region : "africa" , name : "Zimbabwe"};
   countries['botswana'] = { top : 2520, left : 2475, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'southafrica','angola','zimbabwe' ], region : "africa" , name : "Botswana"};
-  countries['southafrica'] = { top : 2690, left : 2370, us : 1 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'angola','botswana' ], region : "africa" , name : "South Africa"};
+  countries['southafrica'] = { top : 2690, left : 2370, us : 1 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'angola','botswana' ], region : "africa" , name : "South Africa"};
 
   for (var i in countries) { countries[i].place = 0; }
 
@@ -3730,8 +3753,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       } else {
    
-        this.addMove("notify\tUS has scoring cards for: " + scoring_cards);
         this.addMove(scoring_alert);
+        this.addMove("notify\tUS has scoring cards for: " + scoring_cards);
         this.endTurn();
 
       }
@@ -3935,7 +3958,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "decolonization") {
 
     if (this.game.player == 2) { 
-      this.updateStatus("USSR is playing decolonization");
+      this.updateStatus("USSR is playing Decolonization");
       return 0;
     }
     if (this.game.player == 1) {
@@ -3946,7 +3969,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       var ops_to_place = 4;
       twilight_self.addMove("resolve\tdecolonization");
 
-      this.updateStatus("Place four influence in Africa or Asia (1 per country)");
+      this.updateStatus("Place four influence in Africa or Southeast Asia (1 per country)");
 
       for (var i in this.countries) {
 
@@ -4472,7 +4495,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	this.updateLog("Suez Crisis auto-removed available influence");
 
         twilight_self.removeInfluence("israel", 2, "us");
-	twilight_self.addMove("remave\tussr\tus\tisrael\t2");
+	twilight_self.addMove("remove\tussr\tus\tisrael\t2");
         twilight_self.removeInfluence("france", 2, "us");
 	twilight_self.addMove("remove\tussr\tus\tfrance\t2");
         twilight_self.removeInfluence("uk", 2, "us");
@@ -4667,6 +4690,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	if (action == "boycott") {
 	  twilight_self.addMove("ops\t"+opponent+"\tolympic\t4");
 	  twilight_self.addMove("defcon\tlower");
+	  twilight_self.addMove("notify\t"+opponent.toUpperCase()+" plays 4 OPS");
+	  twilight_self.addMove("notify\t"+me.toUpperCase()+" boycotts the Olympics");
 	  twilight_self.endTurn();
 	  return;
 	}
@@ -4685,13 +4710,18 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      ussrroll += 2;
 	    }
 
+
 	    if (ussrroll > usroll) {
 	      twilight_self.addMove("vp\tussr\t2");
+	      twilight_self.addMove("notify\tUSSR rolls "+ussrroll+" / US rolls "+usroll);
+	      twilight_self.addMove("notify\t"+me.toUpperCase()+" participates in the Olympics");
 	      twilight_self.endTurn();
 	      winner = 1;
 	    }
 	    if (usroll > ussrroll) {
 	      twilight_self.addMove("vp\tus\t2");
+	      twilight_self.addMove("notify\tUSSR rolls "+ussrroll+" / US rolls "+usroll);
+	      twilight_self.addMove("notify\t"+me.toUpperCase()+" participates in the Olympics");
 	      twilight_self.endTurn();
 	      winner = 2;
 	    }
@@ -4811,7 +4841,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
 
-      twilight_self.updateStatus('<div class="card inline" id="remove">remove all US influence from four countries in Eastern Europe</div> or <div class="card inline" id="add">add five USSR influence in Eastern Europe (max 2 per country)</div>');
+      let html  = "USSR establishes the Warsaw Pact:<p></p><ul>";
+          html += '<li class="card" id="remove">remove all US influence in four countries in Eastern Europe</li>';
+          html += '<li class="card" id="add">add five USSR influence in Eastern Europe (max 2 per country)</li>';
+          html += '</ul>';
+      twilight_self.updateStatus(html);
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -5122,10 +5156,11 @@ console.log("RED SCARE: " + this.game.state.events.redscare_player1 + " -- " + t
     //
     if (this.game.player == 1) {
 
-      var ops_to_place = 7;
       twilight_self.addMove("resolve\tfiveyearplan");
 
       if (this.game.hand.length < 1) {
+	// burn roll anyway as US will burn
+        let burnrand = this.rollDice();
 	alert("No cards left to discard");
   	this.addMove("notify\tUSSR has no cards to discard");
 	this.endTurn();
@@ -9676,6 +9711,41 @@ Twilight.prototype.showCard = function showCard(cardname) {
 }
 Twilight.prototype.hideCard = function hideCard() {
   $('#cardbox').hide();
+}
+
+
+
+//
+// OVERWRITES GAME.JS MODULE TO ADD CARD HOVERING
+//
+Twilight.prototype.updateLog = function updateLog(str, length = 10) {
+
+  let twilight_self = this;
+
+  if (str) {
+    this.game.log.unshift(str);
+    if (this.game.log.length > length) { this.game.log.splice(length); }
+  }
+
+  let html = '';
+
+  for (let i = 0; i < this.game.log.length; i++) {
+    if (i > 0) { html += '<br/>'; }
+    html += "> " + this.game.log[i];
+  }
+
+  console.log("LOG: " + html);
+  if (this.app.BROWSER == 1) { $('#log').html(html) }
+
+  $('.logcard').off();
+  $('.logcard').mouseover(function() {
+    let card = $(this).attr("id");
+    twilight_self.showCard(card);
+  }).mouseout(function() {
+    let card = $(this).attr("id");
+    twilight_self.hideCard(card);
+  });
+
 }
 
 
