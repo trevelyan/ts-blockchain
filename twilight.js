@@ -4103,7 +4103,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       twilight_self.playerFinishedPlacingInfluence();
 
       twilight_self.addMove("resolve\tindopaki");
-      twilight_self.updateStatus('Indo-Pakistani War:<p></p><ul><li class="card" id="pakistan">India invades Pakistan</li><li class="card" id="india">Pakistan invades India</li></ul>');
+      twilight_self.updateStatus('Indo-Pakistani War:<p></p><ul><li class="card" id="invadepakistan">India invades Pakistan</li><li class="card" id="invadeindia">Pakistan invades India</li></ul>');
 
       let target = 4;
 
@@ -4112,7 +4112,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
         let invaded = $(this).attr("id");
 
-        if (invaded == "pakistan") {
+        if (invaded == "invadepakistan") {
 
           if (twilight_self.isControlled(opponent, "india") == 1) { target++; }
           if (twilight_self.isControlled(opponent, "iran") == 1) { target++; }
@@ -4131,6 +4131,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.game.state.vp += 2;
               twilight_self.game.state.milops_us += 2;
               twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("pakistan", "ussr");
 	    } else {
@@ -4141,13 +4142,26 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.game.state.vp -= 2;
               twilight_self.game.state.milops_ussr += 2;
               twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("pakistan", "ussr");
 	    }
-	  }
+	  } else {
 
+	    if (player == "us") {
+              twilight_self.game.state.milops_us += 2;
+              twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
+	      twilight_self.endTurn();
+	    } else {
+              twilight_self.game.state.milops_ussr += 2;
+              twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
+	      twilight_self.endTurn();
+	    }
+	  }
 	}
-        if (invaded == "india") {
+        if (invaded == "invadeindia") {
 
           if (twilight_self.isControlled(opponent, "pakistan") == 1) { target++; }
           if (twilight_self.isControlled(opponent, "burma") == 1) { target++; }
@@ -4164,6 +4178,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.game.state.vp += 2;
               twilight_self.game.state.milops_us += 2;
               twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("india", "ussr");
 	    } else {
@@ -4174,8 +4189,22 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.game.state.vp -= 2;
               twilight_self.game.state.milops_ussr += 2;
               twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
  	      twilight_self.endTurn();
 	      twilight_self.showInfluence("india", "ussr");
+	    }
+	  } else {
+
+	    if (player == "us") {
+              twilight_self.game.state.milops_us += 2;
+              twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
+	      twilight_self.endTurn();
+	    } else {
+              twilight_self.game.state.milops_ussr += 2;
+              twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
+ 	      twilight_self.endTurn();
 	    }
 	  }
 	}
@@ -5013,7 +5042,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    return;
           } else {
             twilight_self.removeInfluence(c, 1, "ussr");
-	    twilight_self.addMove("remove\tus\tus\t"+c+"\t1");
+	    twilight_self.addMove("remove\tussr\tussr\t"+c+"\t1");
 	    ops_to_purge--;
 	    if (ops_to_purge == 0) {
 
@@ -7325,6 +7354,7 @@ console.log(" .... 9");
               twilight_self.game.state.vp += 2;
               twilight_self.game.state.milops_us += 2;
               twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iran", "ussr");
 	    } else {
@@ -7335,9 +7365,24 @@ console.log(" .... 9");
               twilight_self.game.state.vp -= 2;
               twilight_self.game.state.milops_ussr += 2;
               twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iran", "ussr");
 	    }
+	  } else {
+
+	    if (player == "us") {
+              twilight_self.game.state.milops_us += 2;
+              twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
+	      twilight_self.endTurn();
+	    } else {
+              twilight_self.game.state.milops_ussr += 2;
+              twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
+	      twilight_self.endTurn();
+	    }
+
 	  }
 
 	}
@@ -7360,6 +7405,7 @@ console.log(" .... 9");
               twilight_self.game.state.vp += 2;
               twilight_self.game.state.milops_us += 2;
               twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iraq", "ussr");
 	    } else {
@@ -7370,9 +7416,24 @@ console.log(" .... 9");
               twilight_self.game.state.vp -= 2;
               twilight_self.game.state.milops_ussr += 2;
               twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
  	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iraq", "ussr");
 	    }
+	  } else {
+
+	    if (player == "us") {
+              twilight_self.game.state.milops_us += 2;
+              twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
+	      twilight_self.endTurn();
+	    } else {
+              twilight_self.game.state.milops_ussr += 2;
+              twilight_self.updateVictoryPoints();
+              twilight_self.updateMilitaryOperations();
+ 	      twilight_self.endTurn();
+	    }
+
 	  }
 	}
       });
@@ -9192,7 +9253,7 @@ Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
     // Earth Satellite
     if (this.game.state.space_race_ussr == 1) {
       if (this.game.state.space_race_us < 1) { 
-        this.game.state.vp += 2;
+        this.game.state.vp -= 2;
         this.updateVictoryPoints();  
       } else {
         this.game.state.vp -= 1;
