@@ -243,9 +243,6 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
       //
       if (mv[0] === "grainsales") {
 
-console.log("GRAINSALES: " + JSON.stringify(this.game.queue));
-
-
 	//
 	// this is the ussr telling the 
         // us what card they can choose
@@ -254,8 +251,6 @@ console.log("GRAINSALES: " + JSON.stringify(this.game.queue));
 
 	  // remove the command triggering this
           this.game.queue.splice(qe, 1);
-
-console.log(mv[1] + " -- " + mv[2]);
 
 	  if (this.game.player == 2) {
 
@@ -425,7 +420,7 @@ console.log("CHECOUP 2: ");
 
         let roll = this.rollDice(6);
 
-	this.updateLog(mv[1].toUpperCase() + " discards " + mv[2]);
+	this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.cards[mv[2]].name + "</span>");
 	this.updateLog(mv[1].toUpperCase() + " rolls a " + roll);
 
         if (roll < 5) {
@@ -522,7 +517,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
                 $(this).hide();
 		pos_to_discard.push(action2);
 	        cards_discarded++;
-                twilight_self.addMove("notify\tUS discards "+twilight_self.game.cards[cardoptions[action2]].name);
+                twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+cardoptions[action2]+"\">"+twilight_self.game.cards[cardoptions[action2]].name +"</span>");
 
               }
             });
@@ -774,7 +769,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 	  }
 
           this.game.queue.splice(qe, 1);
-	  this.updateLog("USSR discards "+this.game.cards[mv[2]].name);
+	  this.updateLog("USSR discards <span class=\"logcard\" id=\""+mv[2]+"\">"+this.game.cards[mv[2]].name + "</span>");
 	  shd_continue = 1;
 	}
 
@@ -3056,6 +3051,29 @@ Twilight.prototype.endRound = function endRound() {
   this.game.state.turn_in_round = 0;
   this.game.state.move 		= 0;
 
+console.log("FOUND A SCORING CARD0!");
+  // 
+  // game over if scoring card is held
+  //
+  if (this.game.state.round > 1) {
+    for (let i = 0 ; i < this.game.hand.length; i++) {
+      if (this.game.cards[this.game.hand[i]].scoring == 1) {
+console.log("FOUND A SCORING CARD1!");
+	let player = "us";
+	let winner = "ussr";
+console.log("FOUND A SCORING CARD2!");
+	if (this.game.player == 1) { player = "ussr"; winner = "us"; }
+console.log("FOUND A SCORING CARD3!");
+	this.resignGame(player.toUpperCase() + " held scoring card");
+console.log("FOUND A SCORING CARD4!");
+	this.endGame(winner, "opponent held scoring card");
+console.log("FOUND A SCORING CARD5!");
+
+      }
+    }
+  }
+console.log("FOUND A SCORING CARD 6!");
+
 
   //
   // calculate milops
@@ -3470,7 +3488,7 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
   deck['comecon']         = { img : "TNRnTS-14" , name : "Comecon", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['nasser']          = { img : "TNRnTS-15" , name : "Nasser", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['warsawpact']      = { img : "TNRnTS-16" , name : "Warsaw Pact", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
-  deck['degaulle']        = { img : "TNRnTS-17" , name : "De Gaulle", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+  deck['degaulle']        = { img : "TNRnTS-17" , name : "De Gaulle Leads France", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['naziscientist']   = { img : "TNRnTS-18" , name : "Nazi Scientist", scoring : 0 , player : "both" , recurring : 0 , ops : 1 };
   deck['truman']          = { img : "TNRnTS-19" , name : "Truman", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
   deck['olympic']         = { img : "TNRnTS-20" , name : "Olympic Games", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
@@ -4646,6 +4664,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       if (available == 0) {
 	this.updateStatus("Blockade played: no cards available to discard.");
 	this.addMove("remove\tus\tus\twestgermany\t"+this.countries['westgermany'].us);
+	this.addMove("notify\tUS removes all influence from West Germany");
         this.removeInfluence("westgermany", this.countries['westgermany'].us, "us");
 	this.endTurn();
 	return 0;
@@ -5659,7 +5678,7 @@ console.log("DONEENDED");
           $(this).hide();
 	  cards_discarded++;
           twilight_self.removeCardFromHand(action2);
-          twilight_self.addMove("notify\tUS discards "+twilight_self.game.cards[action2].name);
+          twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+action2+"\">"+twilight_self.game.cards[action2].name + "</span>");
         }
       });
     }
@@ -7282,7 +7301,7 @@ console.log(" .... 9");
 
       twilight_self.addMove("resolve\tdebtcrisis");
       twilight_self.addMove("discard\tus\t"+action2);
-      twilight_self.addMove("notify\tUS discards "+action2);
+      twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+action2+"\">"+this.game.cards[action2].name + "</span>");
       twilight_self.removeCardFromHand(action2);
       twilight_self.endTurn();
 
