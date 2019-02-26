@@ -161,9 +161,9 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
   let twilight_self = this;
   let player = "ussr"; if (this.game.player == 2) { player = "us"; }
 
-    ///////////
-    // QUEUE //
-    ///////////
+  ///////////
+  // QUEUE //
+  ///////////
   if (this.game.queue.length > 0) {
 
       //
@@ -254,7 +254,7 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
 
 	  if (this.game.player == 2) {
 
-            let html  = "USSR shares " + this.game.cards[mv[2]].name + ":";
+            let html  = "Grain Sales pulls <span class=\"showcard\" id=\""+mv[2]+"\">" + this.game.cards[mv[2]].name + "</span> from USSR. Do you want to play this card?";
                 html += '<li class="card" id="play">play card</li>';
                 html += '<li class="card" id="nope">return card</li>';
                 html += '</ul>';
@@ -263,6 +263,14 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
 	    let twilight_self = this;
 
 	    $('.card').off();
+  	    $('.showcard').off();
+  	    $('.showcard').mouseover(function() {
+	      let card = $(this).attr("id");
+	      twilight_self.showCard(card);
+	    }).mouseout(function() {
+	      let card = $(this).attr("id");
+	      twilight_self.hideCard(card);
+	    });
 	    $('.card').on('click', function() {
 
 	      let action2 = $(this).attr("id");
@@ -493,7 +501,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
             for (let i = 0; i < cardoptions.length; i++) {
               user_message += '<li class="card" id="'+i+'">'+this.game.cards[cardoptions[i]].name+'</li>';
 	    }
-            user_message += '</ul><p></p>When you are done discarding <span class="card" id="finished">click here</span>.';
+            user_message += '</ul><p></p>When you are done discarding <span class="card dashed" id="finished">click here</span>.';
             twilight_self.updateStatus(user_message);
 
 	    //
@@ -2059,7 +2067,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     //
     if (twilight_self.game.state.events.u2 == 1) {
       if (card == "unintervention" ) {
-        twilight_self.addMove("notify\tU2 triggers +1 VP for USSR");
+        twilight_self.addMove("notify\tU2 Intervention triggers +1 VP for USSR");
         twilight_self.addMove("vp\tussr\t1");
       }
     }
@@ -2318,7 +2326,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "You are playing as the USSR. Start by placing six additional influence in Eastern Europe.<p></p>[cards: ";
+    let x = "You are the USSR. Place six additional influence in Eastern Europe.<p></p>[cards: ";
     for (let i = 0; i < this.game.hand.length; i++) {
       if (i > 0) { x += ", "; }
       x += '<div class="showcard inline" id="'+this.game.hand[i]+'">'+this.game.cards[this.game.hand[i]].name.toLowerCase()+'</div>';
@@ -2382,7 +2390,7 @@ console.log("USSR MOVES: " + JSON.stringify(twilight_self.moves));
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "You are playing as the US. Start by placing seven additional influence in Western Europe.<p></p>[cards: ";
+    let x = "You are the US. Place seven additional influence in Western Europe.<p></p>[cards: ";
     for (i = 0; i < this.game.hand.length; i++) {
       if (i > 0) { x += ", "; }
       x += '<div class="inline showcard" id="'+this.game.hand[i]+'">'+this.game.cards[this.game.hand[i]].name.toLowerCase()+'</div>';
@@ -3239,7 +3247,7 @@ Twilight.prototype.returnState = function returnState() {
   state.vp_ps[17]  = { top : 2740, left : 3035 };
   state.vp_ps[18]  = { top : 2740, left : 3170 };
   state.vp_ps[19]  = { top : 2740, left : 3305 };
-  state.vp_ps[20]  = { top : 2740, left : 3440 };
+  state.vp_ps[20]  = { top : 2740, left : 3570 };
   state.vp_ps[21]  = { top : 2740, left : 3840 };
   state.vp_ps[22]  = { top : 2740, left : 3975 };
   state.vp_ps[23]  = { top : 2740, left : 4110 };
@@ -3567,8 +3575,8 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
   deck['africa']            = { img : "TNRnTS-79" , name : "Africa Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
   deck['onesmallstep']      = { img : "TNRnTS-80" , name : "One Small Step", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['southamerica']      = { img : "TNRnTS-81" , name : "South America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
-  deck['che']               = { img : "TNRnTS-107" , name : "Che", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
-  deck['tehran']            = { img : "TNRnTS-108" , name : "Our Man in Tehran", scoring : 0 , player : "both" , recurring : 0 , ops : 2 };
+  deck['che']               = { img : "TNRnTS-107" , name : "Che", scoring : 0 , player : "ussr" , recurring : 1 , ops : 3 };
+  deck['tehran']            = { img : "TNRnTS-108" , name : "Our Man in Tehran", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
 
   return deck;
 
@@ -5661,7 +5669,7 @@ console.log("DONEENDED");
       for (let i = 0; i < this.game.hand.length; i++) {
         user_message += '<li class="card" id="'+this.game.hand[i]+'">'+this.game.cards[this.game.hand[i]].name+'</li>';
       }
-      user_message += '</ul><p></p>When you are done discarding <span class="card" id="finished">click here</span>.';
+      user_message += '</ul><p></p>When you are done discarding <span class="card dashed" id="finished">click here</span>.';
 
       twilight_self.updateStatus(user_message);
       twilight_self.addMove("resolve\tasknot");
@@ -5738,7 +5746,7 @@ console.log("DONEENDED");
     $('.card').on('click', function() {
       let action2 = $(this).attr("id");
       twilight_self.game.hand.push(action2);
-      twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.cards[actions2].name);
+      twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.cards[action2].name);
       twilight_self.endTurn();
     });
 
@@ -5871,7 +5879,7 @@ console.log("DONEENDED");
         let x = 0;
         let y = 0;
 
-        twilight_self.updateStatus('Adjust DEFCON:<p></p><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li></ul>');
+        twilight_self.updateStatus('You win the Summit:<p></p><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li></ul>');
 
         $('.card').off();
         $('.card').on('click', function() {
@@ -7062,6 +7070,9 @@ console.log(" .... 9");
           $(divname).on('click', function() {
 
 	    let c = $(this).attr('id');
+
+	    alert("Launching Brush War in "+twilight_self.countries[c].name);
+
 	    let dieroll = twilight_self.rollDice(6);
 	    let modify = 0;
 
@@ -7954,7 +7965,7 @@ console.log("SHARING: " + this.game.hand[i]);
       if (this.game.state.vp < 0) { influence_to_add = 6; }
       
       this.addMove("resolve\treformer");
-      this.updateStatus('Add '+influence_to_add+' influence in Eastern Europe (max 2 per country)');
+      this.updateStatus('Add '+influence_to_add+' influence in Europe (max 2 per country)');
 
       var ops_to_place = influence_to_add;
       var ops_placed = {};

@@ -4,6 +4,9 @@ body {
  padding:0px;
  margin:0px;
 }
+.dashed {
+ border-bottom: 1px dashed;
+}
 .logcard {
  font-weight:bold;
  cursor: pointer;
