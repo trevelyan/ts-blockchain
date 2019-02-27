@@ -4735,9 +4735,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let opponent = "us";
     if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
-    
+
     if (player == me) {
       this.updateStatus("Opponent is deciding whether to boycott the Olympics");
+      twilight_self.rollDice(6);
+      twilight_self.rollDice(6);
       return 0;
     } else {
 
@@ -4753,6 +4755,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         let action = $(this).attr("id");
 
 	if (action == "boycott") {
+  	  let usroll   = twilight_self.rollDice(6);
+	  let ussrroll = twilight_self.rollDice(6);
 	  twilight_self.addMove("ops\t"+opponent+"\tolympic\t4");
 	  twilight_self.addMove("defcon\tlower");
 	  twilight_self.addMove("notify\t"+opponent.toUpperCase()+" plays 4 OPS");

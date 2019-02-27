@@ -15,9 +15,44 @@
 
   <div id="Twilight_browser_active"></div>
 
-  <div class="main" style="max-width:700px;font-size:1.2em">
+  <div class="main" style="max-width:550px;font-size:1.1em">
 
-    <h2>Twilight Struggle: Quickplay Instructions</h2>
+    <h2>Twilight Struggle: Quick Introduction</h2>
+
+    Twilight Struggle is a two-player Cold War simulation and also the best board game ever invented. The full rules are available on the <a href="https://www.gmtgames.com/living_rules/TS_Rules_Deluxe.pdf">GMT Games website</a>. This is a quick introduction for people who want to jump in and start playing.
+
+    <p></p>
+
+    <img src="/twilight/images/battleground.png" style="float:left;border:1px solid #888;margin-right:25px;" />
+
+    <p></p>
+
+    The world map in Twilight Struggle contains battleground (purple) and non-battleground (yellow) countries:
+
+    <p></p>
+
+    <img src="/twilight/images/battleground.png" style="float:left;border:1px solid #888;margin-right:25px;" />
+    <img src="/twilight/images/nonbattleground.png" style="float:left;border:1px solid #888;" />
+
+    <p style="clear:both;margin-bottom:25px"></p>
+
+    To control a country have more influence in that country than your opponent in the amount of the "stability index" of that country (top-right). Your goal is to control more battleground countries than your opponent. Points are given out when Scoring Cards are played according to your degree of dominance:
+
+    <p></p>
+
+    <ul style="font-size:0.9em">
+      <li style="margin-bottom:6px"><b>Presence:</b> control at least one country in the region</li>
+      <li style="margin-bottom:6px"><b>Domination:</b> control a majority of battleground countries and a majority of countries overall, including one non-battleground country</li>
+      <li><b>Control:</b> control all battleground countries and a majority of countries overall</li>
+    </ul>
+
+    <p></p>
+
+    Your basic strategy in Twilight Struggle is to take control of more battleground countries than your opponent. Try to get one non-battleground country in a region, but otherwise protect your majority control in existing regions and move on to new regions.
+
+    <p></p>
+
+    <h2>How to Play</h2>
 
     <p></p>
 
@@ -33,7 +68,7 @@ A good start for the Soviets is East Germany (4), Poland (4) and Yugoslavia (1).
 
     <p></p>
 
-The event will happen before the start of the round. The highest card number goes first, with the US event happening first in case of ties.
+Pick a card with an event that you would like to happen. This event will happen before the start of the round. The highest card number goes first, with the US event happening first in case of ties.
 
     <p></p>
 
@@ -41,35 +76,37 @@ The event will happen before the start of the round. The highest card number goe
 
     <p></p>
 
-The USSR and US take turns picking cards and playing them. All cards may be played as follows:
+The USSR and US take turns picking cards. All cards are played as follows:
 
     <p></p>
 
     <ol>
       <li>
-	Play Event:
+	<b>Play Event:</b>
       	<p></p>
 	The event on the card happens.
         <p></p>
       </li>
       <li>
-	Play Operation Points (OPS)
+	<b>Play Operation Points (OPS)</b>
 	<p></p>
-	You can use the points on the card as follows:
+	You choose how to use the points on the card:
 	<p></p>
 	<ol>
 	  <li>
-	    Place Influence
+	    <i>Place Influence</i>
 	    <p></p>
-	    Add influence to a country in which you have influence or any country adjacent to it.
+	    Add influence to a country in which you have influence or any country adjacent to it. It costs one OP to place a single influence in most countries, and two points to place a single influence in a country controlled by an opponent.
 	  </li>
-	  <li>
-	    Coup
+	  <li style="margin-top:15px">
+	    <i>Coup</i>
 	    <p></p>
-	    You can only coup a country in which your opponent has influence. As DEFCON lowers certain regions of the board become off-limits for coups. Couping in a Battleground Country lowers DEFCON by one point. The "power" of the coup is the total points on the card you play added to a roll of the dice minus twice the stability of the country (the number in the top-right of each country box).
+	    You may only coup a country in which your opponent has influence. All coups in battleground countries lower DEFCON by one point and as DEFCON falls certain regions of the board become off-limits for coups.
+	    <p></p>
+	    To conduct a coup roll a dice and add the result to the OPS on your card. Subtract two times the stability index of the country. If this calculation results in a positive number, it is the amount of opponent influence to remove from the country. Once an opponent has no influence remaining in a country you can add your own influence instead.
 	  </li>
-	  <li>
-	    Realignment
+	  <li style="margin-top:15px">
+	    <i>Realignment</i>
 	    <p></p>
 	    Roll the dice and remove influence from one player. Controlling surrounding countries and having more influence than your opponent in the target country increases your chance of winning.
 	    <p></p>
@@ -77,9 +114,9 @@ The USSR and US take turns picking cards and playing them. All cards may be play
 	</ol>
       </li>
       <li>
-	Space Race:
+	<b>Space Race:</b>
       	<p></p>
-	You may discard one card per turn on the Space Race, OPS permitting. If you are lucky, you will advance one in the Space Race track.
+	You may discard one card per turn on the Space Race. If you are lucky, you will advance one in the Space Race track. Advancing in the Space Race can unlock additional benefits.
         <p></p>
       </li>
     </ol>
@@ -90,20 +127,16 @@ The USSR and US take turns picking cards and playing them. All cards may be play
 
     <ul>
       <li>
-    If you play a card belonging to your opponent the event WILL happen regardless. You can choose whether it happens before or after you play your operations points.
-      </li>
-      <li>
     If you have a Scoring Card, you MUST play it during your turn.
       </li>
       <li>
-    Discard cards you do not wish to play on the Space Race
+    If DEFCON hits 1 on your turn, you lose.
+      </li>
+      <li style="margin-top:15px">
+     If you play a card belonging to your opponent the event always happens. You can choose whether it happens before or after you play your operations points.
       </li>
     
   </div>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/browser.js"></script>
-  <script src="/twilight/script.js"></script>
 
 </body>
 </html>

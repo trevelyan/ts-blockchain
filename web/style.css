@@ -4,6 +4,9 @@ body {
  padding:0px;
  margin:0px;
 }
+.link {
+ border-bottom: 1px dashed;
+}
 .dashed {
  border-bottom: 1px dashed;
 }
