@@ -2996,7 +2996,6 @@ Twilight.prototype.playRealign = function playRealign(country) {
       bonus_us--;
     }
 
-
     let roll_us   = this.rollDice(6) + bonus_us;
     let roll_ussr = this.rollDice(6) + bonus_ussr;
 
@@ -4735,11 +4734,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let opponent = "us";
     if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
-
     if (player == me) {
       this.updateStatus("Opponent is deciding whether to boycott the Olympics");
-      twilight_self.rollDice(6);
-      twilight_self.rollDice(6);
       return 0;
     } else {
 
@@ -4757,6 +4753,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	if (action == "boycott") {
   	  let usroll   = twilight_self.rollDice(6);
 	  let ussrroll = twilight_self.rollDice(6);
+	  twilight_self.addMove("dice\tburn\t"+opponent);
+	  twilight_self.addMove("dice\tburn\t"+opponent);
 	  twilight_self.addMove("ops\t"+opponent+"\tolympic\t4");
 	  twilight_self.addMove("defcon\tlower");
 	  twilight_self.addMove("notify\t"+opponent.toUpperCase()+" plays 4 OPS");
@@ -4773,12 +4771,14 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   	    let usroll   = twilight_self.rollDice(6);
 	    let ussrroll = twilight_self.rollDice(6);
 
+	    twilight_self.addMove("dice\tburn\t"+opponent);
+	    twilight_self.addMove("dice\tburn\t"+opponent);
+
 	    if (opponent == "us") {
 	      usroll += 2;
 	    } else {
 	      ussrroll += 2;
 	    }
-
 
 	    if (ussrroll > usroll) {
 	      twilight_self.addMove("vp\tussr\t2");
@@ -5483,6 +5483,7 @@ console.log("RED SCARE: " + this.game.state.events.redscare_player1 + " -- " + t
       this.addMove("resolve\tgrainsales");
 
       if (this.game.hand.length < 1) {
+        let burnrand = this.rollDice();
         this.addMove("ops\tus\tgrainsales\t2");
         this.addMove("notify\tUSSR has no cards to discard");
         this.endTurn();
@@ -7870,7 +7871,6 @@ console.log("SHARING: " + this.game.hand[i]);
     if (player == "ussr") { target = "us"; }
     if (player == "us") { if (this.game.state.events.iranianhostage == 1) { cards_to_discard = 2; } }
 
-
     this.addMove("resolve\tterrorism");
 
     if (this.game.player == 2 && target == "us") {
@@ -7884,8 +7884,6 @@ console.log("SHARING: " + this.game.hand[i]);
 	  twilight_self.addMove("dice\tburn\ttussr");
 	  twilight_self.addMove("discard\tus\t"+card);
   	  twilight_self.addMove("notify\t"+target.toUpperCase()+" discarded "+twilight_self.game.cards[card].name);
-          twilight_self.endTurn();
-
 	});
       }
       twilight_self.endTurn();
@@ -7901,7 +7899,6 @@ console.log("SHARING: " + this.game.hand[i]);
 	  twilight_self.addMove("discard\tussr\t"+card);
   	  twilight_self.addMove("notify\t"+target.toUpperCase()+" discarded "+twilight_self.game.cards[card].name);
           twilight_self.endTurn();
-
       });
     }
 
