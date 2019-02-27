@@ -4753,8 +4753,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	if (action == "boycott") {
   	  let usroll   = twilight_self.rollDice(6);
 	  let ussrroll = twilight_self.rollDice(6);
-	  twilight_self.addMove("dice\tburn\t"+opponent);
-	  twilight_self.addMove("dice\tburn\t"+opponent);
+	  twilight_self.addMove("dice\tburn\t"+me);
+	  twilight_self.addMove("dice\tburn\t"+me);
 	  twilight_self.addMove("ops\t"+opponent+"\tolympic\t4");
 	  twilight_self.addMove("defcon\tlower");
 	  twilight_self.addMove("notify\t"+opponent.toUpperCase()+" plays 4 OPS");
@@ -4771,8 +4771,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   	    let usroll   = twilight_self.rollDice(6);
 	    let ussrroll = twilight_self.rollDice(6);
 
-	    twilight_self.addMove("dice\tburn\t"+opponent);
-	    twilight_self.addMove("dice\tburn\t"+opponent);
+	    twilight_self.addMove("dice\tburn\t"+me);
+	    twilight_self.addMove("dice\tburn\t"+me);
 
 	    if (opponent == "us") {
 	      usroll += 2;
