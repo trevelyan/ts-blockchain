@@ -1014,13 +1014,13 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
           if (this.game.player == mv[1]) {
             this.playerPlaceInitialInfluence("ussr");
           } else {
-            this.updateStatus("USSR is making its initial placemement of influence.");
+            this.updateStatus("USSR is making its initial placement of influence.");
           }
         } else {
           if (this.game.player == mv[1]) {
             this.playerPlaceInitialInfluence("us");
           } else {
-            this.updateStatus("US is making its initial placemement of influence.");
+            this.updateStatus("US is making its initial placement of influence.");
           }
         }
 
@@ -3491,7 +3491,7 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
   deck['blockade']        = { img : "TNRnTS-10" , name : "Blockade", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['koreanwar']       = { img : "TNRnTS-11" , name : "Korean War", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
   deck['romanianab']      = { img : "TNRnTS-12" , name : "Romanian Abdication", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
-  deck['arabisraeli']     = { img : "TNRnTS-13" , name : "Arab-Israeli War", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+  deck['arabisraeli']     = { img : "TNRnTS-13" , name : "Arab-Israeli War", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
   deck['comecon']         = { img : "TNRnTS-14" , name : "Comecon", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['nasser']          = { img : "TNRnTS-15" , name : "Nasser", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['warsawpact']      = { img : "TNRnTS-16" , name : "Warsaw Pact", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
