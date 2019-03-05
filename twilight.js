@@ -957,10 +957,18 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
           // resolving UN intervention means disabling the effect
           //
           if (mv[1] == "unintervention") {
+
+	    //
+	    // UNIntervention causing issues with USSR when US plays
+	    // force the event to reset in ALL circumstances
+	    // 
+            this.game.state.events.unintervention = 0;
+
             let lmv = this.game.queue[le].split("\t");
             if (lmv[0] == "event" && lmv[2] == mv[1]) {
               this.game.state.events.unintervention = 0;
   	    }
+
           }
           //
           // we can remove the event if it is immediately above us in the queue
@@ -996,6 +1004,8 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
       }
       if (mv[0] === "placement") {
 
+console.log("PLACEMENT");
+console.log(JSON.stringify(this.game.queue));
         //
         // add china card
         //
@@ -1751,7 +1761,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
   
         if (j == 0) {
 	    if (twilight_self.isRegionBonus() == 1) {
-              twilight_self.updateStatus("Place regional bonux");
+              twilight_self.updateStatus("Place regional bonus");
 	      j++;
 	      twilight_self.limitToRegionBonus();
 	      twilight_self.endRegionBonus();
@@ -2355,7 +2365,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
     placeable.push("yugoslavia");
     placeable.push("bulgaria");
 
-    var ops_to_place = 6;
+    let ops_to_place = 6;
 
     for (let i = 0; i < placeable.length; i++) {
 
@@ -2372,6 +2382,16 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
           twilight_self.addMove("place\tussr\tussr\t"+countryname+"\t1");
           twilight_self.placeInfluence(countryname, 1, "ussr");
 	  ops_to_place--;
+
+	  //
+	  // sanity check
+	  //
+	  let total_placed = 0;
+ 	  for (var i in this.countries) {
+	    total_placed += parseInt(this.countries[i].ussr);
+	  }
+	  if (total_placed >= 10) { ops_to_place = 0; }
+
           if (ops_to_place == 0) {
 	    twilight_self.playerFinishedPlacingInfluence();
 	    twilight_self.game.state.placement = 1;
@@ -2440,6 +2460,16 @@ console.log("USSR MOVES: " + JSON.stringify(twilight_self.moves));
           twilight_self.addMove("place\tus\tus\t"+countryname+"\t1");
           twilight_self.placeInfluence(countryname, 1, "us");
           ops_to_place--;
+
+	  //
+	  // sanity check
+	  //
+	  let total_placed = 0;
+ 	  for (var i in this.countries) {
+	    total_placed += parseInt(this.countries[i].us);
+	  }
+	  if (total_placed >= 14) { ops_to_place = 0; }
+
           if (ops_to_place == 0) {
             twilight_self.playerFinishedPlacingInfluence();
             twilight_self.game.state.placement = 1;
@@ -8572,6 +8602,8 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
   //
   let vp_adjustment = vp_us - vp_ussr;
   this.game.state.vp += vp_adjustment;
+
+  this.updateLog("VP adjusted: " + vp_adjustment);
   this.updateVictoryPoints();
 
 }
