@@ -2386,11 +2386,11 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 	  //
 	  // sanity check
 	  //
-	  let total_placed = 0;
- 	  for (var i in this.countries) {
-	    total_placed += parseInt(this.countries[i].ussr);
-	  }
-	  if (total_placed >= 10) { ops_to_place = 0; }
+	  //let total_placed = 0;
+ 	  //for (var i in this.countries) {
+	  //  total_placed += parseInt(this.countries[i].ussr);
+	  //}
+	  i//f (total_placed >= 10) { ops_to_place = 0; }
 
           if (ops_to_place == 0) {
 	    twilight_self.playerFinishedPlacingInfluence();
@@ -2464,11 +2464,11 @@ console.log("USSR MOVES: " + JSON.stringify(twilight_self.moves));
 	  //
 	  // sanity check
 	  //
-	  let total_placed = 0;
- 	  for (var i in this.countries) {
-	    total_placed += parseInt(this.countries[i].us);
-	  }
-	  if (total_placed >= 14) { ops_to_place = 0; }
+	  //let total_placed = 0;
+ 	  //for (var i in this.countries) {
+	  //  total_placed += parseInt(this.countries[i].us);
+	  //}
+	  //if (total_placed >= 14) { ops_to_place = 0; }
 
           if (ops_to_place == 0) {
             twilight_self.playerFinishedPlacingInfluence();
