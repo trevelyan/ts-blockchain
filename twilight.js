@@ -324,7 +324,6 @@ console.log("CHECOUP 1");
 	// results.
 	//
 	twilight_self.playCoup("ussr", mv[2], 3, function() {
-console.log("CHECOUP 2: ");
 	  if (twilight_self.countries[mv[2]].us < original_us) {
 	    if (twilight_self.game.player == 1) {
 
@@ -1046,12 +1045,17 @@ console.log(JSON.stringify(this.game.queue));
 	console.log("HEADLINE TRIGGERED: ");
 
 	// set to first player if needed
+	let reloaded = 0; // HACK
 	if (msg.extra == undefined) { msg.extra = {}; }
 	if (msg.extra.target == undefined) { msg.extra.target = 1; }
 
 	let x = this.playHeadline(msg);
+console.log("play headline returns: " + x);
+console.log("WHAT IS HAPPENING: " + JSON.stringify(this.game.queue));
         if (x == 1) { this.game.queue.splice(qe, 1); }
         else { return 0; }
+console.log("WHAT IS HAPPENING 2: " + JSON.stringify(this.game.queue));
+console.log("shd_continue: " + shd_continue);
 
       }
       if (mv[0] === "round") {
@@ -2687,9 +2691,6 @@ Twilight.prototype.playerRealign = function playerRealign(player, card, mycallba
       $(divname).on('click', function() {
 
         let c = $(this).attr('id');
-
-console.log("CLICK ON : " + c);
-
         var result = twilight_self.playRealign(c);
         twilight_self.addMove("realign\t"+player+"\t"+c);
 	mycallback();
@@ -2960,7 +2961,10 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
 
   if (winning > 0) {
 
-    alert("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
+    if (this.browser_active == 1) {
+      alert("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
+    }
+
     this.updateLog(player.toUpperCase() + " rolls " + roll + " ("+winning+" added)");
 
     while (winning > 0) {
@@ -2985,7 +2989,9 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
 
     }
   } else {
-    alert("COUP FAILED: " + player.toUpperCase() + " rolls " + roll);
+    if (this.browser_actiev == 1) {
+      alert("COUP FAILED: " + player.toUpperCase() + " rolls " + roll);
+    }
   }
 
   if (mycallback != null) {
@@ -3026,11 +3032,14 @@ Twilight.prototype.playRealign = function playRealign(country) {
       bonus_us--;
     }
 
-    let roll_us   = this.rollDice(6) + bonus_us;
-    let roll_ussr = this.rollDice(6) + bonus_ussr;
+    let roll_us   = this.rollDice(6);
+    let roll_ussr = this.rollDice(6);
 
-    console.log("US roll: " + roll_us + " versus USSR roll: " + roll_ussr);
+    this.updateLog("US bonus " + bonus_us + " vs. USSR bonus " + bonus_ussr);
     this.updateLog("US roll " + roll_us + " vs. USSR roll " + roll_ussr);
+
+    roll_us   = roll_us + bonus_us;
+    roll_ussr = roll_ussr + bonus_ussr;
 
     if (roll_us > roll_ussr) {
       outcome_determined = 1;
@@ -3077,7 +3086,9 @@ Twilight.prototype.endGame = function endGame(winner, method) {
   if (winner == "us") { this.game.winner = 2; }
   if (winner == "ussr") { this.game.winner = 1; }
 
-  alert("The Game is Over - " + winner.toUpperCase() + " by " + method);
+  if (this.active_browser == 1) {
+    alert("The Game is Over - " + winner.toUpperCase() + " by " + method);
+  }  
 }
 
 
@@ -3088,28 +3099,20 @@ Twilight.prototype.endRound = function endRound() {
   this.game.state.turn_in_round = 0;
   this.game.state.move 		= 0;
 
-console.log("FOUND A SCORING CARD0!");
   // 
   // game over if scoring card is held
   //
   if (this.game.state.round > 1) {
     for (let i = 0 ; i < this.game.hand.length; i++) {
       if (this.game.cards[this.game.hand[i]].scoring == 1) {
-console.log("FOUND A SCORING CARD1!");
 	let player = "us";
 	let winner = "ussr";
-console.log("FOUND A SCORING CARD2!");
 	if (this.game.player == 1) { player = "ussr"; winner = "us"; }
-console.log("FOUND A SCORING CARD3!");
 	this.resignGame(player.toUpperCase() + " held scoring card");
-console.log("FOUND A SCORING CARD4!");
 	this.endGame(winner, "opponent held scoring card");
-console.log("FOUND A SCORING CARD5!");
-
       }
     }
   }
-console.log("FOUND A SCORING CARD 6!");
 
 
   //
@@ -4872,7 +4875,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       if (options_purge.length <= countries_to_purge) {
 	for (let i = 0; i < options_purge.length; i++) {
 	  twilight_self.addMove("remove\tus\tussr\t"+options_purge[i]+"\t"+ops_to_purge);
-	  twilight_self.removeInfluence(options_purge[i], ops_to_purge, "us");
+	  twilight_self.removeInfluence(options_purge[i], ops_to_purge, "ussr");
 	}
 	twilight_self.endTurn();
       } else {
