@@ -42,7 +42,7 @@ util.inherits(Twilight, Game);
 ////////////////
 // initialize //
 ////////////////
-Twilight.prototype.initializeGame = async function initializeGame(game_id) {
+Twilight.prototype.initializeGame = function initializeGame(game_id) {
 
   //
   // enable chat
@@ -140,12 +140,16 @@ Twilight.prototype.initializeGame = async function initializeGame(game_id) {
   //
   // if the browser is active, shift to the game that way
   //
-  if (this.browser_active == 1) {
-    let msg = {};
-    msg.extra = {};
-    msg.extra.target = this.game.target;
-    this.handleGame(msg);
-  }
+  // run queue is now handled by game.js
+  //
+  // keeping as reference
+  //
+  //if (this.browser_active == 1) {
+  //  let msg = {};
+  //  msg.extra = {};
+  //  msg.extra.target = this.game.target;
+  //  this.handleGame(msg);
+  //}
 
 }
 
@@ -169,6 +173,7 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
       //
       // save before we start executing the game queue
       //
+console.log("SAVING THE GAME: " + twilight_self.game.queue);
       twilight_self.saveGame(twilight_self.game.id);
 
       let qe = this.game.queue.length-1;
@@ -912,29 +917,45 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
         this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "event") {
-        shd_continue = this.playEvent(mv[1], mv[2]);
-        this.updateLog(mv[1].toUpperCase() + " triggers <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.cards[mv[2]].name + "</span> event"); 
-        if (mv[1] == "china") {
-        } else {
-          //
-          // remove non-recurring events from game
-          //
-          for (var i in this.game.cards) {
-            if (mv[1] == i) {
-	      if (this.game.cards[i].recurring != 1) {
-	        this.updateLog(this.game.cards[i].name + " removed from game");
-	        this.game.removed[i] = this.game.cards[1];
-	        delete this.game.cards[i];
-	      } else {
-	        this.updateLog(this.game.cards[i].name + " discarded");
-		this.game.discard[i] = this.game.cards[i];
-	      }
-  	    }
-          }
-        }
 
-	// delete event if not deleted already
-        this.game.queue.splice(qe, 1);
+        shd_continue = this.playEvent(mv[1], mv[2]);
+
+        if (shd_continue == 0) {
+
+	  //
+	  // game will stop
+	  //
+	  // this will resolve when next turn clears the event
+	  //
+
+        } else {
+
+	  //
+	  // only continue if we do not stop
+	  //
+          this.updateLog(mv[1].toUpperCase() + " triggers <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.cards[mv[2]].name + "</span> event"); 
+          if (mv[1] == "china") {
+          } else {
+            //
+            // remove non-recurring events from game
+            //
+            for (var i in this.game.cards) {
+              if (mv[2] == i) {
+	        if (this.game.cards[i].recurring != 1) {
+	          this.updateLog(this.game.cards[i].name + " removed from game");
+	          this.game.removed[i] = this.game.cards[i];
+	          delete this.game.cards[i];
+	        } else {
+	          this.updateLog(this.game.cards[i].name + " discarded");
+	  	  this.game.discard[i] = this.game.cards[i];
+	        }
+  	      }
+            }
+          }
+
+	  // delete event if not deleted already
+          this.game.queue.splice(qe, 1);
+        }
       }
       if (mv[0] === "place") {
         if (player != mv[1]) { this.placeInfluence(mv[3], parseInt(mv[4]), mv[2]); }
