@@ -3919,7 +3919,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let hungary_diff = hungary_ussr - hungary_us;
     let czechoslovakia_diff = czechoslovakia_ussr - czechoslovakia_us;
 
-    if (yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
+    this.addMove("resolve\tindreds");
+ 
+   if (yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
       this.endTurn();
       return 0;
     } else {
