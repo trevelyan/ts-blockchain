@@ -1089,8 +1089,8 @@ console.log("shd_continue: " + shd_continue);
 	//
 	this.updateStatus("Preparing for round " + this.game.state.round);
 
-	let rounds_in_turn = 6;
-	if (this.game.state.round > 3) { rounds_in_turn = 7; }
+	let rounds_in_turn = 2;
+	if (this.game.state.round > 3) { rounds_in_turn = 3; }
 
 	for (let i = 0; i < rounds_in_turn; i++) {
 	  this.game.queue.push("turn");
