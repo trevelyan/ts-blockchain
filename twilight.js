@@ -1008,8 +1008,6 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
       }
       if (mv[0] === "placement") {
 
-console.log("PLACEMENT");
-console.log(JSON.stringify(this.game.queue));
         //
         // add china card
         //
@@ -1069,8 +1067,8 @@ console.log(JSON.stringify(this.game.queue));
 	//
 	this.updateStatus("Preparing for round " + this.game.state.round);
 
-	let rounds_in_turn = 2;
-	if (this.game.state.round > 3) { rounds_in_turn = 3; }
+	let rounds_in_turn = 6;
+	if (this.game.state.round > 3) { rounds_in_turn = 7; }
 
 	for (let i = 0; i < rounds_in_turn; i++) {
 	  this.game.queue.push("turn");
@@ -1122,7 +1120,7 @@ console.log(JSON.stringify(this.game.queue));
 
 	  }
 
-	  if (this.game.state.round == 2) {
+	  if (this.game.state.round == 4) {
 
 	    this.game.queue.push("SHUFFLE\t1");
 	    this.game.queue.push("DECKRESTORE\t1");
