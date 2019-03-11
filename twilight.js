@@ -152,15 +152,25 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
   let player = "ussr"; if (this.game.player == 2) { player = "us"; }
 
 
+
   ///////////
   // QUEUE //
   ///////////
   if (this.game.queue.length > 0) {
 
+console.log("QUEUE: " + JSON.stringify(this.game.queue));
+
       let qe = this.game.queue.length-1;
       let mv = this.game.queue[qe].split("\t");
       let shd_continue = 1;
 
+      //
+      // cambridge region
+      // chernobyl region
+      // grainsales sender card
+      // missileenvy sender card
+      // latinamericandebtcrisis (if USSR can double)
+      // che ussr country_of_target1
       //
       // start round
       // placement (initial placement)
@@ -180,13 +190,7 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
       // card [us/ussr] card  --> hand card to play
       // vp [us/ussr] points
       // discard [us/ussr] card --> discard from hand
-      // cambridge region
-      // chernobyl region
       // discard [ussr/us] card
-      // grainsales sender card
-      // missileenvy sender card
-      // latinamericandebtcrisis (if USSR can double)
-      // che ussr country_of_target1
       // deal [1/2]  --- player decides how many cards they need, adds DEAL and clears when ready
       //
       if (mv[0] === "turn") {
@@ -218,7 +222,7 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
 	      //
 	      // discard pile is parallel to normal
 	      //
-              this.game.discard[i] = this.game.deck[0].cards[i];
+              this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
 	    }
           }
         }
@@ -298,8 +302,6 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
       //
       if (mv[0] == "checoup") {
 
-console.log("CHECOUP 1");
-
 	let target1 = mv[2];
 	let original_us = this.countries[mv[2]].us;
 	let twilight_self = this;
@@ -313,6 +315,7 @@ console.log("CHECOUP 1");
 	  if (twilight_self.countries[mv[2]].us < original_us) {
 	    if (twilight_self.game.player == 1) {
 
+	      twilight_self.addMove("resolve\tchecoup");
 	      twilight_self.updateStatus("Pick second target for coup:");
               twilight_self.playerFinishedPlacingInfluence();
 
@@ -479,8 +482,6 @@ console.log("CHECOUP 1");
             for (let i = 0; i < keysnum; i++) {
  	      this.game.queue.splice(this.game.queue.length-1, 1);
 	    }
-
-console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 
             let user_message = "Select cards to discard:<p></p><ul>";
             for (let i = 0; i < cardoptions.length; i++) {
@@ -1045,8 +1046,6 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 
       if (mv[0] === "headline") {
 
-	console.log("HEADLINE TRIGGERED: ");
-
 	// set to first player if needed
 	let reloaded = 0; // HACK
 	if (msg.extra == undefined) { msg.extra = {}; }
@@ -1092,6 +1091,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 	  this.finalScoring();
 	}
 
+console.log("\n\nWHICH ROUND: " + this.game.state.round);
 
 	//
 	// DEAL MISSING CARDS
@@ -1103,21 +1103,25 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 	  this.game.queue.push("deal\t2");
 	  this.game.queue.push("deal\t1");
 
-	  if (this.game.deck[0].crypt.length < 16) {
- 
-	    //
-	    // shuffle in discarded cards
-	    //
-	    this.game.queue.push("SHUFFLE\t1");
-	    this.game.queue.push("DECKRESTORE\t1");
-            this.game.queue.push("DECKENCRYPT\t1\t2");
-            this.game.queue.push("DECKENCRYPT\t1\t1");
-            this.game.queue.push("DECKXOR\t1\t2");
-            this.game.queue.push("DECKXOR\t1\t1");
-            this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnDiscardedCards()));
-	    this.game.queue.push("DECKBACKUP\t1");
-	    this.updateLog("Shuffling discarded cards back into the deck...");
+	  if (this.game.deck[0].crypt.length < 16) { 
 
+	    let discarded_cards = this.returnDiscardedCards();
+	    if (Object.keys(discarded_cards).length > 0) {
+
+	      //
+	      // shuffle in discarded cards
+	      //
+	      this.game.queue.push("SHUFFLE\t1");
+	      this.game.queue.push("DECKRESTORE\t1");
+              this.game.queue.push("DECKENCRYPT\t1\t2");
+              this.game.queue.push("DECKENCRYPT\t1\t1");
+              this.game.queue.push("DECKXOR\t1\t2");
+              this.game.queue.push("DECKXOR\t1\t1");
+              this.game.queue.push("DECK\t1\t"+JSON.stringify(discarded_cards));
+	      this.game.queue.push("DECKBACKUP\t1");
+	      this.updateLog("Shuffling discarded cards back into the deck...");
+
+	    }
 	  }
 
 	  if (this.game.state.round == 4) {
@@ -1339,7 +1343,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
         this.game.turn = [];
 
         if (this.game.state.headline_opponent_hash != this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor)) {
-alert("PLAYER 1 HASH WRONG: " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
+alert("PLAYER 1 HASH WRONG: -- this is a development error message that can be triggered if the opponent attempts to cheat by changing their selected card after sharing the encrypted hash. It can also be rarely caused if one or both players reload or have unreliable connections during the headline exchange process. The solution in this case is for both players to reload until the game hits the first turn. " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
         }
 
         this.game.state.headline2 = 1;
@@ -1373,7 +1377,6 @@ alert("PLAYER 1 HASH WRONG: " + this.game.state.headline_opponent_hash + " -- " 
       this.updateLog("Confirming USSR headline card");
       if (this.game.player == 1) {
 
-console.log("target 1, headline 3: USSR");
 	//
 	// could be triggered by reload
 	//
@@ -1384,7 +1387,7 @@ console.log("target 1, headline 3: USSR");
         this.game.state.headline_opponent_xor = msg.extra.headline_xor;
 
         if (this.game.state.headline_opponent_hash != this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor)) {
-alert("PLAYER 2 HASH WRONG: " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
+alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be triggered if the opponent attempts to cheat by changing their selected card after sharing the encrypted hash. It can also be rarely caused if one or both players reload or have unreliable connections during the headline exchange process. The solution in this case is for both players to reload until the game hits the first turn. " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
         }
 
 	//this.saveGame(this.game.id);
@@ -1622,7 +1625,6 @@ alert("PLAYER 2 HASH WRONG: " + this.game.state.headline_opponent_hash + " -- " 
     // only one player should trigger next round
     //
     if (player_to_go == this.game.player && shd_continue == 1) {
-console.log("HEADLINE 5 - RESOLVE");
       this.addMove("RESOLVE");
       let extra      = {};
           extra.skipqueue = 0;
@@ -1745,6 +1747,9 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         let j = ops;
         twilight_self.updateStatus("Place " + j + " influence.");
         twilight_self.prePlayerPlaceInfluence(player);
+	if (j == 1) { 
+          twilight_self.uneventOpponentControlledCountries(player);
+	}
         twilight_self.playerPlaceInfluence(player, () => {
 
           j--;
@@ -1761,7 +1766,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
           twilight_self.updateStatus("Place " + j + " influence");
   
-        if (j == 0) {
+        if (j <= 0) {
 	    if (twilight_self.isRegionBonus() == 1) {
               twilight_self.updateStatus("Place regional bonus");
 	      j++;
@@ -1876,7 +1881,6 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
     let extra       = {};
     extra.headline_hash = twilight_self.game.state.headline_hash;
     extra.target    = twilight_self.returnNextPlayer(twilight_self.game.player);
-console.log("SENDING HEADLINE1 INFOR TO OTHER PLAYER WITH: " + JSON.stringify(extra));
 
     $('.card').off();
     $('.showcard').off();
@@ -2130,6 +2134,11 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
             announcement += '<li class="card" id="space">space race</li>';  
   	  }
         }
+      } else {
+
+console.log("\nSPACE RACE IS NOT AN OPTION? WHY? ");
+console.log(JSON.stringify(twilight_self.game.state));
+
       }
       twilight_self.updateStatus(announcement);
     }
@@ -2402,7 +2411,6 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
           if (ops_to_place == 0) {
 	    twilight_self.playerFinishedPlacingInfluence();
 	    twilight_self.game.state.placement = 1;
-console.log("USSR MOVES: " + JSON.stringify(twilight_self.moves));
 	    twilight_self.endTurn();
 	  }
         } else {
@@ -2798,7 +2806,7 @@ Twilight.prototype.playerFinishedPlacingInfluence = function playerFinishedPlaci
 }
 Twilight.prototype.playerSpaceCard = function playerSpaceCard(card, player) {
 
-  if (this.game.player == 1) {
+  if (player == "ussr") {
     this.game.state.space_race_ussr_counter++;
   } else {
     this.game.state.space_race_us_counter++;
@@ -3525,35 +3533,35 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
   deck['socgov']          = { img : "TNRnTS-07" , name : "Socialist Governments", scoring : 0 , player : "ussr" , recurring : 1 , ops : 3 };
   deck['fidel']           = { img : "TNRnTS-08" , name : "Fidel", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
   deck['vietnamrevolts']  = { img : "TNRnTS-09" , name : "Vietnam Revolts", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
-  deck['blockade']        = { img : "TNRnTS-10" , name : "Blockade", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
+//  deck['blockade']        = { img : "TNRnTS-10" , name : "Blockade", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['koreanwar']       = { img : "TNRnTS-11" , name : "Korean War", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
   deck['romanianab']      = { img : "TNRnTS-12" , name : "Romanian Abdication", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['arabisraeli']     = { img : "TNRnTS-13" , name : "Arab-Israeli War", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
-  deck['comecon']         = { img : "TNRnTS-14" , name : "Comecon", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+//  deck['comecon']         = { img : "TNRnTS-14" , name : "Comecon", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['nasser']          = { img : "TNRnTS-15" , name : "Nasser", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
-  deck['warsawpact']      = { img : "TNRnTS-16" , name : "Warsaw Pact", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+//  deck['warsawpact']      = { img : "TNRnTS-16" , name : "Warsaw Pact", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['degaulle']        = { img : "TNRnTS-17" , name : "De Gaulle Leads France", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['naziscientist']   = { img : "TNRnTS-18" , name : "Nazi Scientist", scoring : 0 , player : "both" , recurring : 0 , ops : 1 };
-  deck['truman']          = { img : "TNRnTS-19" , name : "Truman", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
+//  deck['truman']          = { img : "TNRnTS-19" , name : "Truman", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
   deck['olympic']         = { img : "TNRnTS-20" , name : "Olympic Games", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['nato']            = { img : "TNRnTS-21" , name : "NATO", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
   deck['indreds']         = { img : "TNRnTS-22" , name : "Independent Reds", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
-  deck['marshall']        = { img : "TNRnTS-23" , name : "Marshall Plan", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
+//  deck['marshall']        = { img : "TNRnTS-23" , name : "Marshall Plan", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
   deck['indopaki']        = { img : "TNRnTS-24" , name : "Indo-Pakistani War", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['containment']     = { img : "TNRnTS-25" , name : "Containment", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
-  deck['cia']             = { img : "TNRnTS-26" , name : "CIA", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
+//  deck['cia']             = { img : "TNRnTS-26" , name : "CIA Created", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
   deck['usjapan']         = { img : "TNRnTS-27" , name : "US/Japan Defense Pact", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
   deck['suezcrisis']      = { img : "TNRnTS-28" , name : "Suez Crisis", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['easteuropean']    = { img : "TNRnTS-29" , name : "East European Unrest", scoring : 0 , player : "us"   , recurring : 1 , ops : 3 };
   deck['decolonization']  = { img : "TNRnTS-30" , name : "Decolonization", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
   deck['redscare']        = { img : "TNRnTS-31" , name : "Red Scare", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
   deck['unintervention']  = { img : "TNRnTS-32" , name : "UN Intervention", scoring : 0 , player : "both" , recurring : 1 , ops : 1 };
-  deck['destalinization'] = { img : "TNRnTS-33" , name : "Destalinization", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+//  deck['destalinization'] = { img : "TNRnTS-33" , name : "Destalinization", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['nucleartestban']  = { img : "TNRnTS-34" , name : "Nuclear Test Ban Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
   deck['formosan']        = { img : "TNRnTS-35" , name : "Formosan Resolution", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
-  deck['defectors']       = { img : "TNRnTS-103" ,name : "Defectors", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
-  deck['cambridge']       = { img : "TNRnTS-104" ,name : "The Cambridge Five", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 2 };
-  deck['specialrelation'] = { img : "TNRnTS-105" ,name : "Special Relationship", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
+  deck['defectors']       = { img : "TNRnTS-103" ,name : "Defectors", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
+  deck['cambridge']       = { img : "TNRnTS-104" ,name : "The Cambridge Five", scoring : 0 , player : "ussr"   , recurring : 1 , ops : 2 };
+  deck['specialrelation'] = { img : "TNRnTS-105" ,name : "Special Relationship", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
   deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
 
   for (var i in deck) { deck[i].dealt = 0; deck[i].discarded = 0; deck[i].removed = 0; }
@@ -3652,12 +3660,14 @@ Twilight.prototype.returnDiscardedCards = function returnDiscardedCards() {
 
   var discarded = {};
 
-  for (var i in this.game.discards) {
+  for (var i in this.game.deck[0].discards) {
     discarded[i] = this.game.deck[0].cards[i];
     delete this.game.deck[0].cards[i];
   }
 
-  this.game.discards = {};
+  this.game.deck[0].discards = {};
+
+console.log("RETURNING DISCARDED CARDS: " + JSON.stringify(discarded));
 
   return discarded;
 
@@ -4000,7 +4010,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
         let countryname  = i;
         let divname      = '#'+i;
-	if (i == "canada" || i == "uk" || i == "france" || i == "benelux" || i == "westgermany" || i == "spain" ||  i == "italy" || i == "greece" || i == "turkey" || i == "denmark" || i == "norway" || i == "sweden" ||  i == "finland") {
+	if (i == "canada" || i == "uk" || i == "france" || i == "benelux" || i == "westgermany" || i == "spain" ||  i == "italy" || i == "greece" || i == "turkey" || i == "denmark" || i == "norway" || i == "sweden" ||  i == "finland" || i == "austria") {
           if (twilight_self.isControlled("ussr", countryname) != 1) {
             twilight_self.countries[countryname].place = 1;
             $(divname).off();
@@ -4570,10 +4580,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "suezcrisis") {
 
     if (this.game.player == 2) {
-
       this.updateStatus("USSR is playing Suez Crisis");
       return 0;
-
     }
     if (this.game.player == 1) {
 
@@ -4601,12 +4609,22 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
  
 	this.updateLog("Suez Crisis auto-removed available influence");
 
-        twilight_self.removeInfluence("israel", 2, "us");
-	twilight_self.addMove("remove\tussr\tus\tisrael\t2");
-        twilight_self.removeInfluence("france", 2, "us");
-	twilight_self.addMove("remove\tussr\tus\tfrance\t2");
-        twilight_self.removeInfluence("uk", 2, "us");
-	twilight_self.addMove("remove\tussr\tus\tuk\t2");
+	if (israel_ops >= 2) { israel_ops = 2; } else {}
+	if (uk_ops >= 2) { uk_ops = 2; } else {}
+	if (france_ops >= 2) { france_ops = 2; } else {}
+
+	if (israel_ops > 0) {
+          twilight_self.removeInfluence("israel", israel_ops, "us");
+  	  twilight_self.addMove("remove\tussr\tus\tisrael\t"+israel_ops);
+        }
+	if (france_ops > 0) {
+	  twilight_self.removeInfluence("france", france_ops, "us");
+	  twilight_self.addMove("remove\tussr\tus\tfrance\t"+france_ops);
+        }
+	if (uk_ops > 0) {
+	  twilight_self.removeInfluence("uk", uk_ops, "us");
+	  twilight_self.addMove("remove\tussr\tus\tuk\t"+uk_ops);
+        }
         twilight_self.endTurn();
 
       } else {
@@ -4666,7 +4684,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.game.player == 1) {
 
       this.addMove("resolve\tcia");
-      this.updateStatus("USSR is playing CIA Created");
+      this.updateStatus("US is playing CIA Created");
 
       if (this.game.deck[0].hand.length < 1) {
         this.addMove("ops\tus\tcia\t1");
@@ -4707,9 +4725,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
         let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops);
-        if (this.game.deck[0].cards[this.game.deck[0].hand[i]].ops >= 3) {
-          available = 1;
-        }
+        if (avops >= 3) { available = 1; }
       }
 
       if (available == 0) {
@@ -5173,7 +5189,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "redscare") {
     if (player == "ussr") { this.game.state.events.redscare_player2 = 1; }
     if (player == "us") { this.game.state.events.redscare_player1 = 1; }
-console.log("RED SCARE: " + this.game.state.events.redscare_player1 + " -- " + this.game.state.events.redscare_player2);
     return 1;
   }
 
@@ -7593,7 +7608,6 @@ console.log("RED SCARE: " + this.game.state.events.redscare_player1 + " -- " + t
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] === "china") { cards_to_reveal--; }
         else { 
-console.log("SHARING: " + this.game.deck[0].hand[i]);
           this.addMove(this.game.deck[0].hand[i]); 
         }
       }
@@ -8155,7 +8169,6 @@ Twilight.prototype.limitToRegionBonus = function limitToRegionBonus() {
   return;
 }
 Twilight.prototype.modifyOps = function modifyOps(ops) {
-console.log("MODIFY OPS: " + JSON.stringify(this.game.state.events));
   if (this.game.state.events.brezhnev == 1 && this.game.player == 1) { 
     this.updateLog("USSR gets Brezhnev bonus +1");
     ops++;
@@ -9008,7 +9021,6 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
 Twilight.prototype.updateStatus = function updateStatus(str) {
 
   this.game.status = str;
-  console.log("STATUS: " + this.game.status);
   if (this.app.BROWSER == 1) { $('#status').html(this.game.status); }
 
 }
@@ -9865,7 +9877,6 @@ Twilight.prototype.updateLog = function updateLog(str, length = 10) {
     html += "> " + this.game.log[i];
   }
 
-  console.log("LOG: " + html);
   if (this.app.BROWSER == 1) { $('#log').html(html) }
 
   $('.logcard').off();
