@@ -146,7 +146,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
 //
 // Core Game Logic
 //
-Twilight.prototype.handleGame = function gandleGame(msg=null) {
+Twilight.prototype.handleGame = function handleGame(msg=null) {
 
   let twilight_self = this;
   let player = "ussr"; if (this.game.player == 2) { player = "us"; }
