@@ -842,7 +842,7 @@ console.log("TEHRAN CHOICES: " + JSON.stringify(cardoptions));
 	return 0;
       }
       if (mv[0] === "ops") {
-        this.updateLog(mv[1].toUpperCase() + " plays <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span> for " + mv[3] + " OPS"); 
+        this.updateLog(mv[1].toUpperCase() + " plays <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> for " + mv[3] + " OPS"); 
         this.playOps(mv[1], mv[3], mv[2]);
         this.game.queue.splice(qe, 1);
         shd_continue = 0;
@@ -2201,7 +2201,12 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
               let action2 = $(this).attr("id");
 
+	      twilight_self.game.state.event_before_ops = 0;
+	      twilight_self.game.state.event_name = "";
+
 	      if (action2 === "before") {
+	        twilight_self.game.state.event_before_ops = 1;
+	        twilight_self.game.state.event_name = twilight_self.game.deck[0].cards[card].name;
                 twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
                 twilight_self.addMove("event\t"+player+"\t"+card);
                 twilight_self.removeCardFromHand(card);
@@ -3227,6 +3232,8 @@ Twilight.prototype.returnState = function returnState() {
   state.turn_in_round = 0;
   state.broke_control = 0;
   state.us_defcon_bonus = 0;
+  state.event_before_ops = 0;
+  state.event_name = "";
 
   state.animal_in_space = "";
   state.man_in_earth_orbit = "";
