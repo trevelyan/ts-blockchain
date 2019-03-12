@@ -3008,7 +3008,8 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
 
     }
   } else {
-    if (this.browser_actiev == 1) {
+    if (this.browser_active == 1) {
+      this.updateLog(player.toUpperCase() + " rolls " + roll + " (no change)");
       alert("COUP FAILED: " + player.toUpperCase() + " rolls " + roll);
     }
   }
@@ -3063,12 +3064,22 @@ Twilight.prototype.playRealign = function playRealign(country) {
     if (roll_us > roll_ussr) {
       outcome_determined = 1;
       let diff = roll_us - roll_ussr;
-      this.removeInfluence(country, diff, "ussr");
+      if (this.countries[country].ussr > 0) {
+	if (this.countries[country].ussr < diff) {
+	  diff = this.countries[country].ussr;
+	}
+        this.removeInfluence(country, diff, "ussr");
+      }
     }
     if (roll_us < roll_ussr) {
       outcome_determined = 1;
       let diff = roll_ussr - roll_us;
-      this.removeInfluence(country, diff, "us");
+      if (this.countries[country].us > 0) {
+	if (this.countries[country].us < diff) {
+	  diff = this.countries[country].us;
+	}
+        this.removeInfluence(country, diff, "us");
+      }
     }
   }
 }
@@ -4324,8 +4335,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (roll >= target) {
       this.updateLog("USSR wins the Arab-Israeli War");
-      this.placeInfluence("israel", this.countries['southkorea'].us, "ussr");
-      this.removeInfluence("israel", this.countries['southkorea'].us, "us");
+      this.placeInfluence("israel", this.countries['israel'].us, "ussr");
+      this.removeInfluence("israel", this.countries['israel'].us, "us");
       this.game.state.vp -= 2;
       this.game.state.milops_ussr += 2;
       this.updateVictoryPoints();
