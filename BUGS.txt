@@ -1,0 +1,6 @@
+
+KNOWN PROBLEMS:
+
+- some issue can result in the USSR being able to place its initial placement twice… but what? we can implement a sanity check on initial placement to guard against the placement of too many influence, but it would be better to solve the problem at a more foundational level.
+
+

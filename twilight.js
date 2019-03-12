@@ -2374,6 +2374,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
     x += ']';
     this.updateStatus(x);
 
+
     $('.showcard').off();
     $('.showcard').mouseover(function() {
       let card = $(this).attr("id");
