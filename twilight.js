@@ -1155,13 +1155,6 @@ console.log("\n\nWHICH ROUND: " + this.game.state.round);
 
 	return 1;
       }
-      if (mv[0] === "turn") {
-
-	if (mv[1] == "ussr") { this.game.state.turn = 0; }
-	if (mv[1] == "us") { this.game.state.turn = 1; }
-  	this.game.queue.splice(qe, 1);
-
-      }
       if (mv[0] === "play") {
 
 	if (mv[1] == 1) { this.game.state.turn = 0; }
@@ -9127,7 +9120,11 @@ Twilight.prototype.lowerDefcon = function lowerDefcon() {
     }
   }
 
+
   if (this.game.state.defcon == 1) {
+
+    console.log("DEFCON is 1 and game state turn? "+JSON.stringify(this.game.state));
+
     if (this.game.state.turn == 0) {
       this.endGame("us", "USSR triggers thermonuclear war");
     } else {
