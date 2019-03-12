@@ -2278,16 +2278,30 @@ console.log(JSON.stringify(twilight_self.game.state));
 /////////////////////
 Twilight.prototype.uneventOpponentControlledCountries = function uneventOpponentControlledCountries(player) {
 
+console.log("uneventing opponent controlled countries for " + player);
+
   for (var i in this.countries) { 
     if (player == "us") {
       if (this.isControlled("ussr", i) == 1) {
+console.log("uneventing: " + i);
         this.countries[i].place = 0; 
+	let divname = '#'+i;
+	$(divname).off();
+	//$(divname).on('click', function() {
+	//  alert("invalid selection");
+	//});
       }
     }
 
     if (player == "ussr") {
       if (this.isControlled("us", i) == 1) {
+console.log("uneventing: " + i);
         this.countries[i].place = 0; 
+	let divname = '#'+i;
+	$(divname).off();
+	//$(divname).on('click', function() {
+	//  alert("invalid selection");
+	//});
       }
     }
   }
@@ -3719,6 +3733,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "defectors") {
     if (this.game.state.headline == 0) {
       this.game.state.vp += 1;
+      this.updateLog("US gains 1 VP from Defectors");
       this.updateDefcon();
     }
     return 1;
@@ -5283,7 +5298,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       twilight_self.addMove("resolve\tfiveyearplan");
 
-      if (this.game.deck[0].hand.length < 1) {
+      let size_of_hand_minus_china_card = this.game.deck[0].hand.length;
+      for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+	if (this.game.deck[0].hand == "china") { size_of_hand_minus_china_card--; }
+      }
+
+
+      if (size_of_hand_minus_china_card < 1) {
 	// burn roll anyway as US will burn
         let burnrand = this.rollDice();
 	alert("No cards left to discard");
@@ -5296,6 +5317,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
         twilight_self.rollDice(twilight_self.game.deck[0].hand.length, function(roll) {
           let card = twilight_self.game.deck[0].hand[roll-1];
+
+	  if (card == "china") {
+	    if (roll-2 >= 0) { card = twilight_self.game.deck[0].hand[roll-2]; } else {
+	      card = twilight_self.game.deck[0].hand[roll];
+	    }
+	  }
+
 	  twilight_self.removeCardFromHand(card);
 	  if (twilight_self.game.deck[0].cards[card].player == "us") {
 	    alert("You have rolled: " + card);
