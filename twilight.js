@@ -1344,6 +1344,21 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
     }
 
     if (msg.extra.target == 2) {
+
+      //
+      // weird bug where msg is targeting 2
+      // but the first user is the next to
+      // go and we do not clear the headline
+      // in which case...
+      //
+      if (this.game.player == 1 && this.game.state.headline1 == 0 && this.game.state.headline2 == 0 && this.game.state.headline3 == 0 && this.game.state.headline4 == 0 && this.game.state.headline5 == 0 && this.game.state.headline_card != "") {
+	this.game.state.headline = 0;
+	console.log("headline bug workaround!");
+	return 1;
+      }
+
+
+
       this.updateLog("US selecting headline card");
       if (this.game.player == 2) {
 
@@ -1462,8 +1477,6 @@ alert("PLAYER 1 HASH WRONG: -- this is a development error message that can be t
 alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be triggered if the opponent attempts to cheat by changing their selected card after sharing the encrypted hash. It can also be rarely caused if one or both players reload or have unreliable connections during the headline exchange process. The solution in this case is for both players to reload until the game hits the first turn. " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
         }
 
-	//this.saveGame(this.game.id);
-
 	this.game.turn = [];
 	this.addMove("discard\tussr\t"+this.game.state.headline_card); // discard card
         this.removeCardFromHand(this.game.state.headline_card);
@@ -1487,7 +1500,6 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
         // we now have both headline cards, just tell players what they are
         //
         this.game.state.headline3 = 1;
-        //this.saveGame(this.game.id);
 
         this.game.turn = [];
 	this.addMove("discard\tus\t"+this.game.state.headline_card); // discard card
