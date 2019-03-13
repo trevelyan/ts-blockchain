@@ -81,7 +81,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     this.game.queue.push("DECKENCRYPT\t1\t1");
     this.game.queue.push("DECKXOR\t1\t2");
     this.game.queue.push("DECKXOR\t1\t1");
-    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnLateWarCards()));
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
 
   }
   if (this.game.dice == "") {
