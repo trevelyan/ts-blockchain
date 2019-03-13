@@ -313,42 +313,60 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	//
 	twilight_self.playCoup("ussr", mv[2], 3, function() {
 	  if (twilight_self.countries[mv[2]].us < original_us) {
-	    if (twilight_self.game.player == 1) {
 
-	      twilight_self.addMove("resolve\tchecoup");
-	      twilight_self.updateStatus("Pick second target for coup:");
-              twilight_self.playerFinishedPlacingInfluence();
-
-      	      for (var i in twilight_self.countries) {
-
-	        let countryname  = i;
-	        let divname      = '#'+i;
-
-	        if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") ) {
-
-	          $(divname).off();
-	          $(divname).on('click', function() {
-		    let c = $(this).attr('id');
-		    twilight_self.addMove("coup\tussr\t"+c+"\t3");
-		    twilight_self.endTurn();
-		  });
-
-		} else {
-
-	          $(divname).off();
-	          $(divname).on('click', function() {
-		    alert("Invalid Target");
-		  });
-
-	        }
+	    let valid_targets = 0;
+	    for (var i in twilight_self.countries) {
+	      let countryname = i;
+	      if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && twilight_self.countries[countryname].us > 0 ) {
+	        valid_targets++;
 	      }
 	    }
 
-	    //
-	    // ussr will tell us who to coup next
-	    //
-            twilight_self.game.queue.splice(qe, 1);
-	    shd_continue = 0;
+	    if (valid_targets == 0) {
+      	      twilight_self.updateLog("No valid targets for Che");
+              twilight_self.game.queue.splice(qe, 1);
+	      shd_continue = 1;
+    	    } else {
+
+	      if (twilight_self.game.player == 1) {
+
+	        twilight_self.addMove("resolve\tchecoup");
+	        twilight_self.updateStatus("Pick second target for coup:");
+                twilight_self.playerFinishedPlacingInfluence();
+
+      	        for (var i in twilight_self.countries) {
+
+	          let countryname  = i;
+	          let divname      = '#'+i;
+
+	          if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") ) {
+
+	            $(divname).off();
+	            $(divname).on('click', function() {
+		      let c = $(this).attr('id');
+		      twilight_self.addMove("coup\tussr\t"+c+"\t3");
+		      twilight_self.endTurn();
+		    });
+
+		  } else {
+
+	            $(divname).off();
+	            $(divname).on('click', function() {
+		      alert("Invalid Target");
+		    });
+
+		  }
+	        }
+	      }
+
+	      //
+	      // ussr will tell us who to coup next
+	      //
+              twilight_self.game.queue.splice(qe, 1);
+	      shd_continue = 0;
+
+	    }
+
 
 	  } else {
 	    //
@@ -1074,7 +1092,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  this.game.queue.push("play\t2");
 	  this.game.queue.push("play\t1");
 	}
-	this.game.queue.push("headline");
+	//this.game.queue.push("headline");
 
 	// reset headline
 	this.game.state.headline1 = 0;
@@ -5689,13 +5707,29 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   //
   if (card == "che") {
 
+    let twilight_self = this;
+    let valid_targets = 0;
+
+    for (var i in this.countries) {
+      let countryname = i;
+      if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && twilight_self.countries[countryname].us > 0 ) {
+	valid_targets++;
+      }
+    }
+
+    if (valid_targets == 0) {
+      this.updateLog("No valid targets for Che");
+      return 1;
+    }
+
+
+
     if (this.game.player == 2) {
       this.updateStatus("Waiting for USSR to play Che");
       return 0;
     }
     if (this.game.player == 1) {
 
-      var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
 
       this.updateStatus("Pick first target for coup:");
@@ -5768,7 +5802,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         let action2 = $(this).attr("id");
 
         if (action2 == "finished") {
-          twilight_self.addMove("DEAL\t2\t"+cards_discarded);
+          twilight_self.addMove("DEAL\t1\t2\t"+cards_discarded);
           twilight_self.endTurn();
         } else {
           $(this).hide();
