@@ -1,5 +1,6 @@
 
 KNOWN PROBLEMS:
 
+- man in space and subsequent bonuses not yet implemented
 
 

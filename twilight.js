@@ -8349,7 +8349,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (total_ussr> 0) { vp_ussr = 3; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 7; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 7; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 7; }
 
     if (total_us == 6 && total_us > total_ussr) { vp_us = 10000; }
     if (total_ussr == 6 && total_us > total_ussr) { vp_ussr = 10000; }
@@ -8406,7 +8406,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (total_ussr> 0) { vp_ussr = 3; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 5; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 5; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 5; }
 
     if (total_us == 7 && total_us > total_ussr) { vp_us = 7; }
     if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 7; }
@@ -8497,7 +8497,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (total_ussr> 0) { vp_ussr = 1; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 4; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 4; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 4; }
 
     if (total_us == 7 && total_us > total_ussr) { vp_us = 6; }
     if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 6; }
@@ -8542,7 +8542,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (total_ussr> 0) { vp_ussr = 1; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 3; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 3; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 3; }
 
     if (total_us == 7 && total_us > total_ussr) { vp_us = 5; }
     if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 5; }
@@ -8587,7 +8587,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (total_ussr> 0) { vp_ussr = 2; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 5; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 5; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 5; }
 
     if (total_us == 7 && total_us > total_ussr) { vp_us = 6; }
     if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 6; }
@@ -8660,7 +8660,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (total_ussr> 0) { vp_ussr = 3; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 7; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 7; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 7; }
 
     if (this.game.state.events.formosan == 1) {
       if (total_us == 7 && total_us > total_ussr) { vp_us = 9; }
@@ -8751,7 +8751,7 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
     if (total_ussr> 0) { vp_ussr = 3; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 7; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 7; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 7; }
 
     if (total_us == 6 && total_us > total_ussr) { vp_us = 10000; }
     if (total_ussr == 6 && total_us > total_ussr) { vp_ussr = 10000; }
@@ -8805,7 +8805,7 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
     if (total_ussr> 0) { vp_ussr = 3; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 5; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 5; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 5; }
 
     if (total_us == 7 && total_us > total_ussr) { vp_us = 7; }
     if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 7; }
@@ -8875,7 +8875,7 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
     if (total_ussr> 0) { vp_ussr = 1; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 4; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 4; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 4; }
 
     if (total_us == 7 && total_us > total_ussr) { vp_us = 6; }
     if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 6; }
@@ -8929,7 +8929,7 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
     if (total_ussr> 0) { vp_ussr = 1; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 3; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 3; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 3; }
 
     if (total_us == 7 && total_us > total_ussr) { vp_us = 5; }
     if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 5; }
@@ -8983,7 +8983,7 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
     if (total_ussr> 0) { vp_ussr = 2; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 5; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 5; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 5; }
 
     if (total_us == 7 && total_us > total_ussr) { vp_us = 6; }
     if (total_ussr == 7 && total_us > total_ussr) { vp_ussr = 6; }
@@ -9051,7 +9051,7 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
     if (total_ussr> 0) { vp_ussr = 3; }
     
     if (bg_us > bg_ussr && total_us > total_ussr) { vp_us = 7; }
-    if (bg_ussr < bg_us && total_ussr > total_us) { vp_ussr = 7; }
+    if (bg_ussr > bg_us && total_ussr > total_us) { vp_ussr = 7; }
 
     if (this.game.state.events.formosan == 1) {
       if (total_us == 7 && total_us > total_ussr) { vp_us = 9; }
