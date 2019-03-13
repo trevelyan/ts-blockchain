@@ -1153,7 +1153,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  this.game.queue.push("play\t2");
 	  this.game.queue.push("play\t1");
 	}
-	//this.game.queue.push("headline");
+	this.game.queue.push("headline");
 
 	// reset headline
 	this.game.state.headline1 = 0;
