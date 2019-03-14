@@ -1,6 +1,9 @@
 
 KNOWN PROBLEMS:
 
-- man in space and subsequent bonuses not yet implemented
+- "man in earth orbit" space race bonus not yet implemented
+- "eagle/bear has landed" space race bonus not yet implemented
+- "space station" space race bonus not yet implemented
+
 
 
