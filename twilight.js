@@ -63,7 +63,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     this.game.countries = this.returnCountries();
   } 
   if (this.game.state == undefined) {
-    this.game.state     = this.returnState();
+    this.game.state = this.returnState();
   }
   if (this.game.deck.length == 0) {
 
@@ -150,7 +150,6 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
 
   let twilight_self = this;
   let player = "ussr"; if (this.game.player == 2) { player = "us"; }
-
 
 
   ///////////
@@ -1091,7 +1090,10 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	if (msg.extra.target == undefined) { msg.extra.target = 1; }
 
 	let x = this.playHeadline(msg);
-        if (x == 1) { this.game.queue.splice(qe, 1); }
+        if (x == 1) { 
+	  console.log("________DELETE________");
+          this.game.queue.splice(qe, 1); 
+        }
         else { return 0; }
 
       }
@@ -1312,6 +1314,9 @@ console.log("\n\nWHICH ROUND: " + this.game.state.round);
 
 Twilight.prototype.playHeadline = function playHeadline(msg) {
 
+console.log("MOVING INTO HEADLINE PHASE!");
+console.log(JSON.stringify(this.game.state));
+
   if (	this.game.state.headline1 == 1 &&
 	this.game.state.headline2 == 1 &&
 	this.game.state.headline3 == 1 &&
@@ -1319,6 +1324,8 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 	this.game.state.headline5 == 1) { return 1; }
 
   if (this.game.state.headline1 == 0) {
+
+console.log(" ... headline 1");
 
     //
     // remember we are in the headline
@@ -1345,20 +1352,6 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 
     if (msg.extra.target == 2) {
 
-      //
-      // weird bug where msg is targeting 2
-      // but the first user is the next to
-      // go and we do not clear the headline
-      // in which case...
-      //
-      if (this.game.player == 1 && this.game.state.headline1 == 0 && this.game.state.headline2 == 0 && this.game.state.headline3 == 0 && this.game.state.headline4 == 0 && this.game.state.headline5 == 0 && this.game.state.headline_card != "") {
-	this.game.state.headline = 0;
-	console.log("headline bug workaround!");
-	return 1;
-      }
-
-
-
       this.updateLog("US selecting headline card");
       if (this.game.player == 2) {
 
@@ -1384,6 +1377,8 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
   }
 
   if (this.game.state.headline2 == 0) {
+
+console.log(" ... headline 2");
 
     this.updateLog("Encrypted headline card selection");
 
@@ -1619,14 +1614,15 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
     } else {
 
       if (player_to_go == this.game.player) {
-
         if (this.game.state.headline_card !== my_card) { card_player = opponent; }
         this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
-        shd_continue = this.playEvent(card_player, my_card);
+        this.addMove("event\t"+card_player+"\t"+my_card);
+        this.endTurn();
+console.log("\n\n\n\nCARD ONE 1: " + my_card + " -- " + shd_continue);
       } else {
         if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
         this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
-        shd_continue = this.playEvent(card_player, opponent_card);
+console.log("\n\n\n\nCARD ONE 2: " + opponent_card + " -- " + shd_continue);
       }
 
       this.game.state.headline4 = 1;
@@ -1635,19 +1631,17 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       //
       // only one player should trigger next round
       //
-      if (card_player == player && shd_continue == 1) {
-      this.addMove("RESOLVE");
-        let extra      = {};
-          extra.skipqueue = 0;
-	  extra.target   = this.returnNextPlayer(this.game.player);
-        this.sendMessage("game", extra);
-      }
     }
 
     return 0;
   }
 
+
+console.log("WHERE ARE WE DYING? ");
+
   if (this.game.state.headline5 == 0) {
+
+console.log("1");
 
     let my_card = this.game.state.headline_card;
     let opponent_card = this.game.state.headline_opponent_card;
@@ -1673,11 +1667,14 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       }
     }
 
+console.log("2 - " + player_to_go);
+
     //
     // we switch to the other player now
     //
     if (player_to_go == 1) { player_to_go = 2; } else { player_to_go = 1; }
 
+console.log("3 - " + player_to_go);
 
     let player = "ussr";
     let opponent = "us";
@@ -1691,30 +1688,25 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
 
     let shd_continue = 1;
 
+console.log("3 - " + player_to_go);
 
     if (player_to_go == this.game.player) {
       if (this.game.state.headline_card !== my_card) { card_player = opponent; }
       this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
-      shd_continue = this.playEvent(player, my_card);
+      this.addMove("event\t"+card_player+"\t"+my_card);
+      this.endTurn();
+console.log("CARD TWO: " + shd_continue);
     } else {
       if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
       this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
-      shd_continue = this.playEvent(card_player, opponent_card);
     }
+
+console.log("4 - " + player_to_go);
 
     this.game.state.headline5 = 1;
     //this.saveGame(this.game.id);
 
-    //
-    // only one player should trigger next round
-    //
-    if (player_to_go == this.game.player && shd_continue == 1) {
-      this.addMove("RESOLVE");
-      let extra      = {};
-          extra.skipqueue = 0;
-          extra.target   = this.returnNextPlayer(this.game.player);
-      this.sendMessage("game", extra);
-    }
+console.log("5 -- " + player_to_go + " -- " + this.game.player + " -- " + shd_continue);
 
     return 0;
 
@@ -1734,6 +1726,19 @@ Twilight.prototype.playMove = function playMove(msg) {
   // no longer in headline phase
   //
   this.game.state.headline  = 0;
+  this.game.state.headline1 = 0;
+  this.game.state.headline2 = 0;
+  this.game.state.headline3 = 0;
+  this.game.state.headline4 = 0;
+  this.game.state.headline5 = 0;
+  this.game.state.headline_hash = "";
+  this.game.state.headline_card = "";
+  this.game.state.headline_xor = "";
+  this.game.state.headline_opponent_hash = "";
+  this.game.state.headline_opponent_card = "";
+  this.game.state.headline_opponent_xor = "";
+
+
 
   //
   // player 1 moves
@@ -1742,7 +1747,7 @@ Twilight.prototype.playMove = function playMove(msg) {
     if (this.game.player == 1) {
       if (this.game.state.turn_in_round == 0) {
     	this.addMove("discard\tussr\t"+this.game.state.headline_card);
-    	this.addMove("discard\tus\t"+this.game.state.opponent_headline_card);
+    	this.addMove("discard\tus\t"+this.game.state.headline_opponent_card);
     	this.removeCardFromHand(this.game.state.headline_card);
 	this.game.state.turn_in_round++;
 	this.updateActionRound();
@@ -3510,11 +3515,6 @@ Twilight.prototype.returnState = function returnState() {
   state.events.evilempire         = 0;
   state.events.yuri               = 0;
 
-
-
-
-
-
   return state;
 
 }
@@ -3650,29 +3650,29 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
   deck['comecon']         = { img : "TNRnTS-14" , name : "Comecon", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['nasser']          = { img : "TNRnTS-15" , name : "Nasser", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['warsawpact']      = { img : "TNRnTS-16" , name : "Warsaw Pact", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
-  deck['degaulle']        = { img : "TNRnTS-17" , name : "De Gaulle Leads France", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+//  deck['degaulle']        = { img : "TNRnTS-17" , name : "De Gaulle Leads France", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['naziscientist']   = { img : "TNRnTS-18" , name : "Nazi Scientist", scoring : 0 , player : "both" , recurring : 0 , ops : 1 };
-  deck['truman']          = { img : "TNRnTS-19" , name : "Truman", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
-  deck['olympic']         = { img : "TNRnTS-20" , name : "Olympic Games", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
-  deck['nato']            = { img : "TNRnTS-21" , name : "NATO", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
-  deck['indreds']         = { img : "TNRnTS-22" , name : "Independent Reds", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
-  deck['marshall']        = { img : "TNRnTS-23" , name : "Marshall Plan", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
-  deck['indopaki']        = { img : "TNRnTS-24" , name : "Indo-Pakistani War", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
-  deck['containment']     = { img : "TNRnTS-25" , name : "Containment", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
-  deck['cia']             = { img : "TNRnTS-26" , name : "CIA Created", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
-  deck['usjapan']         = { img : "TNRnTS-27" , name : "US/Japan Defense Pact", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
-  deck['suezcrisis']      = { img : "TNRnTS-28" , name : "Suez Crisis", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
-  deck['easteuropean']    = { img : "TNRnTS-29" , name : "East European Unrest", scoring : 0 , player : "us"   , recurring : 1 , ops : 3 };
-  deck['decolonization']  = { img : "TNRnTS-30" , name : "Decolonization", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
-  deck['redscare']        = { img : "TNRnTS-31" , name : "Red Scare", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
-  deck['unintervention']  = { img : "TNRnTS-32" , name : "UN Intervention", scoring : 0 , player : "both" , recurring : 1 , ops : 1 };
-  deck['destalinization'] = { img : "TNRnTS-33" , name : "Destalinization", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
-  deck['nucleartestban']  = { img : "TNRnTS-34" , name : "Nuclear Test Ban Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
-  deck['formosan']        = { img : "TNRnTS-35" , name : "Formosan Resolution", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
-  deck['defectors']       = { img : "TNRnTS-103" ,name : "Defectors", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
+//  deck['truman']          = { img : "TNRnTS-19" , name : "Truman", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
+//  deck['olympic']         = { img : "TNRnTS-20" , name : "Olympic Games", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+//  deck['nato']            = { img : "TNRnTS-21" , name : "NATO", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
+//  deck['indreds']         = { img : "TNRnTS-22" , name : "Independent Reds", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
+//  deck['marshall']        = { img : "TNRnTS-23" , name : "Marshall Plan", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
+//  deck['indopaki']        = { img : "TNRnTS-24" , name : "Indo-Pakistani War", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+//  deck['containment']     = { img : "TNRnTS-25" , name : "Containment", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
+//  deck['cia']             = { img : "TNRnTS-26" , name : "CIA Created", scoring : 0 , player : "us"   , recurring : 0 , ops : 1 };
+//  deck['usjapan']         = { img : "TNRnTS-27" , name : "US/Japan Defense Pact", scoring : 0 , player : "us"   , recurring : 0 , ops : 4 };
+//  deck['suezcrisis']      = { img : "TNRnTS-28" , name : "Suez Crisis", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+//  deck['easteuropean']    = { img : "TNRnTS-29" , name : "East European Unrest", scoring : 0 , player : "us"   , recurring : 1 , ops : 3 };
+//  deck['decolonization']  = { img : "TNRnTS-30" , name : "Decolonization", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
+//  deck['redscare']        = { img : "TNRnTS-31" , name : "Red Scare", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
+//  deck['unintervention']  = { img : "TNRnTS-32" , name : "UN Intervention", scoring : 0 , player : "both" , recurring : 1 , ops : 1 };
+//  deck['destalinization'] = { img : "TNRnTS-33" , name : "Destalinization", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+//  deck['nucleartestban']  = { img : "TNRnTS-34" , name : "Nuclear Test Ban Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
+//  deck['formosan']        = { img : "TNRnTS-35" , name : "Formosan Resolution", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 };
+//  deck['defectors']       = { img : "TNRnTS-103" ,name : "Defectors", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
   deck['cambridge']       = { img : "TNRnTS-104" ,name : "The Cambridge Five", scoring : 0 , player : "ussr"   , recurring : 1 , ops : 2 };
-  deck['specialrelation'] = { img : "TNRnTS-105" ,name : "Special Relationship", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
-  deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
+//  deck['specialrelation'] = { img : "TNRnTS-105" ,name : "Special Relationship", scoring : 0 , player : "us"   , recurring : 1 , ops : 2 };
+//  deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
 
   for (var i in deck) { deck[i].dealt = 0; deck[i].discarded = 0; deck[i].removed = 0; }
 
@@ -3808,17 +3808,14 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   //
   if (card == "asia") {
     this.scoreRegion("asia");
-    this.game.queue.splice(this.game.queue.length-1, 1);
     return 1;
   }
   if (card == "europe") {
     this.scoreRegion("europe");
-    this.game.queue.splice(this.game.queue.length-1, 1);
     return 1;
   }
   if (card == "mideast") {
     this.scoreRegion("mideast");
-    this.game.queue.splice(this.game.queue.length-1, 1);
     return 1;
   }
 
@@ -3955,7 +3952,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       }
     }
 
-    this.game.queue.splice(this.game.queue.length-1, 1);
     return 0;
   }
 
@@ -3989,7 +3985,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 
   //
-  // NAZI SCIENTIST
+  // Nazi Scientist
   //
   if (card == "naziscientist") {
     this.advanceSpaceRace(player);
@@ -7430,7 +7426,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     }
 
     if (this.game.player == 2) {
-      this.game.queue.splice(this.game.queue.length-1, 1);
       return 0;
     }
     if (this.game.player == 1) {
