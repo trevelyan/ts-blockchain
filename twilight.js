@@ -1443,6 +1443,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.updateMilitaryOperations();
         this.updateRound();
 
+console.log("BEFORE PLAY MOVE");
+
 	this.playMove(msg);
 	return 0;
       }
@@ -2308,6 +2310,8 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
 Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
+console.log("PLAYER TURN TRIGGERED");
+
   if (this.browser_active == 0) { return; }
 
   //
@@ -2414,6 +2418,8 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
   twilight_self.playerFinishedPlacingInfluence();
 
+console.log("PLAYER TURN TRIGGERED 2");
+
   //
   // cannot play if no cards remain
   //
@@ -2424,6 +2430,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     return;
   }
 
+console.log("PLAYER TURN TRIGGERED 3");
 
 
   $('.card').off();
@@ -4930,7 +4937,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	  let ussrpur = twilight_self.countries[c].ussr;
 
           twilight_self.removeInfluence(c, ussrpur, "ussr", function() {
-            twilight_self.addMove("remove\tus\tussr\t"+c+"\t1");
+            twilight_self.addMove("remove\tus\tussr\t"+c+"\t"+ussrpur);
             twilight_self.playerFinishedPlacingInfluence();
             twilight_self.endTurn();
           });
