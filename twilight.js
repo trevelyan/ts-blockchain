@@ -1407,15 +1407,18 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
           let twilight_self = this;
           this.game.state.us_defcon_bonus = 0;
+	
           if (this.game.player == 1) { return 0; }
           if (this.game.player == 2) {
-
+          this.updateLog("NORAD triggers: US places 1 influence in country with US influence");
             for (var i in this.countries) {
 
               let countryname  = i;
               let divname      = '#'+i;
 
               if (this.countries[countryname].us > 0) {
+
+                  this.updateStatus("US place NORAD bonus: (1 OP)");
 
                   $(divname).off();
                   $(divname).on('click', function() {
