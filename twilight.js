@@ -1102,7 +1102,6 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (this.game.state.events.northseaoil_bonus == 1) {
 
           this.game.state.events.northseaoil_bonus = 0;
-
           if (this.game.player == 1) {
             this.updateStatus("US is deciding whether to take extra turn");
             return 0;
@@ -1126,11 +1125,11 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             
             if (action2 == "play") {
               twilight_self.addMove("play\t2");
-              twilight_self.endTurn();
+              twilight_self.endTurn(1);
             } 
             if (action2 == "nope") {
               twilight_self.addMove("notify\tUS does not play extra turn");
-              twilight_self.endTurn();
+              twilight_self.endTurn(1);
             } 
             
           });
@@ -1139,12 +1138,167 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           
 	}
 
+
+
+
+
+	//
+	// Eagle Has Landed
+	//
+        if (this.game.state.eagle_has_landed != "" && this.game.state.eagle_has_landed_bonus_taken == 0 && this.game.state.round > 0) {
+
+          this.game.state.eagle_has_landed_bonus_taken = 1;
+
+	  let bonus_player = 1;
+	  if (this.game.state.eagle_has_landed == "us") { bonus_player = 2; }
+
+          if (this.game.player != bonus_player) {
+            this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to take extra turn");
+	    this.saveGame(this.game.id);
+            return 0;
+          } 
+          
+          //
+          // DISCARD CARD
+          // 
+          let html  = "US may discard a card: (Eagle Has Landed)<p></p><ul>";
+          if (bonus_player == 1) { html  = "USSR may discard a card: (Bear Has Landed)<p></p><ul>"; }
+              html += '<li class="card" id="discard">discard card</li>';
+              html += '<li class="card" id="nope">do not discard</li>';
+              html += '</ul>';
+          this.updateStatus(html);
+          
+          let twilight_self = this;
+          
+          $('.card').off();
+          $('.card').on('click', function() {
+          
+            let action2 = $(this).attr("id");
+            
+            if (action2 == "nope") {
+              twilight_self.addMove("notify\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" does not discard a card");
+              twilight_self.endTurn(1);
+            }
+ 
+            if (action2 == "discard") {
+
+	      let cards_discarded = 0;
+
+	      let cards_to_discard = 0;
+	      let user_message = "Select card to discard:<p></p><ul>";
+	      for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
+	        if (twilight_self.game.deck[0].hand[i] != "china") {
+	          user_message += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
+	          cards_to_discard++;
+	        }
+	      }
+
+	      if (cards_to_discard == 0) {
+	        twilight_self.updateStatus("No cards available to discard! Please wait for next turn...");
+	        twilight_self.addMove("notify\tUS has no cards available to discard");
+	        twilight_self.endTurn(1);
+	 	twilight_self.saveGame(twilight_self.game.id);
+	        return;
+	      }
+
+	      user_message += '</ul><p></p>If you wish to cancel your discard, <span class="card dashed" id="finished">click here</span>.';
+	      twilight_self.updateStatus(user_message);
+
+	      $('.card').off();
+	      $('.showcard').off();
+	      $('.showcard').mouseover(function() {
+	        let card = $(this).attr("id");
+	        twilight_self.showCard(card);
+	      }).mouseout(function() {
+	        let card = $(this).attr("id");
+	        twilight_self.hideCard(card);
+	      });
+	      $('.card').on('click', function() {
+
+	        let action2 = $(this).attr("id");
+
+	        if (action2 == "finished") {
+	          twilight_self.endTurn(1);
+	        } else {
+	          $(this).hide();
+		  twilight_self.hideCard();
+		  twilight_self.updateStatus("Discarding...");
+	          cards_discarded++;
+	          twilight_self.removeCardFromHand(action2);
+	          twilight_self.addMove("discard\t"+twilight_self.game.state.eagle_has_landed+"\t"+action2);
+	          twilight_self.addMove("notify\t"+twilight_self.game.state.eagle_has_landed.toUpperCase()+" discards <span class=\"logcard\" id=\""+action2+"\">"+twilight_self.game.deck[0].cards[action2].name + "</span>");
+	          twilight_self.endTurn(1);
+		  return 0;
+	        }
+	      });
+	    }
+
+	    return 0;
+
+          });
+          
+          return 0;
+          
+	}
+
+
+
+
+	//
+	// Space Shuttle
+	//
+        if (this.game.state.space_shuttle != "" && this.game.state.space_shuttle_bonus_taken == 0 && this.game.state.round > 0) {
+
+          this.game.state.space_shuttle_bonus_taken = 1;
+
+	  let bonus_player = 1;
+	  if (this.game.state.space_shuttle == "us") { bonus_player = 2; }
+
+          if (this.game.player != bonus_player) {
+            this.updateStatus(this.game.state.space_shuttle.toUpperCase() + " is deciding whether to take extra turn");
+            return 0;
+          } 
+          
+          //
+          // player gets extra move
+          // 
+          let html  = "Do you want to take an extra turn: (Space Shuttle)<p></p><ul>";
+              html += '<li class="card" id="play">play extra turn</li>';
+              html += '<li class="card" id="nope">do not play</li>';
+              html += '</ul>';
+          this.updateStatus(html);
+          
+          let twilight_self = this;
+          
+          $('.card').off();
+          $('.card').on('click', function() {
+          
+            let action2 = $(this).attr("id");
+            
+            if (action2 == "play") {
+              twilight_self.addMove("play\t"+bonus_player);
+              twilight_self.endTurn(1);
+            } 
+            if (action2 == "nope") {
+              twilight_self.addMove("notify\t"+twilight_self.game.state.space_shuttle.toUpperCase()+" does not play extra turn");
+              twilight_self.endTurn(1);
+            } 
+            
+          });
+          
+          return 0;
+          
+	}
+
+
+
+	//
+	// if we have come this far, move to the next turn
+	//
+
 	this.updateLog("End of Round");
 	this.endRound();
 
-	//
-	//
-	//
 	this.updateStatus("Preparing for round " + this.game.state.round);
 
 	let rounds_in_turn = 6;
@@ -1172,7 +1326,6 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  this.finalScoring();
 	}
 
-console.log("\n\nWHICH ROUND: " + this.game.state.round);
 
 	//
 	// DEAL MISSING CARDS
@@ -1314,18 +1467,17 @@ console.log("\n\nWHICH ROUND: " + this.game.state.round);
 
 Twilight.prototype.playHeadline = function playHeadline(msg) {
 
-console.log("MOVING INTO HEADLINE PHASE!");
-console.log(JSON.stringify(this.game.state));
-
   if (	this.game.state.headline1 == 1 &&
 	this.game.state.headline2 == 1 &&
 	this.game.state.headline3 == 1 &&
 	this.game.state.headline4 == 1 &&
 	this.game.state.headline5 == 1) { return 1; }
 
-  if (this.game.state.headline1 == 0) {
 
-console.log(" ... headline 1");
+
+
+  if (this.game.state.man_in_earth_orbit == "") {
+  if (this.game.state.headline1 == 0) {
 
     //
     // remember we are in the headline
@@ -1377,8 +1529,6 @@ console.log(" ... headline 1");
   }
 
   if (this.game.state.headline2 == 0) {
-
-console.log(" ... headline 2");
 
     this.updateLog("Encrypted headline card selection");
 
@@ -1518,6 +1668,205 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
     return 0;
   }
 
+  } // no man in earth orbit
+
+
+
+
+
+
+
+
+  //
+  // man in earth orbit
+  //
+  else {
+
+    let first_picker = 2;
+    let second_picker = 1;
+    let player = "US";
+
+    if (this.game.state.man_in_earth_orbit === "us") { first_picker = 1; second_picker = 2; player = "USSR"; }
+
+    //
+    // first player picks
+    //
+    if (this.game.state.headline1 == 0) {
+
+      this.game.state.headline1 = 1;
+
+      if (this.game.player == first_picker) {
+
+        let x = player.toUpperCase() + " picks headline card first: <p></p><ul>";
+        for (i = 0; i < this.game.deck[0].hand.length; i++) {
+          x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+        }
+        x += '</ul>';
+
+        this.updateStatus(x);
+
+        let twilight_self = this;
+
+        $('.card').off();
+        $('.showcard').off();
+        $('.showcard').mouseover(function() {
+          let card = $(this).attr("id");
+          twilight_self.showCard(card);
+        }).mouseout(function() {
+          let card = $(this).attr("id");
+          twilight_self.hideCard(card);
+        });
+        $('.card').on('click', function() {
+
+          let card = $(this).attr("id");
+
+          // cannot pick china card or UN intervention
+          if (card == "china") { alert("You cannot headline China"); return; }
+          if (card == "unintervention") { alert("You cannot headline UN Intervention"); return; }
+
+          twilight_self.game.state.headline_card = card;
+          twilight_self.game.state.headline_xor = "MAN_IN_EARTH_ORBIT";
+          twilight_self.game.state.headline_hash = "MAN_IN_EARTH_ORBIT";
+	  twilight_self.updateStatus("headline card selected");
+
+          twilight_self.game.turn = [];
+
+          let extra       = {};
+          extra.headline_card = twilight_self.game.state.headline_card;
+          extra.target    = twilight_self.returnNextPlayer(twilight_self.game.player);
+
+          $('.card').off();
+          $('.showcard').off();
+          twilight_self.hideCard();
+
+          twilight_self.sendMessage("game", extra);
+
+        });
+      } else {
+
+	if (first_picker == 1) {
+	  this.updateStatus(player + " is selecting headline card first");
+	} else {
+	  this.updateStatus(player + " is selecting headline card first");
+	}	
+
+      }
+
+      return 0;
+    }
+
+
+    //
+    // second player picks
+    //
+    if (this.game.state.headline2 == 0) {
+
+      this.game.state.headline2 = 1;
+
+      if (this.game.player == second_picker) {
+
+        this.game.state.headline_opponent_card = msg.extra.headline_card;
+
+        let x = player.toUpperCase() + ' selected <span id="'+this.game.state.headline_opponent_card+'" class="showcard">' + this.game.deck[0].cards[this.game.state.headline_opponent_card].name + '</span>. ' + this.game.state.man_in_earth_orbit.toUpperCase() + ' pick your headline card second: <p></p><ul>';
+        for (i = 0; i < this.game.deck[0].hand.length; i++) {
+          x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+        }
+        x += '</ul>';
+
+        this.updateStatus(x);
+
+        let twilight_self = this;
+
+        $('.card').off();
+        $('.showcard').off();
+        $('.showcard').mouseover(function() {
+          let card = $(this).attr("id");
+          twilight_self.showCard(card);
+        }).mouseout(function() {
+          let card = $(this).attr("id");
+          twilight_self.hideCard(card);
+        });
+        $('.card').on('click', function() {
+
+          let card = $(this).attr("id");
+
+          // cannot pick china card or UN intervention
+          if (card == "china") { alert("You cannot headline China"); return; }
+          if (card == "unintervention") { alert("You cannot headline UN Intervention"); return; }
+
+	  twilight_self.updateStatus("headline card selected");
+          twilight_self.game.state.headline_card = card;
+          twilight_self.game.state.headline_xor = "MAN_IN_EARTH_ORBIT";
+          twilight_self.game.state.headline_hash = "MAN_IN_EARTH_ORBIT";
+
+          twilight_self.game.turn = [];
+
+          let extra       = {};
+          extra.headline_card = twilight_self.game.state.headline_card;
+          extra.headline_opponent_card = twilight_self.game.state.headline_opponent_card;
+          extra.target    = twilight_self.returnNextPlayer(twilight_self.game.player);
+
+          $('.card').off();
+          $('.showcard').off();
+          twilight_self.hideCard();
+
+          twilight_self.sendMessage("game", extra);
+
+        });
+      } else {
+
+        this.game.state.headline_card = msg.extra.headline_card;
+
+	if (first_picker == 1) {
+	  this.updateStatus("US is selecting headline card second");
+	} else {
+	  this.updateStatus("USSR is selecting headline card second");
+	}
+
+      }
+
+      return 0;
+    }
+
+
+
+
+    //
+    // second player picks
+    //
+    if (this.game.state.headline3 == 0) {
+      this.game.state.headline3 = 1;
+      if (this.game.player == first_picker) {
+        this.game.state.headline_opponent_card = msg.extra.headline_card;
+        this.game.state.headline_card = msg.extra.headline_opponent_card;
+      } else {
+        this.game.state.headline_card = msg.extra.headline_card;
+      }
+    }
+
+
+    //
+    // fall through to headline execution
+    //
+
+  }
+
+
+
+
+
+console.log("TESTING OUR STATE 1: ");
+console.log("MINE: " + this.game.state.headline_card);
+console.log("OPPO: " + this.game.state.headline_opponent_card);
+  //
+  // default to USSR
+  //
+  let player_to_go = 1;
+
+
+  //
+  // headline execution starts here
+  //
   if (this.game.state.headline4 == 0) {
 
     this.updateLog("Moving into first headline card event");
@@ -1525,10 +1874,12 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
     let my_card = this.game.state.headline_card;
     let opponent_card = this.game.state.headline_opponent_card;
 
-    //
-    // default to USSR
-    //
-    let player_to_go = 1;
+console.log("MINE 2: " + this.game.state.headline_card);
+console.log("OPPO 2: " + this.game.state.headline_opponent_card);
+
+console.log("MINE 3: " + my_card);
+console.log("OPPO 3: " + opponent_card);
+
 
     if (this.game.player == 1) {
       if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
@@ -1618,11 +1969,9 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
         this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
         this.addMove("event\t"+card_player+"\t"+my_card);
         this.endTurn();
-console.log("\n\n\n\nCARD ONE 1: " + my_card + " -- " + shd_continue);
       } else {
         if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
         this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
-console.log("\n\n\n\nCARD ONE 2: " + opponent_card + " -- " + shd_continue);
       }
 
       this.game.state.headline4 = 1;
@@ -1637,44 +1986,23 @@ console.log("\n\n\n\nCARD ONE 2: " + opponent_card + " -- " + shd_continue);
   }
 
 
-console.log("WHERE ARE WE DYING? ");
-
   if (this.game.state.headline5 == 0) {
-
-console.log("1");
 
     let my_card = this.game.state.headline_card;
     let opponent_card = this.game.state.headline_opponent_card;
 
-    //
-    // default to USSR
-    //
-    let player_to_go = 1;
+console.log("MINE 4: " + this.game.state.headline_card);
+console.log("OPPO 4: " + this.game.state.headline_opponent_card);
 
-    if (this.game.player == 1) {
-      if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
-        player_to_go = 1;
-      } else {
-        player_to_go = 2;
-      }
-    }
+console.log("MINE 5: " + my_card);
+console.log("OPPO 6: " + opponent_card);
 
-    if (this.game.player == 2) {
-      if (this.game.deck[0].cards[my_card].ops >= this.game.deck[0].cards[opponent_card].ops) {
-        player_to_go = 2;
-      } else {
-        player_to_go = 1;
-      }
-    }
-
-console.log("2 - " + player_to_go);
+console.log("CARDS: " + JSON.stringify(this.game.deck[0].cards));
 
     //
     // we switch to the other player now
     //
     if (player_to_go == 1) { player_to_go = 2; } else { player_to_go = 1; }
-
-console.log("3 - " + player_to_go);
 
     let player = "ussr";
     let opponent = "us";
@@ -1688,30 +2016,22 @@ console.log("3 - " + player_to_go);
 
     let shd_continue = 1;
 
-console.log("3 - " + player_to_go);
-
     if (player_to_go == this.game.player) {
       if (this.game.state.headline_card !== my_card) { card_player = opponent; }
       this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
       this.addMove("event\t"+card_player+"\t"+my_card);
       this.endTurn();
-console.log("CARD TWO: " + shd_continue);
     } else {
       if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
       this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
     }
 
-console.log("4 - " + player_to_go);
-
     this.game.state.headline5 = 1;
     //this.saveGame(this.game.id);
-
-console.log("5 -- " + player_to_go + " -- " + this.game.player + " -- " + shd_continue);
 
     return 0;
 
   }
-
 
   return 1;
 }
@@ -1790,6 +2110,7 @@ Twilight.prototype.playMove = function playMove(msg) {
     }
     return;
   }
+
 
   return 1;
 
@@ -2093,6 +2414,18 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
   twilight_self.playerFinishedPlacingInfluence();
 
+  //
+  // cannot play if no cards remain
+  //
+  if (selected_card == null && this.game.deck[0].hand.length == 0) {
+    this.updateStatus("Skipping turn... no cards left to play");
+    this.updateLog("Skipping turn... no cards left to play");
+    this.endTurn();
+    return;
+  }
+
+
+
   $('.card').off();
   $('.showcard').off();
   $('.showcard').mouseover(function() {
@@ -2224,10 +2557,6 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   	  }
         }
       } else {
-
-console.log("\nSPACE RACE IS NOT AN OPTION? WHY? ");
-console.log(JSON.stringify(twilight_self.game.state));
-
       }
       twilight_self.updateStatus(announcement);
     }
@@ -2367,12 +2696,9 @@ console.log(JSON.stringify(twilight_self.game.state));
 /////////////////////
 Twilight.prototype.uneventOpponentControlledCountries = function uneventOpponentControlledCountries(player) {
 
-console.log("uneventing opponent controlled countries for " + player);
-
   for (var i in this.countries) { 
     if (player == "us") {
       if (this.isControlled("ussr", i) == 1) {
-console.log("uneventing: " + i);
         this.countries[i].place = 0; 
 	let divname = '#'+i;
 	$(divname).off();
@@ -2384,7 +2710,6 @@ console.log("uneventing: " + i);
 
     if (player == "ussr") {
       if (this.isControlled("us", i) == 1) {
-console.log("uneventing: " + i);
         this.countries[i].place = 0; 
 	let divname = '#'+i;
 	$(divname).off();
@@ -3194,12 +3519,13 @@ Twilight.prototype.addMove = function addMove(mv) {
   this.moves.push(mv);
 }
 
-Twilight.prototype.endTurn = function endTurn() {
+Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
   this.updateStatus("Waiting for information from peers....");
   
   let extra = {};
       extra.target = this.returnNextPlayer(this.game.player);
+  if (nextTarget != 0) { extra.target = nextTarget; }
   this.game.turn = this.moves;
   this.moves = [];
   this.sendMessage("game", extra);
@@ -3263,6 +3589,8 @@ Twilight.prototype.endRound = function endRound() {
 
   this.game.state.space_race_us_counter = 0;
   this.game.state.space_race_ussr_counter = 0;
+  this.game.state.eagle_has_landed_bonus_taken = 0;
+  this.game.state.space_shuttle_bonus_taken = 0;
 
   this.game.state.events.region_bonus = "";
   this.game.state.events.u2 = 0;
@@ -3360,8 +3688,10 @@ Twilight.prototype.returnState = function returnState() {
 
   state.animal_in_space = "";
   state.man_in_earth_orbit = "";
-  state.moon_landing = "";
-  state.space_shuttle = "";
+  state.eagle_has_landed = "";
+  state.eagle_has_landed_bonus_taken = 0;
+  state.space_shuttle = "us";
+  state.space_shuttle_bonus_taken = 0;
 
   state.limit_coups = 0;
   state.limit_realignments = 0;
@@ -3412,7 +3742,7 @@ Twilight.prototype.returnState = function returnState() {
   state.vp_ps[23]  = { top : 2740, left : 4110 };
 
   state.vp_ps[24]  = { top : 2880, left : 3035 };
-  state.vp_ps[25]  = { top : 2800, left : 3170 };
+  state.vp_ps[25]  = { top : 2880, left : 3170 };
   state.vp_ps[26]  = { top : 2880, left : 3305 };
   state.vp_ps[27]  = { top : 2880, left : 3435 };
   state.vp_ps[28]  = { top : 2880, left : 3570 };
@@ -3776,8 +4106,6 @@ Twilight.prototype.returnDiscardedCards = function returnDiscardedCards() {
   }
 
   this.game.deck[0].discards = {};
-
-console.log("RETURNING DISCARDED CARDS: " + JSON.stringify(discarded));
 
   return discarded;
 
@@ -5898,7 +6226,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
           $(this).hide();
 	  cards_discarded++;
           twilight_self.removeCardFromHand(action2);
-          twilight_self.addMove("discard\tus\t"+actions2);
+          twilight_self.addMove("discard\tus\t"+action2);
           twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+action2+"\">"+twilight_self.game.deck[0].cards[action2].name + "</span>");
         }
       });
@@ -8136,7 +8464,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       if (available_cards < cards_to_discard) { cards_to_discard = available_cards; }
 
       if (cards_to_discard == 0) { this.addMove("notify\tUSSR has no cards to discard"); this.endTurn(); return 0; }
-console.log("USSR rolling for terrorism...");
       this.rollDice(twilight_self.game.deck[0].hand.length, function(roll) {
 	  roll = parseInt(roll)-1;
           let card = twilight_self.game.deck[0].hand[roll];
@@ -9517,9 +9844,9 @@ Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
     // Eagle has Landed
     if (this.game.state.space_race_us == 6) {
       if (this.game.state.space_race_ussr < 6) { 
-        this.game.state.moon_landing = "us";
+        this.game.state.eagle_has_landed = "us";
       } else {
-        this.game.state.moon_landing = "";
+        this.game.state.eagle_has_landed = "";
         this.game.state.man_in_earth_orbit = "";
         this.game.state.animal_in_space = "";
       }
@@ -9533,7 +9860,7 @@ Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
       } else {
         this.game.state.vp += 2;
         this.updateVictoryPoints();  
-        this.game.state.moon_landing = "";
+        this.game.state.eagle_has_landed = "";
         this.game.state.man_in_earth_orbit = "";
         this.game.state.animal_in_space = "";
       }
@@ -9546,7 +9873,7 @@ Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
         this.updateVictoryPoints();  
         this.game.state.space_shuttle = "us";
       } else {
-        this.game.state.moon_landing = "";
+        this.game.state.eagle_has_landed = "";
         this.game.state.man_in_earth_orbit = "";
         this.game.state.animal_in_space = "";
         this.game.state.space_shuttle = "";
@@ -9618,11 +9945,11 @@ Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
     // Bear has Landed
     if (this.game.state.space_race_ussr == 6) {
       if (this.game.state.space_race_us < 6) { 
-        this.game.state.moon_landing = "ussr";
+        this.game.state.eagle_has_landed = "ussr";
       } else {
         this.game.state.animal_in_space = "";
         this.game.state.man_in_earth_orbit = "";
-        this.game.state.moon_landing = "";
+        this.game.state.eagle_has_landed = "";
       }
     }
 
@@ -9636,7 +9963,7 @@ Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
         this.updateVictoryPoints();  
         this.game.state.animal_in_space = "";
         this.game.state.man_in_earth_orbit = "";
-        this.game.state.moon_landing = "";
+        this.game.state.eagle_has_landed = "";
       }
     }
 
@@ -9649,7 +9976,7 @@ Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
       } else {
         this.game.state.animal_in_space = "";
         this.game.state.man_in_earth_orbit = "";
-        this.game.state.moon_landing = "";
+        this.game.state.eagle_has_landed = "";
         this.game.state.space_shuttle = "";
       }
     }
