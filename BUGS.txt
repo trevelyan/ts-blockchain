@@ -1,9 +1,4 @@
 
 KNOWN PROBLEMS:
 
-- "eagle/bear has landed" space race bonus not yet implemented
-- "space station" space race bonus not yet implemented ????
-
-
-
 

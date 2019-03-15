@@ -1,141 +1,164 @@
 body {
- font-family: arial, helvetica, sans-serif;
- font-size: 13px;
- padding:0px;
- margin:0px;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 13px;
+  padding: 0px;
+  margin: 0px;
 }
+
 .connection_monitor {
- display:none;
- min-height: 30px;
- z-index: 90000;
- position: absolute;
- background: #ef6666;
- font-size: 1.8em;
- padding: 15px;
+  display: none;
+  min-height: 30px;
+  z-index: 90000;
+  position: absolute;
+  background: #ef6666;
+  font-size: 1.8em;
+  padding: 15px;
 }
+
 .link {
- border-bottom: 1px dashed;
+  border-bottom: 1px dashed;
 }
+
 .dashed {
- border-bottom: 1px dashed;
+  border-bottom: 1px dashed;
 }
+
 .logcard {
- font-weight:bold;
- cursor: pointer;
- border-bottom: 1px dashed;
+  font-weight: bold;
+  cursor: pointer;
+  border-bottom: 1px dashed;
 }
+
 .gameboard {
   position: absolute;
-  //background-image: url("images/TS Map-11.jpg");
-  //background-image: url("images/TS Map-11-small.jpg");
+  /*background-image: url("images/TS Map-11.jpg");*/
   background-image: url("images/TS Map-11-medium.jpg");
+  /*background-image: url("images/TS Map-11-small.jpg");*/
   background-size: cover;
-  //width: 5100px;
-  //height: 3300px;
+  /*width: 5100px;
+  height: 3300px;*/
   width: 2550px;
   height: 1650px;
 }
+
 .status {
   float: left;
   font-size: 1.8em;
-  padding:10px;
+  padding: 10px;
   width: 390px;
   height: 425px;
   background-color: #fffccd;
   border: 2px solid #948f8b;
   border-bottom: 0px;
 }
+
 .log {
   overflow: hidden;
   position: absolute;
   top: 431px;
   left: 0px;
   float: left;
-  padding:10px;
+  padding: 10px;
   font-family: Courier, Sans-Serif;
   height: 200px;
   width: 390px;
   font-size: 1.1em;
   background-color: #fffccd;
-  border: 2px solid #948f8b; 
+  border: 2px solid #948f8b;
   border-top: 0px;
 }
 
 li {
- margin-top: 6px;
+  margin-top: 6px;
 }
+
 .round {
- position: absolute;
- background-image: url("images/Turn.svg");
- background-size: cover;
+  position: absolute;
+  background-image: url("images/Turn.svg");
+  background-size: cover;
 }
+
 .action_round_us {
- position: absolute;
- background-image: url("images/AmericanActionRound.svg");
- background-size: cover;
- display:all;
+  position: absolute;
+  background-image: url("images/AmericanActionRound.svg");
+  background-size: cover;
+  display: all;
 }
+
 .action_round_ussr {
- position: absolute;
- background-image: url("images/SovietActionRound.svg");
- background-size: cover;
- display:all;
+  position: absolute;
+  background-image: url("images/SovietActionRound.svg");
+  background-size: cover;
+  display: all;
 }
+
 .defcon {
- position: absolute;
- background-image: url("images/Radiation_warning_symbol.svg");
- background-size: cover;
+  position: absolute;
+  background-image: url("images/Radiation_warning_symbol.svg");
+  background-size: cover;
 }
+
 .vp {
- position: absolute;
- background-image: url("images/VPs.svg");
- background-size: cover;
+  position: absolute;
+  background-image: url("images/VPs.svg");
+  background-size: cover;
 }
+
 .space_race_us {
- position: absolute;
- background-image: url("images/AmericanSpaceRace.svg");
- background-size: cover;
+  position: absolute;
+  background-image: url("images/AmericanSpaceRace.svg");
+  background-size: cover;
 }
+
 .space_race_ussr {
- position: absolute;
- background-image: url("images/SovietSpaceRace.svg");
- background-size: cover;
+  position: absolute;
+  background-image: url("images/SovietSpaceRace.svg");
+  background-size: cover;
 }
+
 .milops_us {
- position: absolute;
- background-image: url("images/AmericanMilitaryOperations.svg");
- background-size: cover;
+  position: absolute;
+  background-image: url("images/AmericanMilitaryOperations.svg");
+  background-size: cover;
 }
+
 .milops_ussr {
- position: absolute;
- background-image: url("images/SovietMilitaryOperations.svg");
- background-size: cover;
+  position: absolute;
+  background-image: url("images/SovietMilitaryOperations.svg");
+  background-size: cover;
 }
+
 .inline {
-  display:inline;
+  display: inline;
 }
+
 .card {
- cursor: pointer;
+  cursor: pointer;
 }
+
 .link {
-  display:inline;
-  text-decoration:underline;
-  cursor:pointer;
+  display: inline;
+  text-decoration: underline;
+  cursor: pointer;
 }
+
 .country {
   position: absolute;
   cursor: pointer;
 }
+
 .showcard {
- text-decoration: none;
+  text-decoration: none;
 }
+
 .cardimg {
- position: absolute;
- left: 0;
- top: 0;
- height: 520px;
- width: 375px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 520px;
+  width: 375px;
 }
+
 .cardbox {
   position: absolute;
   left: 413;
@@ -143,71 +166,73 @@ li {
   width: 375px;
   background-image: url("/twilight/images/Base.svg");
   background-size: cover;
-  z-index:1000;
-  display:none;
+  z-index: 1000;
+  display: none;
 }
+
 .us {
- display: inline;
- float:left;
+  display: inline;
+  float: left;
 }
+
 .ussr {
- display: inline;
- float:left;
+  display: inline;
+  float: left;
 }
+
 .us_control {
   color: #FFFFFF;
   background-image: url("images/AmericanInfluenceControlledBackground.png");
   background-size: cover;
+  text-align: center;
+  line-height: 48px;
 }
+
 .us_uncontrol {
   color: #008fd5;
   background-image: url("images/AmericanInfluenceUnControlledBackground.png");
   background-size: cover;
+  text-align: center;
+  line-height: 48px;
 }
+
 .ussr_control {
   color: #FFFFFF;
   background-image: url("images/SovietInfluenceControlledBackground.png");
   background-size: cover;
+  text-align: center;
+  line-height: 48px;
 }
+
 .ussr_uncontrol {
   color: #d2232a;
   background-size: cover;
   background-image: url("images/SovietInfluenceUnControlledBackground.png");
+  text-align: center;
+  line-height: 48px;
 }
-
-
 
 .loader {
- width: 100%;
- max-width: 600px;
-}
-.main {
+  width: 100%;
+  max-width: 600px;
 }
 
-
-
-
+.main {}
 
 @media only screen and (min-width: 750px) {
-
   .status {
     position: fixed;
     float: none;
     z-index: 40000;
   }
-
   .log {
     position: fixed;
     float: none;
     z-index: 40000;
   }
-
   .cardbox {
     position: fixed;
-    float:none;
+    float: none;
     z-index: 40000;
   }
-
 }
-
-
