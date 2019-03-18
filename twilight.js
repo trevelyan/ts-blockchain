@@ -3700,7 +3700,7 @@ Twilight.prototype.returnState = function returnState() {
   state.man_in_earth_orbit = "";
   state.eagle_has_landed = "";
   state.eagle_has_landed_bonus_taken = 0;
-  state.space_shuttle = "us";
+  state.space_shuttle = "";
   state.space_shuttle_bonus_taken = 0;
 
   state.limit_coups = 0;
