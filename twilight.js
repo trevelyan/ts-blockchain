@@ -1628,7 +1628,6 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
         }
 
 	this.game.turn = [];
-	this.addMove("discard\tussr\t"+this.game.state.headline_card); // discard card
         this.removeCardFromHand(this.game.state.headline_card);
         let extra      = {};
             extra.target   = this.returnNextPlayer(this.game.player);
@@ -1652,7 +1651,6 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
         this.game.state.headline3 = 1;
 
         this.game.turn = [];
-	this.addMove("discard\tus\t"+this.game.state.headline_card); // discard card
         this.removeCardFromHand(this.game.state.headline_card);
         let extra      = {};
             extra.skipqueue = 1;
