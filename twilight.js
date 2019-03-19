@@ -1899,6 +1899,9 @@ console.log("OPPO 3: " + opponent_card);
       }
     }
 
+console.log("PLAYER TO GO: " + player_to_go);
+
+
     let player = "ussr";
     let opponent = "us";
     if (this.game.player == 2) { player = "us"; opponent = "ussr"; }
@@ -1978,7 +1981,7 @@ console.log("OPPO 3: " + opponent_card);
       }
 
       this.game.state.headline4 = 1;
-      //this.saveGame(this.game.id);
+      this.saveGame(this.game.id);
 
       //
       // only one player should trigger next round
@@ -1999,13 +2002,26 @@ console.log("OPPO 4: " + this.game.state.headline_opponent_card);
 
 console.log("MINE 5: " + my_card);
 console.log("OPPO 6: " + opponent_card);
-
-console.log("CARDS: " + JSON.stringify(this.game.deck[0].cards));
+console.log("PLAYER TO GO: " + player_to_go);
 
     //
     // we switch to the other player now
     //
-    if (player_to_go == 1) { player_to_go = 2; } else { player_to_go = 1; }
+    if (this.game.player == 1) {
+      if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
+        player_to_go = 2;
+      } else {
+        player_to_go = 1;
+      }
+    }
+    if (this.game.player == 2) {
+      if (this.game.deck[0].cards[my_card].ops >= this.game.deck[0].cards[opponent_card].ops) {
+        player_to_go = 1;
+      } else {
+        player_to_go = 2;
+      }
+    }
+
 
     let player = "ussr";
     let opponent = "us";
@@ -2020,7 +2036,7 @@ console.log("CARDS: " + JSON.stringify(this.game.deck[0].cards));
     let shd_continue = 1;
 
     if (player_to_go == this.game.player) {
-      if (this.game.state.headline_card !== my_card) { card_player = opponent; }
+      //if (this.game.state.headline_card !== my_card) { card_player = opponent; }
       this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
       this.addMove("event\t"+card_player+"\t"+my_card);
       this.endTurn();
@@ -2030,7 +2046,7 @@ console.log("CARDS: " + JSON.stringify(this.game.deck[0].cards));
     }
 
     this.game.state.headline5 = 1;
-    //this.saveGame(this.game.id);
+    this.saveGame(this.game.id);
 
     return 0;
 
@@ -2069,9 +2085,9 @@ Twilight.prototype.playMove = function playMove(msg) {
   if (this.game.state.turn == 0) {
     if (this.game.player == 1) {
       if (this.game.state.turn_in_round == 0) {
-    	this.addMove("discard\tussr\t"+this.game.state.headline_card);
-    	this.addMove("discard\tus\t"+this.game.state.headline_opponent_card);
-    	this.removeCardFromHand(this.game.state.headline_card);
+    	//this.addMove("discard\tussr\t"+this.game.state.headline_card);
+    	//this.addMove("discard\tus\t"+this.game.state.headline_opponent_card);
+    	//this.removeCardFromHand(this.game.state.headline_card);
 	this.game.state.turn_in_round++;
 	this.updateActionRound();
       }
@@ -2415,6 +2431,23 @@ console.log("PLAYER TURN TRIGGERED");
 
   if (this.game.state.events.unintervention != 1 && selected_card != "grainsales") {
     this.moves = [];
+  }
+
+  //
+  // delete cards if needed
+  //
+  if (this.game.state.turn == 0) {
+    if (this.game.player == 1) {
+      if (this.game.state.turn_in_round == 1) {
+console.log("DISCARDING!");
+	//
+	// players have already discarded, this pushes this into discard queue if needed
+	//
+        this.addMove("discard\tussr\t"+this.game.state.headline_card);
+        this.addMove("discard\tus\t"+this.game.state.headline_opponent_card);
+        this.removeCardFromHand(this.game.state.headline_card);
+      }
+    }
   }
 
   twilight_self.playerFinishedPlacingInfluence();
