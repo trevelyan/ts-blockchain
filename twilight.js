@@ -1971,12 +1971,14 @@ console.log("PLAYER TO GO: " + player_to_go);
     } else {
 
       if (player_to_go == this.game.player) {
-        if (this.game.state.headline_card !== my_card) { card_player = opponent; }
+        //if (this.game.state.headline_card !== my_card) { card_player = opponent; }
         this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
+        this.addMove("discard\t"+card_player+"\t"+my_card);
         this.addMove("event\t"+card_player+"\t"+my_card);
+        this.removeCardFromHand(my_card);
         this.endTurn();
       } else {
-        if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
+        //if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
         this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
       }
 
@@ -2047,10 +2049,12 @@ console.log("PLAYER TO GO: " + player_to_go);
     if (player_to_go == this.game.player) {
       //if (this.game.state.headline_card !== my_card) { card_player = opponent; }
       this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
+      this.addMove("discard\t"+card_player+"\t"+my_card);
       this.addMove("event\t"+card_player+"\t"+my_card);
+      this.removeCardFromHand(my_card);
       this.endTurn();
     } else {
-      if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
+      //if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
       this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
     }
 
@@ -2440,23 +2444,6 @@ console.log("PLAYER TURN TRIGGERED");
 
   if (this.game.state.events.unintervention != 1 && selected_card != "grainsales") {
     this.moves = [];
-  }
-
-  //
-  // delete cards if needed
-  //
-  if (this.game.state.turn == 0) {
-    if (this.game.player == 1) {
-      if (this.game.state.turn_in_round == 1) {
-console.log("DISCARDING!");
-	//
-	// players have already discarded, this pushes this into discard queue if needed
-	//
-        this.addMove("discard\tussr\t"+this.game.state.headline_card);
-        this.addMove("discard\tus\t"+this.game.state.headline_opponent_card);
-        this.removeCardFromHand(this.game.state.headline_card);
-      }
-    }
   }
 
   twilight_self.playerFinishedPlacingInfluence();
