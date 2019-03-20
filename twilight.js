@@ -2008,17 +2008,26 @@ console.log("PLAYER TO GO: " + player_to_go);
     // we switch to the other player now
     //
     if (this.game.player == 1) {
-      if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
-        player_to_go = 2;
-      } else {
-        player_to_go = 1;
+      if (this.game.deck[0].cards[my_card] == undefined) { player_to_go = 2; } else {
+        if (this.game.deck[0].cards[opponent_card] == undefined) { player_to_go = 1; } else {
+          if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
+            player_to_go = 2;
+          } else {
+            player_to_go = 1;
+          }
+	}
       }
     }
+
     if (this.game.player == 2) {
-      if (this.game.deck[0].cards[my_card].ops >= this.game.deck[0].cards[opponent_card].ops) {
-        player_to_go = 1;
-      } else {
-        player_to_go = 2;
+      if (this.game.deck[0].cards[my_card] == undefined) { player_to_go = 1; } else {
+        if (this.game.deck[0].cards[opponent_card] == undefined) { player_to_go = 2; } else {
+          if (this.game.deck[0].cards[my_card].ops >= this.game.deck[0].cards[opponent_card].ops) {
+            player_to_go = 1;
+          } else {
+            player_to_go = 2;
+          }
+  	}
       }
     }
 
