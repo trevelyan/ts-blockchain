@@ -3559,6 +3559,12 @@ Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
   this.updateStatus("Waiting for information from peers....");
   
+  //
+  // remove events from board to prevent "Doug Corley" gameplay
+  //
+  $(".card").off();
+  $(".country").off();
+
   let extra = {};
       extra.target = this.returnNextPlayer(this.game.player);
   if (nextTarget != 0) { extra.target = nextTarget; }
