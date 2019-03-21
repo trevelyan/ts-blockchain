@@ -5780,11 +5780,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
         twilight_self.rollDice(twilight_self.game.deck[0].hand.length, function(roll) {
 	  roll = parseInt(roll)-1;
-          let card = twilight_self.game.deck[0].hand[roll-1];
+          let card = twilight_self.game.deck[0].hand[roll];
 
 	  if (card == "china") {
-	    if (roll-2 >= 0) { card = twilight_self.game.deck[0].hand[roll-2]; } else {
-	      card = twilight_self.game.deck[0].hand[roll];
+	    if (roll-1 >= 0) { card = twilight_self.game.deck[0].hand[roll-1]; } else {
+  	      card = twilight_self.game.deck[0].hand[roll+1];
 	    }
 	  }
 
