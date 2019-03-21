@@ -3137,19 +3137,19 @@ Twilight.prototype.playerRealign = function playerRealign(player, card, mycallba
     //
     // DEFCON restrictions
     //
-    if (twilight_self.game.state.events.limit_ignoredefcon == 0) {
-    if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.defcon < 5) {
-      valid_target = 0;
-    }
-    if (twilight_self.countries[countryname].region == "asia" && twilight_self.game.state.defcon < 4) {
-      valid_target = 0;
-    }
-    if (twilight_self.countries[countryname].region == "seasia" && twilight_self.game.state.defcon < 4) {
-      valid_target = 0;
-    }
-    if (twilight_self.countries[countryname].region == "mideast" && twilight_self.game.state.defcon < 3) {
-      valid_target = 0;
-    }
+    if (twilight_self.game.state.limit_ignoredefcon == 0) {
+      if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.defcon < 5) {
+        valid_target = 0;
+      }
+      if (twilight_self.countries[countryname].region == "asia" && twilight_self.game.state.defcon < 4) {
+        valid_target = 0;
+      }
+      if (twilight_self.countries[countryname].region == "seasia" && twilight_self.game.state.defcon < 4) {
+        valid_target = 0;
+      }
+      if (twilight_self.countries[countryname].region == "mideast" && twilight_self.game.state.defcon < 3) {
+        valid_target = 0;
+      }
     }
 
     //
@@ -3319,11 +3319,11 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
       
     let countryname  = i;
     let divname      = '#'+i;
-    let valid_target = 0;
 
     $(divname).off();
     $(divname).on('click', function() {
 
+      let valid_target = 0;
       let countryname = $(this).attr('id');
 
       if (player == "us") {
@@ -3335,7 +3335,7 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
       //
       // Coup Restrictions
       //
-      if (twilight_self.game.state.events.limit_ignoredefcon == 0) {
+      if (twilight_self.game.state.limit_ignoredefcon == 0) {
         if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
           alert("Invalid Region for this Coup");
           valid_target = 0;
