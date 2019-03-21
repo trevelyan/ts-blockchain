@@ -152,6 +152,14 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
   let player = "ussr"; if (this.game.player == 2) { player = "us"; }
 
 
+  if (this.game.over == 1) {
+    let winner = "ussr";
+    if (this.game.winner == 2) { winner = "us"; }
+    this.updateStatus("Game Over: "+winner.toUpperCase() + " wins");
+    return 0;
+  }
+
+
   ///////////
   // QUEUE //
   ///////////
@@ -1979,7 +1987,7 @@ console.log("PLAYER TO GO: " + player_to_go);
         this.endTurn();
       } else {
         //if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
-        this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
+        this.updateLog(opponent.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
       }
 
       this.game.state.headline4 = 1;
@@ -2055,7 +2063,7 @@ console.log("PLAYER TO GO: " + player_to_go);
       this.endTurn();
     } else {
       //if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
-      this.updateLog(card_player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
+      this.updateLog(opponent.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
     }
 
     this.game.state.headline5 = 1;
@@ -2098,9 +2106,6 @@ Twilight.prototype.playMove = function playMove(msg) {
   if (this.game.state.turn == 0) {
     if (this.game.player == 1) {
       if (this.game.state.turn_in_round == 0) {
-    	//this.addMove("discard\tussr\t"+this.game.state.headline_card);
-    	//this.addMove("discard\tus\t"+this.game.state.headline_opponent_card);
-    	//this.removeCardFromHand(this.game.state.headline_card);
 	this.game.state.turn_in_round++;
 	this.updateActionRound();
       }
@@ -2340,8 +2345,6 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
 Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
-console.log("PLAYER TURN TRIGGERED");
-
   if (this.browser_active == 0) { return; }
 
   //
@@ -2448,8 +2451,6 @@ console.log("PLAYER TURN TRIGGERED");
 
   twilight_self.playerFinishedPlacingInfluence();
 
-console.log("PLAYER TURN TRIGGERED 2");
-
   //
   // cannot play if no cards remain
   //
@@ -2459,8 +2460,6 @@ console.log("PLAYER TURN TRIGGERED 2");
     this.endTurn();
     return;
   }
-
-console.log("PLAYER TURN TRIGGERED 3");
 
 
   $('.card').off();
@@ -3336,7 +3335,7 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
       //
       // Coup Restrictions
       //
-      if (twilight_self.game.state.events.limit_ignore_defcon == 0) {
+      if (twilight_self.game.state.events.limit_ignoredefcon == 0) {
         if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
           alert("Invalid Region for this Coup");
           valid_target = 0;
@@ -3358,7 +3357,7 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
           valid_target = 0;
         }
       }
-      if (twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.events.nato == 1) {
+      if (valid_target == 1 && twilight_self.countries[countryname].region == "europe" && twilight_self.game.state.events.nato == 1) {
 	if ( (countryname == "westgermany" && twilight_self.game.state.events.nato_westgermany == 0) || (countryname == "france" && twilight_self.game.state.events.nato_france == 0) ) {} else { 
 	  alert("NATO prevents coups in Europe");
 	  valid_target = 0;
@@ -3574,9 +3573,10 @@ Twilight.prototype.endGame = function endGame(winner, method) {
   if (winner == "us") { this.game.winner = 2; }
   if (winner == "ussr") { this.game.winner = 1; }
 
-  if (this.active_browser == 1) {
-    alert("The Game is Over - " + winner.toUpperCase() + " by " + method);
-  }  
+  if (this.browser_active == 1) {
+    alert("The Game is Over - " + winner.toUpperCase() + " wins by " + method);
+    this.updateStatus("Game Over: " + winner.toUpperCase() + " wins by " + method);
+  }
 }
 
 
