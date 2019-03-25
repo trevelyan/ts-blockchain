@@ -151,11 +151,13 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
   let twilight_self = this;
   let player = "ussr"; if (this.game.player == 2) { player = "us"; }
 
-
   if (this.game.over == 1) {
     let winner = "ussr";
     if (this.game.winner == 2) { winner = "us"; }
-    this.updateStatus("Game Over: "+winner.toUpperCase() + " wins");
+    let gid = $('#sage_game_id').attr("class");
+    if (gid === this.game.id) {
+      this.updateStatus("Game Over: "+winner.toUpperCase() + " wins");
+    }
     return 0;
   }
 
@@ -8731,7 +8733,7 @@ Twilight.prototype.isRegionBonus = function isRegionBonus() {
   //
   if (this.game.state.events.china_card == 1 && this.game.state.events.china_card_eligible == 1) {
     this.updateStatus("Extra 1 OP Available for Asia");
-    this.game.state.events.region_bonus += "seasia"; 
+    this.game.state.events.region_bonus += "asia"; 
     return 1;
   }
   return 0;
@@ -8742,7 +8744,7 @@ Twilight.prototype.endRegionBonus = function endRegionBonus() {
 }
 Twilight.prototype.limitToRegionBonus = function limitToRegionBonus() {
   for (var i in this.countries) {
-    if (this.game.state.events.region_bonus.indexOf(this.countries[i].region) == -1) {
+    if (this.countries[i].region.indexOf(this.game.state.events.region_bonus) == -1) {
       let divname = '#'+i;
       $(divname).off();
     }
