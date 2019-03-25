@@ -8196,7 +8196,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     this.addMove("resolve\tstarwars");
 
-    let user_message = "Choose card to reclaim: ";
+    let user_message = "Choose card to reclaim: <p></p>";
     let first = 0;
     for (var i in this.game.deck[0].discards) {
       if (first > 0) { user_message += ", "; }
@@ -8206,6 +8206,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     twilight_self.updateStatus(user_message);
 
     $('.card').off();
+    $('.card').mouseover(function() {
+      let card = $(this).attr("id");
+      twilight_self.showCard(card);
+    }).mouseout(function() {
+      let card = $(this).attr("id");
+      twilight_self.hideCard(card);
+    });
     $('.card').on('click', function() {
 
       let action2 = $(this).attr("id");
@@ -8723,7 +8730,7 @@ Twilight.prototype.isRegionBonus = function isRegionBonus() {
   //
   if (this.game.state.events.vietnam_revolts == 1 && this.game.state.events.vietnam_revolts_eligible == 1 && this.game.player == 1) {
     this.updateStatus("Extra 1 OP Available for Southeast Asia");
-    this.game.state.events.region_bonus += "seasia"; 
+    this.game.state.events.region_bonus = "seasia"; 
     return 1;
   }
 
@@ -8732,7 +8739,7 @@ Twilight.prototype.isRegionBonus = function isRegionBonus() {
   //
   if (this.game.state.events.china_card == 1 && this.game.state.events.china_card_eligible == 1) {
     this.updateStatus("Extra 1 OP Available for Asia");
-    this.game.state.events.region_bonus += "asia"; 
+    this.game.state.events.region_bonus = "asia"; 
     return 1;
   }
   return 0;
