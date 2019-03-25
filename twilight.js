@@ -47,8 +47,10 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   //
   // enable chat
   //
-  const chat = this.app.modules.returnModule("Chat");
-  chat.addPopUpChat();
+  if (this.browser_active == 1) {
+    const chat = this.app.modules.returnModule("Chat");
+    chat.addPopUpChat();
+  }
 
 
   this.updateStatus("loading game...");
@@ -10432,6 +10434,7 @@ Twilight.prototype.webServer = function webServer(app, expressapp) {
 Twilight.prototype.showCard = function showCard(cardname) {
 
   let c = this.game.deck[0].cards[cardname];
+  if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
 
   let url = '<img class="cardimg" src="/twilight/images/' + c.img + '.svg" />';
       url +='<img class="cardimg" src="/twilight/images/EarlyWar.svg" />';
