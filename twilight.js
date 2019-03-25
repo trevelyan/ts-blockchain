@@ -8739,8 +8739,14 @@ Twilight.prototype.isRegionBonus = function isRegionBonus() {
   return 0;
 }
 Twilight.prototype.endRegionBonus = function endRegionBonus() {
-  this.game.state.events.vietnam_revolts_eligible = 0;
-  this.game.state.events.china_card_eligible = 0;
+  if (this.game.state.events.vietnam_revolts_eligible == 1) {
+    this.game.state.events.vietnam_revolts_eligible = 0;
+    return;
+  }
+  if (this.game.state.events.china_card_eligible == 1) {
+    this.game.state.events.china_card_eligible = 0;
+    return;
+  }
 }
 Twilight.prototype.limitToRegionBonus = function limitToRegionBonus() {
   for (var i in this.countries) {
