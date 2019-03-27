@@ -2680,6 +2680,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	        return;
 	      }
 	      if (action2 === "after") {
+	        twilight_self.game.state.event_name = twilight_self.game.deck[0].cards[card].name;
                 twilight_self.addMove("event\t"+player+"\t"+card);
                 twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
                 twilight_self.removeCardFromHand(card);
