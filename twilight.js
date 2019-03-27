@@ -3201,8 +3201,19 @@ Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, 
 
   var twilight_self = this;
 
+  //
   // set place to only choose valid countries
-  this.prePlayerPlaceInfluence(player);
+  //
+  // handled directly in "place" now, but 
+  // leaving here temporarily in case this
+  // triggers an error as a reminder of how
+  // we used to handle it.
+  //
+  // putting this here "resets" the unsetting
+  // of opponent-controlled countries and 
+  // permits breaking control with 1 OP cards
+  //
+  //this.prePlayerPlaceInfluence(player);
 
   for (var i in this.countries) {
       
