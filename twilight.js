@@ -1,4 +1,3 @@
-
 var saito = require('../../lib/saito/saito');
 var Game = require('../../lib/templates/game');
 var util = require('util');
@@ -1068,7 +1067,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             if (this.game.deck[0].hand[x] == "china") { hand_contains_china = 1; }
           }
           if (hand_contains_china == 0) {
-            this.game.deck[0].hand.push("china");
+	    if (! this.game.deck[0].hand.includes("china")) {
+              this.game.deck[0].hand.push("china");
+	    }
           }
         }
 
@@ -2571,7 +2572,14 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	}
       }
 
-      let announcement = player.toUpperCase() + ' playing '+twilight_self.game.deck[0].cards[card].name+'<p></p><ul><li class="card" id="event">play event</li><li class="card" id="ops">play ops</li>';
+      let announcement = player.toUpperCase() + ' playing '+twilight_self.game.deck[0].cards[card].name+'<p></p><ul>';
+
+      //
+      // cannot play China card for event
+      //
+      if (card != "china") { announcement += '<li class="card" id="event">play event</li>'; } 
+      announcement += '<li class="card" id="ops">play ops</li>';
+
       if (sre == 1) {
         if (player == "ussr" && ops > 1) {
           if (twilight_self.game.state.space_race_ussr < 4 && ops > 1) {
@@ -3684,12 +3692,16 @@ Twilight.prototype.endRound = function endRound() {
   if (do_i_have_the_china_card == 0) {
     if (this.game.player == 1) {
       if (this.game.state.events.china_card == 1) {
-	this.game.deck[0].hand.push("china");
+	if (!this.game.deck[0].hand.includes("china")) {
+	  this.game.deck[0].hand.push("china");
+	}
       }
     }
     if (this.game.player == 2) {
       if (this.game.state.events.china_card == 2) {
-	this.game.deck[0].hand.push("china");
+	if (!this.game.deck[0].hand.includes("china")) {
+	  this.game.deck[0].hand.push("china");
+	}
       }
     }
   }
@@ -6619,7 +6631,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       if (this.game.state.events.china_card == 2) {
 
-	this.game.deck[0].hand.push("china");
+	if (! this.game.deck[0].hand.includes("china")) {
+	  this.game.deck[0].hand.push("china");
+	}
 	this.game.state.events.china_card = 0;
 
       } else {
@@ -6641,7 +6655,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    this.game.state.vp -= 2;
 	    this.updateVictoryPoints();
 	  } else {
-	    this.game.deck[0].hand.push("china");
+	    if (! this.game.deck[0].hand.includes("china")) {
+	      this.game.deck[0].hand.push("china");
+	    }
 	    this.game.state.events.china_card = 0;
 	  }
 
@@ -7124,7 +7140,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         }
       }
       if (this.game.player == 2) {
-        this.game.deck[0].hand.push("china");
+	if (! this.game.deck[0].hand.includes("china")) {
+          this.game.deck[0].hand.push("china");
+	}
       }
 
       return 1;
@@ -7805,13 +7823,23 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       this.addMove("resolve\tmarine");
 
-      this.updateStatus("Remove 2 US influence from the Middle East");
-
       var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
 
       var ops_to_purge = 2;
 
+      var ops_available = 0;
+      for (var i in this.countries) {
+        if (this.countries[i].region == "mideast") {
+	  if (this.countries[i].us > 0) {
+	    ops_available += this.countries[i].us;
+	  }
+	}
+      }
+
+      if (ops_available < 2) { ops_to_purge = ops_available; }
+
+      this.updateStatus("Remove "+ops_to_purge+" US influence from the Middle East");
       for (var i in this.countries) {
 
         let countryname  = i;
