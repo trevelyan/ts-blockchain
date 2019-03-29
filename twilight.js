@@ -891,6 +891,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	return 0;
       }
       if (mv[0] === "ops") {
+        if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
         this.updateLog(mv[1].toUpperCase() + " plays <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> for " + mv[3] + " OPS"); 
         this.playOps(mv[1], mv[3], mv[2]);
         this.game.queue.splice(qe, 1);
@@ -2627,6 +2628,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	}
 
 
+	twilight_self.game.state.event_name = twilight_self.game.deck[0].cards[card].name;
         twilight_self.addMove("event\t"+player+"\t"+card);
         twilight_self.removeCardFromHand(card);
         twilight_self.endTurn();
@@ -5153,7 +5155,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      alert("Invalid Option");
 	    } else {
               twilight_self.removeInfluence(c, 1, "us");
-	      twilight_self.addMove("remove\tus\tus\t"+c+"\t1");
+	      twilight_self.addMove("remove\tussr\tus\t"+c+"\t1");
 	      options_purged[c]++;
 	      if (options_purged[c] >= 2) {
 		twilight_self.countries[c].place = 0;
