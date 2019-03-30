@@ -8920,8 +8920,8 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (bg_us > bg_ussr && total_us > bg_us && total_us > total_ussr) { vp_us = 7; }
     if (bg_ussr > bg_us && total_ussr > bg_ussr && total_ussr > total_us) { vp_ussr = 7; }
 
-    if (total_us == 6 && total_us > total_ussr) { vp_us = 10000; }
-    if (total_ussr == 6 && total_us > total_ussr) { vp_ussr = 10000; }
+    if (bg_us == 5 && total_us > total_ussr) { vp_us = 10000; }
+    if (bg_ussr == 5 && total_us > total_ussr) { vp_ussr = 10000; }
 
     vp_us = vp_us + bg_us;
     vp_ussr = vp_ussr + bg_ussr;
