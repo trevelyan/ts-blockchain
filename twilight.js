@@ -1370,26 +1370,55 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  this.game.queue.push("deal\t2");
 	  this.game.queue.push("deal\t1");
 
-	  if (this.game.deck[0].crypt.length < 16) { 
+	  let reshuffle_limit = 14;
+	  if (this.game.state.round > 3) { reshuffle_limit = 16; }
 
-	    let discarded_cards = this.returnDiscardedCards();
-	    if (Object.keys(discarded_cards).length > 0) {
+	  if (this.game.deck[0].crypt.length < reshuffle_limit) { 
 
-	      //
-	      // shuffle in discarded cards
-	      //
-	      this.game.queue.push("SHUFFLE\t1");
-	      this.game.queue.push("DECKRESTORE\t1");
-              this.game.queue.push("DECKENCRYPT\t1\t2");
-              this.game.queue.push("DECKENCRYPT\t1\t1");
-              this.game.queue.push("DECKXOR\t1\t2");
-              this.game.queue.push("DECKXOR\t1\t1");
-              this.game.queue.push("DECK\t1\t"+JSON.stringify(discarded_cards));
-	      this.game.queue.push("DECKBACKUP\t1");
-	      this.updateLog("Shuffling discarded cards back into the deck...");
+	    //
+	    // but first deal out whatever is left
+	    //
+	    if (this.game.state.round != 4 && this.game.state.round != 8) {
+
+	      let discarded_cards = this.returnDiscardedCards();
+	      if (Object.keys(discarded_cards).length > 0) {
+
+	        //
+	        // shuffle in discarded cards
+	        //
+	        this.game.queue.push("SHUFFLE\t1");
+	        this.game.queue.push("DECKRESTORE\t1");
+                this.game.queue.push("DECKENCRYPT\t1\t2");
+                this.game.queue.push("DECKENCRYPT\t1\t1");
+                this.game.queue.push("DECKXOR\t1\t2");
+                this.game.queue.push("DECKXOR\t1\t1");
+                this.game.queue.push("DECK\t1\t"+JSON.stringify(discarded_cards));
+	        this.game.queue.push("DECKBACKUP\t1");
+	        this.updateLog("Shuffling discarded cards back into the deck...");
+
+	      }
+
+              //
+              // deal existing cards before
+              // we shuffle the discards into the
+              // deck
+              //
+              let cards_available = this.game.deck[0].crypt.length;
+              let player2_cards = Math.floor(cards_available / 2);
+              let player1_cards = cards_available = player2_cards;;
+
+              if (player1_cards > 0) {
+                this.game.queue.push("DEAL\t1\t2\t"+player2_cards);
+                this.game.queue.push("DEAL\t1\t1\t"+player1_cards);
+              }
+              this.updateStatus("Dealing remaining cards from draw deck before reshuffle...");
+              this.updateLog("Dealing remaining cards from draw deck before reshuffle...");
 
 	    }
+
 	  }
+
+
 
 	  if (this.game.state.round == 4) {
 
@@ -1404,6 +1433,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	    this.updateLog("Adding Mid War cards to the deck...");
 
 	  }
+
 
 	  if (this.game.state.round == 8) {
 
