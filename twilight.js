@@ -949,6 +949,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       }
       if (mv[0] === "event") {
 
+        if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
+        this.updateLog(mv[1].toUpperCase() + " triggers <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> event"); 
+
         shd_continue = this.playEvent(mv[1], mv[2]);
 
         if (shd_continue == 0) {
@@ -967,7 +970,6 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  //
 	  // only continue if we do not stop
 	  //
-          this.updateLog(mv[1].toUpperCase() + " triggers <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span> event"); 
           if (mv[1] == "china") {
           } else {
             //
@@ -1055,6 +1057,24 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	    }
           }
         }
+
+        //
+        // remove non-recurring events from game
+        //
+        for (var i in this.game.deck[0].cards) {
+          if (mv[1] == i) {
+            if (this.game.deck[0].cards[i].recurring != 1) {
+              this.updateLog(this.game.deck[0].cards[i].name + " removed from game");
+              this.game.deck[0].removed[i] = this.game.deck[0].cards[i];
+              delete this.game.deck[0].cards[i];
+            } else {
+              this.updateLog(this.game.deck[0].cards[i].name + " discarded");
+              this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
+            }
+          }
+        }
+
+
       }
       if (mv[0] === "placement") {
 
@@ -2561,7 +2581,6 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       // is space race an option
       //
       let sre = 1;
-      if (card == "china") { sre = 0; }
       if (twilight_self.game.player == 1 && twilight_self.game.state.space_race_ussr_counter >= 1) {
 	if (twilight_self.game.state.animal_in_space == "ussr" && twilight_self.game.state.space_race_ussr_counter < 2) {} else {
 	  sre = 0;
@@ -3495,6 +3514,12 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
       alert("COUP FAILED: " + player.toUpperCase() + " rolls " + roll);
     }
   }
+
+
+  //
+  // update country
+  //
+  this.showInfluence(countryname, player);
 
   if (mycallback != null) {
     mycallback();
@@ -4515,7 +4540,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
         let countryname  = i;
         let divname      = '#'+i;
-	if (i == "canada" || i == "uk" || i == "france" || i == "benelux" || i == "westgermany" || i == "spain" ||  i == "italy" || i == "greece" || i == "turkey" || i == "denmark" || i == "norway" || i == "sweden" ||  i == "finland" || i == "austria") {
+	if (i == "canada" || i == "uk" || i == "sweden" || i == "france" || i == "benelux" || i == "westgermany" || i == "spain" ||  i == "italy" || i == "greece" || i == "turkey" || i == "denmark" || i == "norway" || i == "sweden" ||  i == "finland" || i == "austria") {
           if (twilight_self.isControlled("ussr", countryname) != 1) {
             twilight_self.countries[countryname].place = 1;
             $(divname).off();
@@ -4684,7 +4709,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       twilight_self.playerFinishedPlacingInfluence();
 
       twilight_self.addMove("resolve\tindopaki");
-      twilight_self.updateStatus('Indo-Pakistani War:<p></p><ul><li class="card" id="invadepakistan">India invades Pakistan</li><li class="card" id="invadeindia">Pakistan invades India</li></ul>');
+      twilight_self.updateStatus('Indo-Pakistani War. Choose Target:<p></p><ul><li class="card" id="invadepakistan">Pakistan</li><li class="card" id="invadeindia">India</li></ul>');
 
       let target = 4;
 
@@ -4706,7 +4731,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 	    if (player == "us") {
               twilight_self.addMove("place\tus\tus\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
-              twilight_self.addMove("remove\tussr\tussr\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
+              twilight_self.addMove("remove\tus\tussr\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "us");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "ussr");
               twilight_self.game.state.vp += 2;
@@ -4717,7 +4742,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      twilight_self.showInfluence("pakistan", "ussr");
 	    } else {
               twilight_self.addMove("place\tussr\tussr\tpakistan\t"+twilight_self.countries['pakistan'].us);
-              twilight_self.addMove("remove\tus\tus\tpakistan\t"+twilight_self.countries['pakistan'].us);
+              twilight_self.addMove("remove\tussr\tus\tpakistan\t"+twilight_self.countries['pakistan'].us);
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].us, "ussr");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].us, "us");
               twilight_self.game.state.vp -= 2;
@@ -4753,7 +4778,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 	    if (player == "us") {
               twilight_self.addMove("place\tus\tus\tindia\t"+twilight_self.countries['india'].ussr);
-              twilight_self.addMove("remove\tussr\tussr\tindia\t"+twilight_self.countries['india'].ussr);
+              twilight_self.addMove("remove\tus\tussr\tindia\t"+twilight_self.countries['india'].ussr);
               twilight_self.placeInfluence("india", twilight_self.countries['india'].ussr, "us");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].ussr, "ussr");
               twilight_self.game.state.vp += 2;
@@ -4764,7 +4789,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      twilight_self.showInfluence("india", "ussr");
 	    } else {
               twilight_self.addMove("place\tussr\tussr\tindia\t"+twilight_self.countries['india'].us);
-              twilight_self.addMove("remove\tus\tus\tindia\t"+twilight_self.countries['india'].us);
+              twilight_self.addMove("remove\tussr\tus\tindia\t"+twilight_self.countries['india'].us);
               twilight_self.placeInfluence("india", twilight_self.countries['india'].us, "ussr");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].us, "us");
               twilight_self.game.state.vp -= 2;
@@ -5229,8 +5254,10 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       let available = 0;
 
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-        let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops);
-        if (avops >= 3) { available = 1; }
+	if (this.game.deck[0].hand[i] != "china") {
+          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops);
+          if (avops >= 3) { available = 1; }
+	}
       }
 
       if (available == 0) {
@@ -5252,7 +5279,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         if (action == "discard") {
 	  let choicehtml = "";
 	  for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
-	    if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops) >= 3) {
+	    if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
 	      if (choicehtml.length > 0) { choicehtml += ", "; }
               choicehtml += '<div class="card inline" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</div>';
 	    }
@@ -6776,6 +6803,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.isControlled("ussr", "cuba") == 1)        { ussr_bg++; }
     if (this.isControlled("us", "panama") == 1)        { us_bg++; }
     if (this.isControlled("ussr", "panama") == 1)      { ussr_bg++; }
+
     if (this.isControlled("us", "venezuela") == 1)     { us_bg++; }
     if (this.isControlled("ussr", "venezuela") == 1)   { ussr_bg++; }
     if (this.isControlled("us", "brazil") == 1)        { us_bg++; }
@@ -6784,6 +6812,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.isControlled("ussr", "argentina") == 1)   { ussr_bg++; }
     if (this.isControlled("us", "chile") == 1)         { us_bg++; }
     if (this.isControlled("ussr", "chile") == 1)       { ussr_bg++; }
+
     if (this.isControlled("us", "southafrica") == 1)   { us_bg++; }
     if (this.isControlled("ussr", "southafrica") == 1) { ussr_bg++; }
     if (this.isControlled("us", "angola") == 1)        { us_bg++; }
@@ -6794,6 +6823,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.isControlled("ussr", "nigeria") == 1)     { ussr_bg++; }
     if (this.isControlled("us", "algeria") == 1)       { us_bg++; }
     if (this.isControlled("ussr", "algeria") == 1)     { ussr_bg++; }
+
     if (this.isControlled("us", "poland") == 1)        { us_bg++; }
     if (this.isControlled("ussr", "poland") == 1)      { ussr_bg++; }
     if (this.isControlled("us", "eastgermany") == 1)   { us_bg++; }
@@ -6804,6 +6834,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.isControlled("ussr", "france") == 1)      { ussr_bg++; }
     if (this.isControlled("us", "italy") == 1)         { us_bg++; }
     if (this.isControlled("ussr", "italy") == 1)       { ussr_bg++; }
+
     if (this.isControlled("us", "libya") == 1)         { us_bg++; }
     if (this.isControlled("ussr", "libya") == 1)       { ussr_bg++; }
     if (this.isControlled("us", "egypt") == 1)         { us_bg++; }
@@ -6816,6 +6847,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.isControlled("ussr", "iran") == 1)        { ussr_bg++; }
     if (this.isControlled("us", "saudiarabia") == 1)   { us_bg++; }
     if (this.isControlled("ussr", "saudiarabia") == 1) { ussr_bg++; }
+
     if (this.isControlled("us", "pakistan") == 1)      { us_bg++; }
     if (this.isControlled("ussr", "pakistan") == 1)    { ussr_bg++; }
     if (this.isControlled("us", "india") == 1)         { us_bg++; }
@@ -6834,11 +6866,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.game.state.vp += 2;
       this.updateVictoryPoints();
     } 
-    if (ussr_bg > us_bg) {
-      this.updateLog("USSR pokes US in chest...");
-      this.game.state.vp -= 2;
-      this.updateVictoryPoints();
-    }
 
     return 1;
   }
@@ -7315,7 +7342,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       twilight_self.addMove("resolve\toas");
 
-      this.updateStatus("US places two influence in Central America");
+      this.updateStatus("US places two influence in Central or South America");
       for (var i in this.countries) {
 
         let countryname  = i;
@@ -8003,7 +8030,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 	    if (player == "us") {
               twilight_self.addMove("place\tus\tus\tiran\t"+twilight_self.countries['iran'].ussr);
-              twilight_self.addMove("remove\tussr\tussr\tiran\t"+twilight_self.countries['iran'].ussr);
+              twilight_self.addMove("remove\tus\tussr\tiran\t"+twilight_self.countries['iran'].ussr);
               twilight_self.placeInfluence("iran", twilight_self.countries['iran'].ussr, "us");
               twilight_self.removeInfluence("iran", twilight_self.countries['iran'].ussr, "ussr");
               twilight_self.game.state.vp += 2;
@@ -8014,7 +8041,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      twilight_self.showInfluence("iran", "ussr");
 	    } else {
               twilight_self.addMove("place\tussr\tussr\tiran\t"+twilight_self.countries['iran'].us);
-              twilight_self.addMove("remove\tus\tus\tiran\t"+twilight_self.countries['iran'].us);
+              twilight_self.addMove("remove\tussr\tus\tiran\t"+twilight_self.countries['iran'].us);
               twilight_self.placeInfluence("iran", twilight_self.countries['iran'].us, "ussr");
               twilight_self.removeInfluence("iran", twilight_self.countries['iran'].us, "us");
               twilight_self.game.state.vp -= 2;
@@ -8054,7 +8081,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 	    if (player == "us") {
               twilight_self.addMove("place\tus\tus\tiraq\t"+twilight_self.countries['iraq'].ussr);
-              twilight_self.addMove("remove\tussr\tussr\tiraq\t"+twilight_self.countries['iraq'].ussr);
+              twilight_self.addMove("remove\tus\tussr\tiraq\t"+twilight_self.countries['iraq'].ussr);
               twilight_self.placeInfluence("iraq", twilight_self.countries['iraq'].ussr, "us");
               twilight_self.removeInfluence("iraq", twilight_self.countries['iraq'].ussr, "ussr");
               twilight_self.game.state.vp += 2;
@@ -8064,7 +8091,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iraq", "ussr");
 	    } else {
-              twilight_self.addMove("place\tussr\tussr\tiraq\t"+twilight_self.countries['iraq'].us);
+              twilight_self.addMove("place\tus\tussr\tiraq\t"+twilight_self.countries['iraq'].us);
               twilight_self.addMove("remove\tus\tus\tiraq\t"+twilight_self.countries['iraq'].us);
               twilight_self.placeInfluence("iraq", twilight_self.countries['iraq'].us, "ussr");
               twilight_self.removeInfluence("iraq", twilight_self.countries['iraq'].us, "us");
