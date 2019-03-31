@@ -161,6 +161,22 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
     return 0;
   }
 
+console.log("HERE: " + JSON.stringify(msg));
+
+  if (msg != null) {
+    if (msg.extra != null) {
+
+      //
+      // if my turn, update
+      //
+      if (msg.extra.target == this.game.player) {
+        this.game.state.opponent_cards_in_hand = msg.extra.cards_in_hand;
+console.log("OPPONENT CARDS IN HAND: " + this.game.state.opponent_cards_in_hand);
+      }
+    }
+  }
+
+
 
   ///////////
   // QUEUE //
@@ -355,7 +371,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	            $(divname).off();
 	            $(divname).on('click', function() {
 		      let c = $(this).attr('id');
+		      twilight_self.addMove("unlimit\tmilops");
 		      twilight_self.addMove("coup\tussr\t"+c+"\t3");
+		      twilight_self.addMove("limit\tmilops");
 		      twilight_self.endTurn();
 		    });
 
@@ -594,6 +612,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (mv[1] == "spacerace") { this.game.state.limit_spacerace = 1; }
         if (mv[1] == "realignments") { this.game.state.limit_realignments = 1; }
         if (mv[1] == "placement") { this.game.state.limit_placement = 1; }
+        if (mv[1] == "milops") { this.game.state.limit_milops = 1; }
         if (mv[1] == "ignoredefcon") { this.game.state.limit_ignoredefcon = 1; }
         if (mv[1] == "region") { this.game.state.limit_region += mv[2]; }
         this.game.queue.splice(qe, 1);
@@ -726,6 +745,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (mv[1] == "spacerace") { this.game.state.limit_spacerace = 0; }
         if (mv[1] == "realignments") { this.game.state.limit_realignments = 0; }
         if (mv[1] == "placement") { this.game.state.limit_placement = 0; }
+        if (mv[1] == "milops") { this.game.state.limit_milops = 0; }
         if (mv[1] == "ignoredefcon") { this.game.state.limit_ignoredefcon = 0; }
         if (mv[1] == "region") { this.game.state.limit_region = ""; }
         this.game.queue.splice(qe, 1);
@@ -864,7 +884,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	this.addMove("unlimit\tignoredefcon");
 	this.addMove("unlimit\tregion");
 	this.addMove("unlimit\tplacement");
+	this.addMove("unlimit\tmilops");
 	this.addMove("ops\tus\tteardown\t3");
+	this.addMove("limit\tmilops");
 	this.addMove("limit\tplacement");
 	this.addMove("limit\tregion\tasia");
 	this.addMove("limit\tregion\tmideast");
@@ -881,6 +903,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  if (this.game.state.round > 1) { cards_needed = 9; }
 	  cards_needed = cards_needed - this.game.deck[0].hand.length;
 	  this.addMove("RESOLVE");
+console.log("WE ARE DEALING: " + cards_needed + " for player " + mv[1]);
 	  this.addMove("DEAL\t1\t"+mv[1]+"\t"+cards_needed);
 	  this.updateStatus("Fetching new cards to me from deck.");
           this.endTurn();
@@ -909,10 +932,12 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       }
       if (mv[0] === "coup") {
 	this.updateLog(mv[1].toUpperCase() + " coups " + this.countries[mv[2]].name + " with " + mv[3] + " OPS"); 
-        if (mv[1] == "us") { this.game.state.milops_us += parseInt(mv[3]); }
-        if (mv[1] == "ussr") { this.game.state.milops_ussr += parseInt(mv[3]); }
-	this.updateMilitaryOperations();
- 	this.playCoup(mv[1], mv[2], mv[3]);
+	if (this.game.state.limit_milops != 1) {
+          if (mv[1] == "us") { this.game.state.milops_us += parseInt(mv[3]); }
+          if (mv[1] == "ussr") { this.game.state.milops_ussr += parseInt(mv[3]); }
+	  this.updateMilitaryOperations();
+ 	}
+	this.playCoup(mv[1], mv[2], mv[3]);
         this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "realign") {
@@ -1370,13 +1395,41 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  this.game.queue.push("deal\t2");
 	  this.game.queue.push("deal\t1");
 
+
 	  let reshuffle_limit = 14;
-	  if (this.game.state.round > 3) { reshuffle_limit = 16; }
+
+          let cards_needed_per_player = 8;
+          if (this.game.state.round > 4) { cards_needed_per_player = 9; }
+
+          let ussr_cards = this.game.deck[0].hand.length;
+	  for (let z = 0; z < this.game.deck[0].hand.length; z++) {
+	    if (this.game.deck[0].hand[z] == "china") {
+	      ussr_cards--;
+	    }
+	  }
+          let us_cards   = this.game.state.opponent_cards_in_hand;
+
+console.log("I AM PLAYER: " + this.game.player);
+console.log("HANDS: " + this.game.deck[0].hand.length + " ----> " + this.game.state.opponent_cards_in_hand);
+
+          if (this.game.player == 2) {
+            let x = ussr_cards;
+            ussr_cards = us_cards;
+            us_cards = x;
+          }
+	  let us_cards_needed = cards_needed_per_player - us_cards;
+	  let ussr_cards_needed = cards_needed_per_player - ussr_cards;
+	  reshuffle_limit = us_cards_needed + ussr_cards_needed;
+
+console.log("reshuffle limit = " + reshuffle_limit);
+console.log("Cards Needed Per Player: " + ussr_cards_needed + " - " + us_cards_needed);
+console.log("Cards in Deck: " + this.game.deck[0].crypt.length);
+console.log("Who has the China card: " + this.whoHasTheChinaCard());
 
 	  if (this.game.deck[0].crypt.length < reshuffle_limit) { 
 
 	    //
-	    // but first deal out whatever is left
+	    // no need to reshuffle in turn 4 or 8 as we have new cards inbound
 	    //
 	    if (this.game.state.round != 4 && this.game.state.round != 8) {
 
@@ -1405,14 +1458,29 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
               //
               let cards_available = this.game.deck[0].crypt.length;
               let player2_cards = Math.floor(cards_available / 2);
-              let player1_cards = cards_available = player2_cards;;
+              let player1_cards = cards_available - player2_cards;;
+
+	      //
+	      // adjust distribution of cards
+	      //
+	      if (player2_cards > us_cards_needed) {
+		let surplus_cards = player2_cards - us_cards_needed;
+	 	player2_cards = us_cards_needed;
+		player1_cards += surplus_cards;
+	      }
+	      if (player1_cards > ussr_cards_needed) {
+		let surplus_cards = player1_cards - ussr_cards_needed;
+	 	player1_cards = ussr_cards_needed;
+		player2_cards += surplus_cards;
+	      }
+console.log("INITIAL DEAL TO PLAYERS IS: " + player1_cards + " -- " + player2_cards);
 
               if (player1_cards > 0) {
                 this.game.queue.push("DEAL\t1\t2\t"+player2_cards);
                 this.game.queue.push("DEAL\t1\t1\t"+player1_cards);
               }
-              this.updateStatus("Dealing remaining cards from draw deck before reshuffle...");
-              this.updateLog("Dealing remaining cards from draw deck before reshuffle...");
+              this.updateStatus("Dealing remaining cards from draw deck before reshuffling...");
+              this.updateLog("Dealing remaining cards from draw deck before reshuffling...");
 
 	    }
 
@@ -1529,7 +1597,6 @@ console.log("BEFORE PLAY MOVE");
   return 1;
 
 }
-
 
 
 
@@ -3645,8 +3712,17 @@ Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
   $(".card").off();
   $(".country").off();
 
+  let cards_in_hand = this.game.deck[0].hand.length;
+  for (let z = 0; z < this.game.deck[0].hand.length; z++) {
+    if (this.game.deck[0].hand[z] == "china") {
+      cards_in_hand--;
+    }
+  }
+
   let extra = {};
       extra.target = this.returnNextPlayer(this.game.player);
+      extra.cards_in_hand = cards_in_hand;
+
   if (nextTarget != 0) { extra.target = nextTarget; }
   this.game.turn = this.moves;
   this.moves = [];
@@ -3779,7 +3855,57 @@ Twilight.prototype.endRound = function endRound() {
 
 }
 
+Twilight.prototype.whoHasTheChinaCard = function whoHasTheChinaCard() {
 
+  let do_i_have_the_china_card = 0;
+
+  for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+    if (this.game.deck[0].hand[i] == "china") {
+      do_i_have_the_china_card = 1;
+    }
+  }
+
+  if (do_i_have_the_china_card == 0) {
+    if (this.game.player == 1) {
+      if (this.game.state.events.china_card == 1) {
+	if (!this.game.deck[0].hand.includes("china")) {
+	  return "us";
+	} else {
+	  return "ussr";
+	}
+      } else {
+	if (do_i_have_the_china_card == 1) {
+	  return "ussr";
+	} else {
+	  return "us";
+	}
+      }
+    }
+    if (this.game.player == 2) {
+      if (this.game.state.events.china_card == 2) {
+	if (!this.game.deck[0].hand.includes("china")) {
+	  return "ussr";
+	} else {
+	  return "us";
+	}
+      } else {
+	if (do_i_have_the_china_card == 1) {
+	  return "us";
+	} else {
+	  return "ussr";
+	}
+      }
+    }
+  } else {
+    if (this.game.player == 1) { return "ussr"; }
+    if (this.game.player == 2) { return "us"; }
+  }
+
+  //
+  // we should never hit this
+  //
+
+}
 
 
 
@@ -3810,6 +3936,7 @@ Twilight.prototype.returnState = function returnState() {
   state.turn_in_round = 0;
   state.broke_control = 0;
   state.us_defcon_bonus = 0;
+  state.opponent_cards_in_hand = 0;
   state.event_before_ops = 0;
   state.event_name = "";
 
@@ -6635,7 +6762,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    twilight_self.placeInfluence(c, 2, player, function() {
               twilight_self.addMove("resolve\tjunta");
               twilight_self.addMove("unlimit\tplacement");
+              twilight_self.addMove("unlimit\tmilops");
               twilight_self.addMove("ops\t"+player+"\tjunta\t2");
+              twilight_self.addMove("limit\tmilops");
               twilight_self.addMove("limit\tplacement");
               twilight_self.addMove("place\t"+player+"\t"+player+"\t"+c+"\t2");
               twilight_self.playerFinishedPlacingInfluence();
@@ -8774,7 +8903,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	  let c = $(this).attr('id');
 
 	  twilight_self.addMove("resolve\tortega");
+          twilight_self.addMove("unlimit\tmilops");
           twilight_self.addMove("coup\tussr\t"+c+"\t2");
+          twilight_self.addMove("limit\tmilops");
           twilight_self.addMove("notify\tUSSR launches coup in "+c);
 	  twilight_self.endTurn();
 
