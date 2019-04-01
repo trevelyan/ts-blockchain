@@ -69,7 +69,7 @@ body {
 }
 
 li {
-  margin-top: 6px;
+  margin-top: 7px;
 }
 
 .round {
@@ -149,6 +149,7 @@ li {
 
 .showcard {
   text-decoration: none;
+  cursor: pointer;
 }
 
 .cardimg {
