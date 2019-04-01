@@ -5238,6 +5238,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.game.state.events.nato = 1;
       this.game.state.events.nato_westgermany = 1;
       this.game.state.events.nato_france = 1;
+    } else {
+      this.updateLog("NATO cannot trigger before Warsaw Pact of Marshall Plan. Moving to discard pile.");
     }
     return 1;
   }
