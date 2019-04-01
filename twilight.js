@@ -6915,7 +6915,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
 
-      twilight_self.updateStatus('USSR to place 2 Influence in Central or South America');
+      twilight_self.updateStatus(player.toUpperCase() + ' to place 2 Influence in Central or South America');
 
       for (var i in this.countries) {
 
@@ -7713,7 +7713,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   // Allende
   //
   if (card == "allende") {
-    this.placeInfluence("chile", 1, "ussr");
+    this.placeInfluence("chile", 2, "ussr");
     return 1;
   }
 
