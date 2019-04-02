@@ -1032,6 +1032,7 @@ console.log("WE ARE DEALING: " + us_cards_needed + " for player " + mv[1]);
 	  //
           if (mv[1] == "china") {
           } else {
+
             //
             // remove non-recurring events from game
             //
@@ -1042,9 +1043,9 @@ console.log("WE ARE DEALING: " + us_cards_needed + " for player " + mv[1]);
 		  let event_removal = 1;
 
 		  //
-		  // NATO not removed if prerequisitcs
+		  // NATO not removed if prerequisitcs not met
 		  // 
-		  if (this.game.state.events.nato == 0) {
+		  if (this.game.state.events.nato == 0 && mv[2] == "nato") {
 		    event_removal = 0;
 		  }
 
@@ -8665,7 +8666,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (player == "us") {
       this.game.state.vp -= 6;
-      this.updateDefcon();
+      this.updateVictoryPoints();
 
       if (this.game.state.vp > 0) {
 	this.endGame("ussr","Wargames");
@@ -8680,7 +8681,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     } else {
 
       this.game.state.vp += 6;
-      this.updateDefcon();
+      this.updateVictoryPoints();
 
       if (this.game.state.vp > 0) {
 	this.endGame("ussr","Wargames");
