@@ -10732,6 +10732,10 @@ Twilight.prototype.updateLog = function updateLog(str, length = 10) {
     html += "> " + this.game.log[i];
   }
 
+  if ($('.log').css('display') == 'none') {
+    $('#game_log').animate({ backgroundColor: 'red'}, 300);
+  }
+
   if (this.app.BROWSER == 1) { $('#log').html(html) }
 
   $('.logcard').off();
@@ -10756,6 +10760,7 @@ Twilight.prototype.attachEvents = function attachEvents() {
   $('#game_log').on('click', () => {
     $('.status').hide();
     $('.log').show();
+    $('#game_log').css('background-color', '');
   })
 
   $('#dropdown-button').off();

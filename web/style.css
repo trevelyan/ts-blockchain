@@ -31,12 +31,8 @@ body {
 
 .gameboard {
   position: absolute;
-  /*background-image: url("images/TS Map-11.jpg");*/
   background-image: url("images/TS Map-11-medium.jpg");
-  /*background-image: url("images/TS Map-11-small.jpg");*/
   background-size: cover;
-  /*width: 5100px;
-  height: 3300px;*/
   width: 2550px;
   height: 1650px;
 }
@@ -80,13 +76,6 @@ body {
   padding: 0;
   margin: 0;
 }
-/* .hud-header li {
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.2em;
-  line-height: 40px;
-  height: 40px;
-  border-bottom: 1px solid #888;
-} */
 
 .hud-header-dropdown {
   grid-area: dropdown;
@@ -101,23 +90,17 @@ body {
   cursor: pointer;
 }
 
-/* Option 1 - Display Inline */
-/* .hud-header li {
-  display: inline-block;
-  margin-right: -4px;
-} */
- 
 .hud-header a {
   text-decoration: none;
   color: #fff;
   display: block;
   transition: .3s background-color;
 }
- 
+
 .hud-header a:hover {
   background-color: #005f5f;
 }
- 
+
 .hud-header a.active {
   background-color: #fff;
   color: #444;
@@ -129,20 +112,8 @@ body {
 }
 
 .status {
-  /* float: left; */
-  /* font-size: 1.8em; */
   padding-left: 10px;
   padding-right: 10px;
-  /* width: 390px;
-  height: 425px;
-  background-color: #fffccd;
-  background-color: #808080;
-  border: 2px solid #948f8b;
-  border-bottom: 0px;
-  top: 100%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%); */
 }
 
 .status > ul {
@@ -163,27 +134,12 @@ body {
   transition: .1s color;
 }
 
-/* .status > ul > li a {
-  text-decoration: none;
-  color: #fff;
-  display: block;
-  transition: .3s background-color;
-} */
- 
 .status > ul > li:hover {
   background-color: #005f5f;
   color: #fff
 }
 
 .log {
-  /* overflow: hidden;
-  position: absolute; */
-  /* top: 431px;
-  left: 0px;
-  float: left;
-  font-family: Courier, Sans-Serif;
-  height: 200px;
-  width: 390px; */
   padding: 10px;
   background-color: #fffccd;
   display: none;
@@ -192,10 +148,7 @@ body {
   font-size: 1.0rem;
   overflow: scroll;
   color: black
-  /* border: 2px solid #948f8b;
-  border-top: 0px; */
 }
-
 
 .round {
   position: absolute;
@@ -302,12 +255,10 @@ body {
 
 .us {
   display: inline;
-  float: left;
 }
 
 .ussr {
   display: inline;
-  float: left;
 }
 
 .us_control {
@@ -347,19 +298,7 @@ body {
   max-width: 600px;
 }
 
-.main {}
-
 @media only screen and (min-width: 750px) {
-  /* .status {
-    position: fixed;
-    float: none;
-    z-index: 40000;
-  }
-  .log {
-    position: fixed;
-    float: none;
-    z-index: 40000;
-  } */
   .cardbox {
     position: fixed;
     float: none;
