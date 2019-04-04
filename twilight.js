@@ -10745,6 +10745,18 @@ Twilight.prototype.updateLog = function updateLog(str, length = 10) {
 
 }
 
+Twilight.prototype.attachEvents = function attachEvents() {
+  $('#game_status').off();
+  $('#game_status').on('click', () => {
+    $('.log').hide();
+    $('.status').show();
+  })
 
+  $('#game_log').off();
+  $('#game_log').on('click', () => {
+    $('.status').hide();
+    $('.log').show();
+  })
+}
 
 
