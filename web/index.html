@@ -35,8 +35,11 @@
   <div class="main" style="display:all">
     <div class="gameboard">
       <div class="connection_monitor" id="connection_monitor">CONNECTION UNSTABLE (refresh your browser) ...</div>
+      <div class="cardbox" id="cardbox"></div>
       <div class="hud">
-        <div class="cardbox" id="cardbox"></div>
+        <div class="hud-header-dropdown">
+          <i class="fa fa-caret-down" id="dropdown-button" style="cursor: pointer"></i>
+        </div>
         <nav class="hud-header">
           <ul>
             <li>
@@ -50,7 +53,7 @@
         <div class="hud-content">
           <div class="status" id="status">STATUS</div>
           <div class="log" id="log"></div>
-        </div>>
+        </div>
       </div>
       <div class="round" id="round"></div>
       <div class="action_round_us" id="action_round_us"></div>

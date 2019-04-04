@@ -530,11 +530,11 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
  	      this.game.queue.splice(this.game.queue.length-1, 1);
 	    }
 
-            let user_message = "Select cards to discard:<p></p><ul>";
+            let user_message = "Select cards to discard:<ul>";
             for (let i = 0; i < cardoptions.length; i++) {
               user_message += '<li class="card" id="'+i+'">'+this.game.deck[0].cards[cardoptions[i]].name+'</li>';
 	    }
-            user_message += '</ul><p></p>When you are done discarding <span class="card dashed" id="finished">click here</span>.';
+            user_message += '</ul>When you are done discarding <span class="card dashed" id="finished">click here</span>.';
             twilight_self.updateStatus(user_message);
 
 	    //
@@ -698,7 +698,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           this.updateStatus(html);
         }
         if (this.game.player == 2) {
-          let html  = "Do you wish to take an extra turn:<p></p><ul>";
+          let html  = "Do you wish to take an extra turn:<ul>";
           html += '<li class="card" id="play">play turn</li>';
           html += '<li class="card" id="nope">no turn</li>';
           html += '</ul>';
@@ -1168,7 +1168,7 @@ console.log("WE ARE DEALING: " + cards_needed + " for player " + mv[1]);
           //
           // US gets extra move
           // 
-          let html  = "Do you want to take an extra turn: (North Sea Oil)<p></p><ul>";
+          let html  = "Do you want to take an extra turn: (North Sea Oil)<ul>";
               html += '<li class="card" id="play">play extra turn</li>';
               html += '<li class="card" id="nope">do not play</li>';
               html += '</ul>';
@@ -1219,8 +1219,8 @@ console.log("WE ARE DEALING: " + cards_needed + " for player " + mv[1]);
           //
           // DISCARD CARD
           // 
-          let html  = "US may discard a card: (Eagle Has Landed)<p></p><ul>";
-          if (bonus_player == 1) { html  = "USSR may discard a card: (Bear Has Landed)<p></p><ul>"; }
+          let html  = "US may discard a card: (Eagle Has Landed)<ul>";
+          if (bonus_player == 1) { html  = "USSR may discard a card: (Bear Has Landed)<ul>"; }
               html += '<li class="card" id="discard">discard card</li>';
               html += '<li class="card" id="nope">do not discard</li>';
               html += '</ul>';
@@ -1243,7 +1243,7 @@ console.log("WE ARE DEALING: " + cards_needed + " for player " + mv[1]);
 	      let cards_discarded = 0;
 
 	      let cards_to_discard = 0;
-	      let user_message = "Select card to discard:<p></p><ul>";
+	      let user_message = "Select card to discard:<ul>";
 	      for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
 	        if (twilight_self.game.deck[0].hand[i] != "china") {
 	          user_message += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
@@ -1259,7 +1259,7 @@ console.log("WE ARE DEALING: " + cards_needed + " for player " + mv[1]);
 	        return;
 	      }
 
-	      user_message += '</ul><p></p>If you wish to cancel your discard, <span class="card dashed" id="finished">click here</span>.';
+	      user_message += '</ul>If you wish to cancel your discard, <span class="card dashed" id="finished">click here</span>.';
 	      twilight_self.updateStatus(user_message);
 
 	      $('.card').off();
@@ -1320,7 +1320,7 @@ console.log("WE ARE DEALING: " + cards_needed + " for player " + mv[1]);
           //
           // player gets extra move
           // 
-          let html  = "Do you want to take an extra turn: (Space Shuttle)<p></p><ul>";
+          let html  = "Do you want to take an extra turn: (Space Shuttle)<ul>";
               html += '<li class="card" id="play">play extra turn</li>';
               html += '<li class="card" id="nope">do not play</li>';
               html += '</ul>';
@@ -1830,7 +1830,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
 
       if (this.game.player == first_picker) {
 
-        let x = player.toUpperCase() + " picks headline card first: <p></p><ul>";
+        let x = player.toUpperCase() + " picks headline card first: <ul>";
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
         }
@@ -1900,7 +1900,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
 
         this.game.state.headline_opponent_card = msg.extra.headline_card;
 
-        let x = player.toUpperCase() + ' selected <span id="'+this.game.state.headline_opponent_card+'" class="showcard">' + this.game.deck[0].cards[this.game.state.headline_opponent_card].name + '</span>. ' + this.game.state.man_in_earth_orbit.toUpperCase() + ' pick your headline card second: <p></p><ul>';
+        let x = player.toUpperCase() + ' selected <span id="'+this.game.state.headline_opponent_card+'" class="showcard">' + this.game.deck[0].cards[this.game.state.headline_opponent_card].name + '</span>. ' + this.game.state.man_in_earth_orbit.toUpperCase() + ' pick your headline card second: <ul>';
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
         }
@@ -2297,7 +2297,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
   if (player === me) {
 
-    let html  = player.toUpperCase() + ' plays ' + ops + ' OPS:<p></p><ul>';
+    let html  = player.toUpperCase() + ' plays ' + ops + ' OPS:<ul>';
     if (this.game.state.limit_placement == 0) { html += '<li class="card" id="place">place influence</li>'; }
     if (this.game.state.limit_coups == 0) { html += '<li class="card" id="coup">launch coup</li>'; }
     if (this.game.state.limit_realignments == 0) { html += '<li class="card" id="realign">realign country</li>'; }
@@ -2408,7 +2408,7 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
   if (this.game.player == 1) { player = "ussr"; }
 
-  let x = player.toUpperCase() + " pick your headline card: <p></p><ul>";
+  let x = player.toUpperCase() + " pick your headline card: <ul>";
   for (i = 0; i < this.game.deck[0].hand.length; i++) {
     x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
   }
@@ -2483,7 +2483,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   let user_message = "";
   if (selected_card == null) {
 
-    user_message = player.toUpperCase() + " pick a card: <p></p><ul>";
+    user_message = player.toUpperCase() + " pick a card: <ul>";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
     };
@@ -2500,7 +2500,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     }
     user_message += '</ul>';
   } else {
-    user_message = 'Click to play: <p></p><ul><li class="card showcard" id="'+selected_card+'">'+this.game.deck[0].cards[selected_card].name+'</li></ul>';
+    user_message = 'Click to play: <ul><li class="card showcard" id="'+selected_card+'">'+this.game.deck[0].cards[selected_card].name+'</li></ul>';
   }
 
   //
@@ -2515,9 +2515,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     let scoring_cards_available = 0;
     
     if (this.game.state.events.beartrap == 1) {
-      user_message = "Select a card for Bear Trap: <p></p><ul>";
+      user_message = "Select a card for Bear Trap: <ul>";
     } else {
-      user_message = "Select a card for Quagmire: <p></p><ul>";
+      user_message = "Select a card for Quagmire: <ul>";
     }
 
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
@@ -2538,9 +2538,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     } else {
       if (scoring_cards_available > 0) {
         if (this.game.state.events.beartrap == 1) {
-          user_message = "Bear Trap restricts you to Scoring Cards: <p></p><ul>";
+          user_message = "Bear Trap restricts you to Scoring Cards: <ul>";
         } else {
-          user_message = "Quagmire restricts you to Scoring Cards: <p></p><ul>";
+          user_message = "Quagmire restricts you to Scoring Cards: <ul>";
         }
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
@@ -2551,9 +2551,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
         this.updateStatus(user_message);
       } else {
         if (this.game.state.events.beartrap == 1) {
-          user_message = "No cards playable due to Bear Trap:<p></p><ul>";
+          user_message = "No cards playable due to Bear Trap:<ul>";
         } else {
-          user_message = "No cards playable due to Quagmire:<p></p><ul>";
+          user_message = "No cards playable due to Quagmire:<ul>";
         }
         user_message += '<li class="card showcard" id="skipturn">skip turn</li>';
         user_message += '</ul>';
@@ -2669,7 +2669,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     }
 
     if (twilight_self.game.deck[0].cards[card].scoring == 1) { 
-      twilight_self.updateStatus('Playing '+twilight_self.game.deck[0].cards[card].name+':<p></p><ul><li class="card" id="event">score region</li></ul>');
+      twilight_self.updateStatus('Playing '+twilight_self.game.deck[0].cards[card].name+':<ul><li class="card" id="event">score region</li></ul>');
     } else {
 
       let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops);
@@ -2689,7 +2689,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	}
       }
 
-      let announcement = player.toUpperCase() + ' playing '+twilight_self.game.deck[0].cards[card].name+'<p></p><ul>';
+      let announcement = player.toUpperCase() + ' playing '+twilight_self.game.deck[0].cards[card].name+'<ul>';
 
       //
       // cannot play China card for event
@@ -2786,7 +2786,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	      }
 	    }
 
-            twilight_self.updateStatus('Playing opponent card:<p></p><ul><li class="card" id="before">event before ops</li><li class="card" id="after">event after ops</li></ul>');
+            twilight_self.updateStatus('Playing opponent card:<ul><li class="card" id="before">event before ops</li><li class="card" id="after">event after ops</li></ul>');
 
             $('.card').off();
             $('.card').on('click', function() {
@@ -2946,7 +2946,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "You are the USSR. Place six additional influence in Eastern Europe.<p></p>[cards: ";
+    let x = "You are the USSR. Place six additional influence in Eastern Europe.[cards: ";
     for (let i = 0; i < this.game.deck[0].hand.length; i++) {
       if (i > 0) { x += ", "; }
       x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
@@ -3020,7 +3020,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "You are the US. Place seven additional influence in Western Europe.<p></p>[cards: ";
+    let x = "You are the US. Place seven additional influence in Western Europe.[cards: ";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       if (i > 0) { x += ", "; }
       x += '<div class="inline showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
@@ -4610,7 +4610,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     } else {
 
 
-      let userhtml = "Match USSR influence in which country?<p></p><ul>";
+      let userhtml = "Match USSR influence in which country?<ul>";
 
       if (yugo_diff > 0) {
         userhtml += '<li class="card" id="yugoslavia">Yugoslavia</li>';
@@ -4866,7 +4866,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       twilight_self.playerFinishedPlacingInfluence();
 
       twilight_self.addMove("resolve\tindopaki");
-      twilight_self.updateStatus('Indo-Pakistani War. Choose Target:<p></p><ul><li class="card" id="invadepakistan">Pakistan</li><li class="card" id="invadeindia">India</li></ul>');
+      twilight_self.updateStatus('Indo-Pakistani War. Choose Target:<ul><li class="card" id="invadepakistan">Pakistan</li><li class="card" id="invadeindia">India</li></ul>');
 
       let target = 4;
 
@@ -5426,7 +5426,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	return 0;
       }
 
-      this.updateStatus('Blockade triggers:<p></p><ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>');
+      this.updateStatus('Blockade triggers:<ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>');
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -5492,7 +5492,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       this.addMove("resolve\tolympic");
 
-      twilight_self.updateStatus(opponent.toUpperCase() + ' holds the Olympics:<p></p><ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul>');
+      twilight_self.updateStatus(opponent.toUpperCase() + ' holds the Olympics:<ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul>');
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -5658,7 +5658,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
 
-      let html  = "USSR establishes the Warsaw Pact:<p></p><ul>";
+      let html  = "USSR establishes the Warsaw Pact:<ul>";
           html += '<li class="card" id="remove">remove all US influence in four countries in Eastern Europe</li>';
           html += '<li class="card" id="add">add five USSR influence in Eastern Europe (max 2 per country)</li>';
           html += '</ul>';
@@ -6321,7 +6321,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         //
         // select highest card
         //
-        let user_message = "Select card to give opponent:<p></p><ul>";
+        let user_message = "Select card to give opponent:<ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]].ops == selected_ops && this.game.deck[0].hand[i] != "china") {
             user_message += '<li class="card" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
@@ -6440,7 +6440,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       let cards_discarded = 0;
 
       let cards_to_discard = 0;
-      let user_message = "Select cards to discard:<p></p><ul>";
+      let user_message = "Select cards to discard:<ul>";
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (this.game.deck[0].hand[i] != "china") {
           user_message += '<li class="card logcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
@@ -6455,7 +6455,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       }
 
 
-      user_message += '</ul><p></p>When you are done discarding <span class="card dashed" id="finished">click here</span>.';
+      user_message += '</ul>When you are done discarding <span class="card dashed" id="finished">click here</span>.';
 
       twilight_self.updateStatus(user_message);
       twilight_self.addMove("resolve\tasknot");
@@ -6674,7 +6674,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         let x = 0;
         let y = 0;
 
-        twilight_self.updateStatus('You win the Summit:<p></p><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li></ul>');
+        twilight_self.updateStatus('You win the Summit:<ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li></ul>');
 
         $('.card').off();
         $('.card').on('click', function() {
@@ -7364,7 +7364,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
 
-      twilight_self.updateStatus('USSR chooses:<p></p><ul><li class="card" id="southafrica">2 Influence in South Africa</li><li class="card" id="adjacent">1 Influence in South Africa and 2 Influence in any adjacent country</li></ul>');
+      twilight_self.updateStatus('USSR chooses:<ul><li class="card" id="southafrica">2 Influence in South Africa</li><li class="card" id="adjacent">1 Influence in South Africa and 2 Influence in any adjacent country</li></ul>');
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -7441,7 +7441,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (my_go == 1) {
 
-      twilight_self.updateStatus('Set DEFCON at level:<p></p><ul><li class="card" id="five">five</li><li class="card" id="four">four</li><li class="card" id="three">three</li><li class="card" id="two">two</li><li class="card" id="one">one</li></ul>');
+      twilight_self.updateStatus('Set DEFCON at level:<ul><li class="card" id="five">five</li><li class="card" id="four">four</li><li class="card" id="three">three</li><li class="card" id="two">two</li><li class="card" id="one">one</li></ul>');
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -8088,7 +8088,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let cards_available = 0;
     let twilight_self = this;
 
-    let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:<p></p><ul>";
+    let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:<ul>";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops) > 2 && this.game.deck[0].hand[i] != "china") {
         user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
@@ -8167,7 +8167,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       twilight_self.playerFinishedPlacingInfluence();
 
       twilight_self.addMove("resolve\tiraniraq");
-      twilight_self.updateStatus('Iran-Iraq War:<p></p><ul><li class="card" id="iraq">Iran invades Iraq</li><li class="card" id="iran">Iraq invades Iran</li></ul>');
+      twilight_self.updateStatus('Iran-Iraq War:<ul><li class="card" id="iraq">Iran invades Iraq</li><li class="card" id="iran">Iraq invades Iran</li></ul>');
 
       let target = 4;
 
@@ -8321,7 +8321,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       return 0;
     }
 
-    let html = "Chernobyl triggered. Designate region to prohibit USSR placement of influence from OPS: <p></p><ul>";
+    let html = "Chernobyl triggered. Designate region to prohibit USSR placement of influence from OPS: <ul>";
         html += '<li class="card" id="asia">Asia</li>';
         html += '<li class="card" id="europe">Europe</li>';
         html += '<li class="card" id="africa">Africa</li>';
@@ -8424,7 +8424,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     this.addMove("resolve\tstarwars");
 
-    let user_message = "Choose card to reclaim: <p></p>";
+    let user_message = "Choose card to reclaim: ";
     let first = 0;
     for (var i in this.game.deck[0].discards) {
       if (first > 0) { user_message += ", "; }
@@ -10756,6 +10756,33 @@ Twilight.prototype.attachEvents = function attachEvents() {
   $('#game_log').on('click', () => {
     $('.status').hide();
     $('.log').show();
+  })
+
+  $('#dropdown-button').off();
+  $('#dropdown-button').on('click', () => {
+    if ($('.hud').css('width') === '240px') {
+      $('.hud').animate({width: "60px", left: '0'}, 300)
+      $('.hud-header').hide();
+      $('.hud-content').hide();
+      return;
+    }
+
+    if ($('.hud').css('width') == '60px') {
+      $('.hud').animate({width: "15rem", left: '18%'}, 300)
+      $('.hud-header').show();
+      $('.hud-content').show();
+      return;
+    }
+
+    if ($('.hud').css('height') != '60px') {
+      $('.hud').animate({height: "60px"}, 300)
+      $('.hud-header').hide();
+      $('#dropdown-button').toggleClass('fa-caret-down fa-caret-up');
+    } else {
+      $('.hud-header').show();
+      $('#dropdown-button').toggleClass('fa-caret-up fa-caret-down');
+      $('.hud').animate({height: "35rem"}, 300)
+    }
   })
 }
 
