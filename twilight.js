@@ -2584,7 +2584,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   //
   // headline check ensures that Quagmire does not trigger if headlined and the US triggers a card pull
   //
-  if (this.game.state.headline == 0 && (this.game.player == 1 && this.game.state.events.beartrap == 1) || (this.game.player == 2 && this.game.state.events.quagmire == 1) ) {
+  if (this.game.state.headline == 0 && ((this.game.player == 1 && this.game.state.events.beartrap == 1) || (this.game.player == 2 && this.game.state.events.quagmire == 1)) ) {
 
     //
     // do we have cards to select
