@@ -1595,6 +1595,11 @@ console.log("INITIAL DEAL TO PLAYERS IS: " + player1_cards + " -- " + player2_ca
       }
       if (mv[0] === "play") {
 
+	//
+	// it is no longer the headline
+	//
+	this.game.state.headline = 0;
+
 	if (mv[1] == 1) { this.game.state.turn = 0; }
 	if (mv[1] == 2) { this.game.state.turn = 1; }
 
@@ -1680,8 +1685,6 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 	this.game.state.headline3 == 1 &&
 	this.game.state.headline4 == 1 &&
 	this.game.state.headline5 == 1) { return 1; }
-
-
 
 
   if (this.game.state.man_in_earth_orbit == "") {
@@ -2579,7 +2582,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   //
   // Bear Trap and Quagmire
   //
-  if ( (this.game.player == 1 && this.game.state.events.beartrap == 1) || (this.game.player == 2 && this.game.state.events.quagmire == 1) ) {
+  // headline check ensures that Quagmire does not trigger if headlined and the US triggers a card pull
+  //
+  if (this.game.state.headline == 0 && (this.game.player == 1 && this.game.state.events.beartrap == 1) || (this.game.player == 2 && this.game.state.events.quagmire == 1) ) {
 
     //
     // do we have cards to select
