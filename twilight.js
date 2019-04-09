@@ -82,7 +82,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     this.game.queue.push("DECKENCRYPT\t1\t1");
     this.game.queue.push("DECKXOR\t1\t2");
     this.game.queue.push("DECKXOR\t1\t1");
-    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMidWarCards()));
 
   }
   if (this.game.dice == "") {
@@ -533,7 +533,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
             let user_message = "Select cards to discard:<p></p><ul>";
             for (let i = 0; i < cardoptions.length; i++) {
-              user_message += '<li class="card" id="'+i+'">'+this.game.deck[0].cards[cardoptions[i]].name+'</li>';
+              user_message += '<li class="card" id="'+this.game.deck[0].crypt[i]+'_'+cardoptions[i]+'">'+this.game.deck[0].cards[cardoptions[i]].name+'</li>';
 	    }
             user_message += '</ul><p></p>When you are done discarding <span class="card dashed" id="finished">click here</span>.';
             twilight_self.updateStatus(user_message);
@@ -556,9 +556,12 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
               } else {
 
+		let tmpar = action2.split("_");
+
                 $(this).hide();
-		pos_to_discard.push(action2);
+		pos_to_discard.push(tmpar[0]);
 	        cards_discarded++;
+                twilight_self.addMove("discard\tus\t"+tmpar[1]);
                 twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+cardoptions[action2]+"\">"+twilight_self.game.deck[0].cards[cardoptions[action2]].name +"</span>");
 
               }
@@ -578,8 +581,12 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
  	    this.game.queue.splice(this.game.queue.length-1, 1);
           }
 
+
 	  for (let i = 0; i < 5; i++) {
 	    if (removedcard.includes(i)) {
+	      //
+	      // set cards to zero
+	      //
 	      this.game.deck[0].crypt[i] = "";
 	      this.game.deck[0].keys[i] = "";
 	    }
@@ -1057,7 +1064,7 @@ console.log("WE ARE DEALING: " + us_cards_needed + " for player " + mv[1]);
 		  //
 		  // Our Man in Tehran not removed if not triggered
 		  //
-		  if (this.game.state.events.ourmanintehran == 0 && mv[2] == "kitchendebates") {
+		  if (this.game.state.events.ourmanintehran == 0 && mv[2] == "ourmanintehran") {
 		    event_removal = 0;
 		  }
 
@@ -1707,7 +1714,6 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 	this.game.state.headline4 == 1 &&
 	this.game.state.headline5 == 1) { return 1; }
 
-
   if (this.game.state.man_in_earth_orbit == "") {
   if (this.game.state.headline1 == 0) {
 
@@ -1923,6 +1929,11 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
   // man in earth orbit
   //
   else {
+
+    //
+    // first remember we are in the headline phase
+    //
+    this.game.state.headline = 1;
 
     let first_picker = 2;
     let second_picker = 1;
@@ -4145,11 +4156,16 @@ Twilight.prototype.returnState = function returnState() {
   state.event_name = "";
 
   state.animal_in_space = "";
-  state.man_in_earth_orbit = "";
+  state.man_in_earth_orbit = "ussr";
   state.eagle_has_landed = "";
   state.eagle_has_landed_bonus_taken = 0;
   state.space_shuttle = "";
   state.space_shuttle_bonus_taken = 0;
+
+  state.space_race_us_counter = 0;
+  state.space_race_ussr_counter = 0;
+  state.space_race_us = 2;
+  state.space_race_ussr = 5;
 
   state.limit_coups = 0;
   state.limit_realignments = 0;
@@ -4217,11 +4233,6 @@ Twilight.prototype.returnState = function returnState() {
   state.vp_ps[38]  = { top : 3025, left : 3705 };
   state.vp_ps[39]  = { top : 3025, left : 3840 };
   state.vp_ps[40]  = { top : 3025, left : 3975 };
-
-  state.space_race_us_counter = 0;
-  state.space_race_ussr_counter = 0;
-  state.space_race_us = 0;
-  state.space_race_ussr = 0;
 
   state.space_race_ps = [];
   state.space_race_ps[0] = { top : 510 , left : 3465 }  
@@ -8125,13 +8136,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      }
 	    }
 
-	    if (this.game.player == 1) {
+	    if (twilight_self.game.player == 1) {
 	      if (c == "mexico") { modify++; }
 	      if (c == "cuba") { modify++; }
 	      if (c == "japan") { modify++; }
 	      if (c == "canada") { modify++; }
 	    }
-	    if (this.game.player == 2) {
+	    if (twilight_self.game.player == 2) {
 	      if (c == "finland") { modify++; }
 	      if (c == "romania") { modify++; }
 	      if (c == "afghanistan") { modify++; }
@@ -10149,11 +10160,19 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
 
 
     try {
+console.log("A");
       if ($('#game_log').hasClass("loading") == true) {
+console.log("B");
         $('#game_log').removeClass("loading");
+console.log("C");
         $('#game_log').addClass("loaded");
+console.log("D");
+      } else {
+console.log("F");
       }
-    } catch (err) {}
+    } catch (err) {
+console.log("E: " + err);
+    }
   };
 
 }
