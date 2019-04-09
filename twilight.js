@@ -10131,23 +10131,27 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
   let twilight_self = this;
 
   this.game.status = str;
+
   if (this.app.BROWSER == 1) { 
 
     $('#status').html(this.game.status);
 
-    $('.showcard').off();
-    $('.showcard').mouseover(function() {
-      let card = $(this).attr("id");
-      twilight_self.showCard(card);
-    }).mouseout(function() {
-      let card = $(this).attr("id");
-      twilight_self.hideCard(card);
-    });
+    try {
+      $('.showcard').off();
+      $('.showcard').mouseover(function() {
+        let card = $(this).attr("id");
+        twilight_self.showCard(card);
+      }).mouseout(function() {
+        let card = $(this).attr("id");
+        twilight_self.hideCard(card);
+      });
+    } catch (err) {}
+
 
     try {
-      if ($('#log').hasClass("loading") == true) {
-        $('#log').removeCloss("loading");
-        $('#log').addCloss("loaded");
+      if ($('#game_log').hasClass("loading") == true) {
+        $('#game_log').removeCloss("loading");
+        $('#game_log').addClass("loaded");
       }
     } catch (err) {}
   };
@@ -11033,9 +11037,10 @@ Twilight.prototype.updateLog = function updateLog(str, length = 10) {
     });
 
     try {
-      $('#log').addCloss("loading");
+      $('#game_log').addClass("loading");
 ;
-    } catch (err) {}
+    } catch (err) {
+    }
 
   }
 
