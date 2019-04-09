@@ -10150,7 +10150,7 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
 
     try {
       if ($('#game_log').hasClass("loading") == true) {
-        $('#game_log').removeCloss("loading");
+        $('#game_log').removeClass("loading");
         $('#game_log').addClass("loaded");
       }
     } catch (err) {}
