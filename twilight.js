@@ -10144,10 +10144,12 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
       twilight_self.hideCard(card);
     });
 
-    if ($('#log').hasClass("loading") == true) {
-      $('#log').removeCloss("loading");
-      $('#log').addCloss("loaded");
-    }
+    try {
+      if ($('#log').hasClass("loading") == true) {
+        $('#log').removeCloss("loading");
+        $('#log').addCloss("loaded");
+      }
+    } catch (err) {}
   };
 
 }
@@ -11030,8 +11032,11 @@ Twilight.prototype.updateLog = function updateLog(str, length = 10) {
       twilight_self.hideCard(card);
     });
 
-    $('#log').addCloss("loading");
+    try {
+      $('#log').addCloss("loading");
 ;
+    } catch (err) {}
+
   }
 
 }
