@@ -3397,7 +3397,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 	  let countryname = $(this).attr('id');
 
           twilight_self.addMove("place\tus\tus\t"+countryname+"\t1");
-          twilight_self.placeInfluence(countryname, 1, "ussr");
+          twilight_self.placeInfluence(countryname, 1, "us");
 	  ops_to_place--;
 
           if (ops_to_place == 0) {
@@ -11324,7 +11324,7 @@ Twilight.prototype.hideCard = function hideCard() {
 //
 // OVERWRITES GAME.JS MODULE TO ADD CARD HOVERING
 //
-Twilight.prototype.updateLog = function updateLog(str, length = 10) {
+Twilight.prototype.updateLog = function updateLog(str, length = 15) {
 
   let twilight_self = this;
 
@@ -11353,10 +11353,10 @@ Twilight.prototype.updateLog = function updateLog(str, length = 10) {
     });
 
     try {
-      $('#game_log').addClass("loading");
-;
-    } catch (err) {
-    }
+      if (! $('#game_log').isVisible()) {
+        $('#game_log').addClass("loading");
+      }
+    } catch (err) {}
 
   }
 
