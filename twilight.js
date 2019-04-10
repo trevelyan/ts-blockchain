@@ -10852,116 +10852,116 @@ Twilight.prototype.updateSpaceRace = function updateSpaceRace() {
 }
 Twilight.prototype.updateEventTiles = function updateEventTiles() {
 
-  if (this.state.events.warsawpact == 0) {
+  if (this.game.state.events.warsawpact == 0) {
     $('#eventtile_warsaw').css('display','none');
   } else {
     $('#eventtile_warsaw').css('display','block');
   }
 
-  if (this.state.events.degaulle == 0) {
+  if (this.game.state.events.degaulle == 0) {
     $('#eventtile_degaulle').css('display','none');
   } else {
     $('#eventtile_degaulle').css('display','block');
   }
 
-  if (this.state.events.nato == 0) {
+  if (this.game.state.events.nato == 0) {
     $('#eventtile_degaulle').css('display','none');
   } else {
     $('#eventtile_degaulle').css('display','block');
   }
 
-  if (this.state.events.marshall == 0) {
+  if (this.game.state.events.marshall == 0) {
     $('#eventtile_marshall').css('display','none');
   } else {
     $('#eventtile_marshall').css('display','block');
   }
 
-  if (this.state.events.usjapan == 0) {
+  if (this.game.state.events.usjapan == 0) {
     $('#eventtile_usjapan').css('display','none');
   } else {
     $('#eventtile_marshall').css('display','block');
   }
 
-  if (this.state.events.norad == 0) {
+  if (this.game.state.events.norad == 0) {
     $('#eventtile_norad').css('display','none');
   } else {
     $('#eventtile_norad').css('display','block');
   }
 
-  if (this.state.events.quagmire == 0) {
+  if (this.game.state.events.quagmire == 0) {
     $('#eventtile_quagmire').css('display','none');
   } else {
     $('#eventtile_quagmire').css('display','block');
   }
 
-  if (this.state.events.beartrap == 0) {
+  if (this.game.state.events.beartrap == 0) {
     $('#eventtile_beartrap').css('display','none');
   } else {
     $('#eventtile_beartrap').css('display','block');
   }
 
-  if (this.state.events.willybrandt == 0) {
+  if (this.game.state.events.willybrandt == 0) {
     $('#eventtile_willybrandt').css('display','none');
   } else {
     $('#eventtile_willybrandt').css('display','block');
   }
 
-  if (this.state.events.campdavid == 0) {
+  if (this.game.state.events.campdavid == 0) {
     $('#eventtile_campdavid').css('display','none');
   } else {
     $('#eventtile_campdavid').css('display','block');
   }
 
 
-  if (this.state.events.flowerpower == 0) {
+  if (this.game.state.events.flowerpower == 0) {
     $('#eventtile_flowerpower').css('display','none');
   } else {
     $('#eventtile_flowerpower').css('display','block');
   }
 
-  if (this.state.events.johnpaul == 0) {
+  if (this.game.state.events.johnpaul == 0) {
     $('#eventtile_johnpaul').css('display','none');
   } else {
     $('#eventtile_johnpaul').css('display','block');
   }
 
-  if (this.state.events.iranianhostage == 0) {
+  if (this.game.state.events.iranianhostage == 0) {
     $('#eventtile_iranianhostagecrisis').css('display','none');
   } else {
     $('#eventtile_iranianhostagecrisis').css('display','block');
   }
 
-  if (this.state.events.ironlady == 0) {
+  if (this.game.state.events.ironlady == 0) {
     $('#eventtile_ironlady').css('display','none');
   } else {
     $('#eventtile_ironlady').css('display','block');
   }
 
-  if (this.state.events.northseaoil == 0) {
+  if (this.game.state.events.northseaoil == 0) {
     $('#eventtile_northseaoil').css('display','none');
   } else {
     $('#eventtile_northseaoil').css('display','block');
   }
 
-  if (this.state.events.reformer == 0) {
+  if (this.game.state.events.reformer == 0) {
     $('#eventtile_reformer').css('display','none');
   } else {
     $('#eventtile_reformer').css('display','block');
   }
 
-  if (this.state.events.teardown == 0) {
+  if (this.game.state.events.teardown == 0) {
     $('#eventtile_teardown').css('display','none');
   } else {
     $('#eventtile_teardown').css('display','block');
   }
 
-  if (this.state.events.evilempire == 0) {
+  if (this.game.state.events.evilempire == 0) {
     $('#eventtile_evilempire').css('display','none');
   } else {
     $('#eventtile_evilempire').css('display','block');
   }
 
-  if (this.state.events.awacs == 0) {
+  if (this.game.state.events.awacs == 0) {
     $('#eventtile_awacs').css('display','none');
   } else {
     $('#eventtile_awacs').css('display','block');
