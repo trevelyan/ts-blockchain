@@ -3397,7 +3397,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 	  let countryname = $(this).attr('id');
 
           twilight_self.addMove("place\tus\tus\t"+countryname+"\t1");
-          twilight_self.placeInfluence(countryname, 1, "ussr");
+          twilight_self.placeInfluence(countryname, 1, "us");
 	  ops_to_place--;
 
           if (ops_to_place == 0) {
