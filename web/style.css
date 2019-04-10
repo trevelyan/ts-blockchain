@@ -45,6 +45,29 @@ li {
   margin-top: 7px;
 }
 
+.status > ul {
+  list-style-type: none;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 0.3em;
+  text-align: center;
+  overflow: scroll;
+}
+
+.status > ul > li {
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+  margin: 0;
+  transition: .3s background-color;
+  transition: .1s color;
+}
+
+.status > ul > li:hover {
+  background-color: #005f5f;
+  color: #fff
+}
+
 .round {
   position: absolute;
   background-image: url("images/Turn.svg");
@@ -134,14 +157,27 @@ li {
 }
 
 .cardbox {
-  position: absolute;
+  /* position: absolute;
   left: 0;
   height: 520px;
   width: 375px;
   background-image: url("/twilight/images/Base.svg");
   background-size: cover;
   z-index: 1000;
+  display: none; */
+  /* grid-area: cardbox; */
+  position: absolute;
+  left: 413;
+  height: 520px;
+  width: 375px;
+  background-image: url("/twilight/images/Base.svg");
+  background-size: cover;
+  z-index: 1000;
   display: none;
+  top: 40%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 .us {
