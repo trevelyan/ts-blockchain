@@ -88,7 +88,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     this.game.queue.push("DECKENCRYPT\t1\t1");
     this.game.queue.push("DECKXOR\t1\t2");
     this.game.queue.push("DECKXOR\t1\t1");
-    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMidWarCards()));
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
     this.game.queue.push("init");
 
   }
@@ -4323,7 +4323,7 @@ Twilight.prototype.returnState = function returnState() {
   state.event_name = "";
 
   state.animal_in_space = "";
-  state.man_in_earth_orbit = "ussr";
+  state.man_in_earth_orbit = "";
   state.eagle_has_landed = "";
   state.eagle_has_landed_bonus_taken = 0;
   state.space_shuttle = "";
@@ -4331,8 +4331,8 @@ Twilight.prototype.returnState = function returnState() {
 
   state.space_race_us_counter = 0;
   state.space_race_ussr_counter = 0;
-  state.space_race_us = 2;
-  state.space_race_ussr = 5;
+  state.space_race_us = 0;
+  state.space_race_ussr = 0;
 
   state.limit_coups = 0;
   state.limit_realignments = 0;
