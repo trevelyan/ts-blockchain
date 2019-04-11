@@ -41,10 +41,6 @@ body {
   height: 1650px;
 }
 
-li {
-  margin-top: 7px;
-}
-
 .status > ul {
   list-style-type: none;
   padding: 0;
@@ -157,15 +153,6 @@ li {
 }
 
 .cardbox {
-  /* position: absolute;
-  left: 0;
-  height: 520px;
-  width: 375px;
-  background-image: url("/twilight/images/Base.svg");
-  background-size: cover;
-  z-index: 1000;
-  display: none; */
-  /* grid-area: cardbox; */
   position: absolute;
   left: 413;
   height: 520px;
@@ -232,16 +219,8 @@ li {
   float:right;
 }
 
-.main {}
-
 @media only screen and (min-width: 750px) {
   .status {
-    position: fixed;
-    float: none;
-    z-index: 40000;
-  }
-  .log {
-    position: fixed;
     float: none;
     z-index: 40000;
   }
