@@ -1,8 +1,7 @@
 
-
 This is an implementation of Twilight Struggle written for the open source Saito Game Engine Module. It is intended as a demonstration of running complicated, rules-based games on a blockchain, letting the underlying game engire provide provably-fair dice rolls and deck management.
 
-This version of Twilight Struggle implements the full game. As a fan of GMT Games and Twilight Struggle, our hope is that this module helps introduce new players to the company and the game, supports the Twilight Struggle community, and encourages the emergence of improved ecosystems for online gaming which will give games publishers like GMT Games more free to license their games for direct play on a game-by-game basis if they wish.
+This version of Twilight Struggle implements the full game. As a fan of GMT Games and Twilight Struggle, our hope is that this module helps introduce new players to the company and the game, supports the Twilight Struggle community, and encourages the emergence of improved ecosystems for online gaming which will give games publishers like GMT Games more freedom to license their games for direct play on a game-by-game basis if they wish.
 
 Please see the /licence directory for details on legalese. The short version is that the code that implements the game rules is released under the MIT license. All GMT-developed materials (board design, cards, gameplay text) remain owned by GMT Games and are distributed under their own license, which provides for gameplay and distribution under the following conditions:
 

@@ -2989,8 +2989,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       //
       // Cuban Missile Crisis
       //
-      if (action == "cancel_cmc") {
-	this.moves = [];
+      if (card == "cancel_cmc") {
         if (twilight_self.game.player == 1) {
           twilight_self.removeInfluence("cuba", 2, "ussr");
           twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
@@ -4016,30 +4015,27 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
       if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
         if (player == "ussr") { 
           this.updateLog("USSR gets +1 coup bonus");
-          this.updateLog("Latin American Death Squads trigger");
           roll++;
         }
       }
       if (player == "us")   { 
 	this.updateLog("US gets -1 coup penalty");
-        this.updateLog("Latin American Death Squads trigger");
 	roll--; 
       }
     }
     if (this.game.state.events.deathsquads == 2) {
       if (player == "ussr") { 
 	this.updateLog("USSR gets -1 coup penalty");
-        this.updateLog("Latin American Death Squads trigger");
 	roll--;
       }
       if (this.countries[countryname].region == "camerica" || this.countries[countryname].region == "samerica") {
         if (player == "us")   { 
 	  this.updateLog("US gets +1 coup bonus");
-          this.updateLog("Latin American Death Squads trigger");
 	  roll++;
         }
       }
     }
+    this.updateLog("Latin American Death Squads triggers");
   }
 
 
