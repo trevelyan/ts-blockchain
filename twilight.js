@@ -992,6 +992,16 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.game.queue.splice(qe, 1);
         shd_continue = 0;
       }
+      if (mv[0] === "milops") {
+        this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " milops");
+        if (mv[1] === "us") {
+          this.game.state.milops_us += parseInt(mv[2]);
+        } else {
+          this.game.state.milops_ussr -= parseInt(mv[2]);
+        }
+        this.updateMilitaryOperations();
+        this.game.queue.splice(qe, 1);
+      }
       if (mv[0] === "vp") {
         this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
         if (mv[1] === "us") {
@@ -2796,6 +2806,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   if (selected_card == null && this.game.deck[0].hand.length == 0) {
     this.updateStatus("Skipping turn... no cards left to play");
     this.updateLog("Skipping turn... no cards left to play");
+    this.addMove("resolve\tplay");
     this.endTurn();
     return;
   }
@@ -5355,37 +5366,31 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    if (player == "us") {
               twilight_self.addMove("place\tus\tus\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
               twilight_self.addMove("remove\tus\tussr\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
+              twilight_self.addMove("milops\tus\t2");
+              twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "us");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "ussr");
-              twilight_self.game.state.vp += 2;
-              twilight_self.game.state.milops_us += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("pakistan", "ussr");
 	    } else {
               twilight_self.addMove("place\tussr\tussr\tpakistan\t"+twilight_self.countries['pakistan'].us);
               twilight_self.addMove("remove\tussr\tus\tpakistan\t"+twilight_self.countries['pakistan'].us);
+              twilight_self.addMove("milops\tussr\t2");
+              twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].us, "ussr");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].us, "us");
-              twilight_self.game.state.vp -= 2;
-              twilight_self.game.state.milops_ussr += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("pakistan", "ussr");
 	    }
 	  } else {
 
 	    if (player == "us") {
-              twilight_self.game.state.milops_us += 2;
+              twilight_self.addMove("milops\tus\t2");
               twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	    } else {
-              twilight_self.game.state.milops_ussr += 2;
+              twilight_self.addMove("milops\tussr\t2");
               twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	    }
 	  }
@@ -5402,37 +5407,31 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    if (player == "us") {
               twilight_self.addMove("place\tus\tus\tindia\t"+twilight_self.countries['india'].ussr);
               twilight_self.addMove("remove\tus\tussr\tindia\t"+twilight_self.countries['india'].ussr);
+              twilight_self.addMove("milops\tus\t2");
+              twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].ussr, "us");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].ussr, "ussr");
-              twilight_self.game.state.vp += 2;
-              twilight_self.game.state.milops_us += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("india", "ussr");
 	    } else {
               twilight_self.addMove("place\tussr\tussr\tindia\t"+twilight_self.countries['india'].us);
               twilight_self.addMove("remove\tussr\tus\tindia\t"+twilight_self.countries['india'].us);
+              twilight_self.addMove("milops\tussr\t2");
+              twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].us, "ussr");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].us, "us");
-              twilight_self.game.state.vp -= 2;
-              twilight_self.game.state.milops_ussr += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
  	      twilight_self.endTurn();
 	      twilight_self.showInfluence("india", "ussr");
 	    }
 	  } else {
 
 	    if (player == "us") {
-              twilight_self.game.state.milops_us += 2;
+              twilight_self.addMove("milops\tus\t2");
               twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	    } else {
-              twilight_self.game.state.milops_ussr += 2;
+              twilight_self.addMove("milops\tussr\t2");
               twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
  	      twilight_self.endTurn();
 	    }
 	  }
@@ -5473,8 +5472,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.game.state.vp -= 2;
       this.game.state.milops_ussr += 2;
       this.updateVictoryPoints();
+      this.updateMilitaryOperations();
     } else {
       this.updateLog("US wins the Arab-Israeli War");
+      this.game.state.milops_ussr += 2;
+      this.updateMilitaryOperations();
     }
 
     return 1;
@@ -5505,9 +5507,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.placeInfluence("southkorea", this.countries['southkorea'].us, "ussr");
       this.removeInfluence("southkorea", this.countries['southkorea'].us, "us");
       this.game.state.vp -= 2;
+      this.game.state.milops_ussr += 2;
+      this.updateMilitaryOperations();
       this.updateVictoryPoints();
     } else {
       this.updateLog("South Korea wins the Korean War");
+      this.game.state.milops_ussr += 2;
+      this.updateMilitaryOperations();
     }
     return 1;
 
@@ -8466,15 +8472,19 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (player == "us") {
       if (this.game.state.milops_us > this.game.state.milops_ussr) {
+	this.updateLog("US gains 1 VP from Arms Race");
         this.game.state.vp += 1;
         if (this.game.state.milops_us > this.game.state.defcon) {
+	  this.updateLog("US gains 2 VP from Arms Race");
 	  this.game.state.vp += 2;
 	}
       }
     } else {
       if (this.game.state.milops_ussr > this.game.state.milops_us) {
+	this.updateLog("USSR gains 1 VP from Arms Race");
         this.game.state.vp -= 1;
         if (this.game.state.milops_ussr > this.game.state.defcon) {
+	  this.updateLog("USSR gains 2 VP from Arms Race");
 	  this.game.state.vp -= 2;
 	}
       }
@@ -8724,37 +8734,29 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    if (player == "us") {
               twilight_self.addMove("place\tus\tus\tiran\t"+twilight_self.countries['iran'].ussr);
               twilight_self.addMove("remove\tus\tussr\tiran\t"+twilight_self.countries['iran'].ussr);
+	      twilight_self.addMove("milops\tus\t2");
+	      twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("iran", twilight_self.countries['iran'].ussr, "us");
               twilight_self.removeInfluence("iran", twilight_self.countries['iran'].ussr, "ussr");
-              twilight_self.game.state.vp += 2;
-              twilight_self.game.state.milops_us += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iran", "ussr");
 	    } else {
               twilight_self.addMove("place\tussr\tussr\tiran\t"+twilight_self.countries['iran'].us);
               twilight_self.addMove("remove\tussr\tus\tiran\t"+twilight_self.countries['iran'].us);
+	      twilight_self.addMove("milops\tussr\t2");
+	      twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("iran", twilight_self.countries['iran'].us, "ussr");
               twilight_self.removeInfluence("iran", twilight_self.countries['iran'].us, "us");
-              twilight_self.game.state.vp -= 2;
-              twilight_self.game.state.milops_ussr += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iran", "ussr");
 	    }
 	  } else {
 
 	    if (player == "us") {
-              twilight_self.game.state.milops_us += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
+	      twilight_self.addMove("milops\tus\t2");
 	      twilight_self.endTurn();
 	    } else {
-              twilight_self.game.state.milops_ussr += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
+	      twilight_self.addMove("milops\tussr\t2");
 	      twilight_self.endTurn();
 	    }
 
@@ -8775,40 +8777,31 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    if (player == "us") {
               twilight_self.addMove("place\tus\tus\tiraq\t"+twilight_self.countries['iraq'].ussr);
               twilight_self.addMove("remove\tus\tussr\tiraq\t"+twilight_self.countries['iraq'].ussr);
+	      twilight_self.addMove("milops\tus\t2");
+	      twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("iraq", twilight_self.countries['iraq'].ussr, "us");
               twilight_self.removeInfluence("iraq", twilight_self.countries['iraq'].ussr, "ussr");
-              twilight_self.game.state.vp += 2;
-              twilight_self.game.state.milops_us += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
 	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iraq", "ussr");
 	    } else {
               twilight_self.addMove("place\tus\tussr\tiraq\t"+twilight_self.countries['iraq'].us);
               twilight_self.addMove("remove\tus\tus\tiraq\t"+twilight_self.countries['iraq'].us);
+	      twilight_self.addMove("milops\tussr\t2");
+	      twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("iraq", twilight_self.countries['iraq'].us, "ussr");
               twilight_self.removeInfluence("iraq", twilight_self.countries['iraq'].us, "us");
-              twilight_self.game.state.vp -= 2;
-              twilight_self.game.state.milops_ussr += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
  	      twilight_self.endTurn();
 	      twilight_self.showInfluence("iraq", "ussr");
 	    }
 	  } else {
 
 	    if (player == "us") {
-              twilight_self.game.state.milops_us += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
+	      twilight_self.addMove("milops\tus\t2");
 	      twilight_self.endTurn();
 	    } else {
-              twilight_self.game.state.milops_ussr += 2;
-              twilight_self.updateVictoryPoints();
-              twilight_self.updateMilitaryOperations();
+	      twilight_self.addMove("milops\tussr\t2");
  	      twilight_self.endTurn();
 	    }
-
 	  }
 	}
       });
