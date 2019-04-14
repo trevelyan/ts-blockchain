@@ -409,6 +409,22 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	        twilight_self.updateStatus("Pick second target for coup:");
                 twilight_self.playerFinishedPlacingInfluence();
 
+	        let user_message = "Che takes effect. Pick first target for coup:<p></p><ul>";
+        	    user_message += '<li class="card" id="skipche">or skip coup</li>';
+       	  	    user_message += '</ul>';
+      	        twilight_self.updateStatus(user_message);
+
+	        $('.card').off();
+	        $('.card').on('click', function() {
+	          let action2 = $(this).attr("id");
+	          if (action2 == "skipche") {
+	            twilight_self.updateStatus("Skipping Che coups...");
+	            twilight_self.addMove("resolve\tchecoup");
+	            twilight_self.endMove();
+	          }
+	        });
+
+
       	        for (var i in twilight_self.countries) {
 
 	          let countryname  = i;
@@ -942,25 +958,46 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  return 0;
 	}
 
-	let user_message = "3 OP free Coup Attempt or Realignments in Europe";
-        this.updateStatus(user_message);
+        let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.<p></p><ul>";
+            user_message += '<li class="card" id="taketear">take coup or realign</li>';
+            user_message += '<li class="card" id="skiptear">skip coup</li>';
+            user_message += '</ul>';
+        twilight_self.updateStatus(user_message);
 
-	this.addMove("resolve\tteardownthiswall");
-	this.addMove("unlimit\tignoredefcon");
-	this.addMove("unlimit\tregion");
-	this.addMove("unlimit\tplacement");
-	this.addMove("unlimit\tmilops");
-	this.addMove("ops\tus\tteardown\t3");
-	this.addMove("limit\tmilops");
-	this.addMove("limit\tplacement");
-	this.addMove("limit\tregion\tasia");
-	this.addMove("limit\tregion\tmideast");
-	this.addMove("limit\tregion\tsamerica");
-	this.addMove("limit\tregion\tcamerica");
-	this.addMove("limit\tregion\tafrica");
-	this.addMove("limit\tignoredefcon");
-	this.endTurn();
+
+        $('.card').off();
+        $('.card').on('click', function() {
+
+          let action2 = $(this).attr("id");
+
+  	  if (action2 == "skiptear") {
+	    twilight_self.updateStatus("Skipping Tear Down this Wall...");
+	    twilight_self.addMove("resolve\tteardownthiswall");
+	    twilight_self.endMove();
+	  }
+
+  	  if (action2 == "taketear") {
+	    twilight_self.addMove("resolve\tteardownthiswall");
+	    twilight_self.addMove("unlimit\tignoredefcon");
+	    twilight_self.addMove("unlimit\tregion");
+	    twilight_self.addMove("unlimit\tplacement");
+	    twilight_self.addMove("unlimit\tmilops");
+	    twilight_self.addMove("ops\tus\tteardown\t3");
+	    twilight_self.addMove("limit\tmilops");
+	    twilight_self.addMove("limit\tplacement");
+	    twilight_self.addMove("limit\tregion\tasia");
+	    twilight_self.addMove("limit\tregion\tmideast");
+	    twilight_self.addMove("limit\tregion\tsamerica");
+	    twilight_self.addMove("limit\tregion\tcamerica");
+	    twilight_self.addMove("limit\tregion\tafrica");
+	    twilight_self.addMove("limit\tignoredefcon");
+	    twilight_self.endTurn();
+	  }
+
+        });
+
         shd_continue = 0;
+
       }
       if (mv[0] === "deal") {
 	if (this.game.player == mv[1]) {
@@ -4797,20 +4834,20 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
 
   var deck = {};
 
-//  deck['brushwar']          = { img : "TNRnTS-36" , name : "Brush War", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
-//  deck['centralamerica']    = { img : "TNRnTS-37" , name : "Central America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
-//  deck['seasia']            = { img : "TNRnTS-38" , name : "Southeast Asia Scoring", scoring : 1 , player : "both" , recurring : 0 , ops : 0 };
+  deck['brushwar']          = { img : "TNRnTS-36" , name : "Brush War", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
+  deck['centralamerica']    = { img : "TNRnTS-37" , name : "Central America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
+  deck['seasia']            = { img : "TNRnTS-38" , name : "Southeast Asia Scoring", scoring : 1 , player : "both" , recurring : 0 , ops : 0 };
   deck['armsrace']          = { img : "TNRnTS-39" , name : "Arms Race", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
   deck['cubanmissile']      = { img : "TNRnTS-40" , name : "Cuban Missile Crisis", scoring : 0 , player : "both" , recurring : 0 , ops : 3 };
   deck['nuclearsubs']       = { img : "TNRnTS-41" , name : "Nuclear Subs", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   deck['quagmire']          = { img : "TNRnTS-42" , name : "Quagmire", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['saltnegotiations']  = { img : "TNRnTS-43" , name : "Salt Negotiations", scoring : 0 , player : "both" , recurring : 0 , ops : 3 };
-//  deck['beartrap']          = { img : "TNRnTS-44" , name : "Bear Trap", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+  deck['beartrap']          = { img : "TNRnTS-44" , name : "Bear Trap", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   deck['summit']            = { img : "TNRnTS-45" , name : "Summit", scoring : 0 , player : "both" , recurring : 1 , ops : 1 };
   deck['howilearned']       = { img : "TNRnTS-46" , name : "How I Learned to Stop Worrying", scoring : 0 , player : "both" , recurring : 0 , ops : 2 };
   deck['junta']             = { img : "TNRnTS-47" , name : "Junta", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['kitchendebates']    = { img : "TNRnTS-48" , name : "Kitchen Debates", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
-//  deck['missileenvy']       = { img : "TNRnTS-49" , name : "Missile Envy", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+  deck['missileenvy']       = { img : "TNRnTS-49" , name : "Missile Envy", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['wwby']              = { img : "TNRnTS-50" , name : "We Will Bury You", scoring : 0 , player : "ussr" , recurring : 0 , ops : 4 };
   deck['brezhnev']          = { img : "TNRnTS-51" , name : "Brezhnev Doctrine", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['portuguese']        = { img : "TNRnTS-52" , name : "Portuguese Empire Crumbles", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
@@ -4818,26 +4855,26 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
   deck['allende']           = { img : "TNRnTS-54" , name : "Allende", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['willybrandt']       = { img : "TNRnTS-55" , name : "Willy Brandt", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
   deck['muslimrevolution']  = { img : "TNRnTS-56" , name : "Muslim Revolution", scoring : 0 , player : "ussr" , recurring : 1 , ops : 4 };
-//  deck['abmtreaty']         = { img : "TNRnTS-57" , name : "ABM Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
+  deck['abmtreaty']         = { img : "TNRnTS-57" , name : "ABM Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
   deck['culturalrev']       = { img : "TNRnTS-58" , name : "Cultural Revolution", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['flowerpower']       = { img : "TNRnTS-59" , name : "Flower Power", scoring : 0 , player : "ussr" , recurring : 0 , ops : 4 };
   deck['u2']                = { img : "TNRnTS-60" , name : "U2 Incident", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['opec']              = { img : "TNRnTS-61" , name : "OPEC", scoring : 0 , player : "ussr" , recurring : 1 , ops : 3 };
-//  deck['lonegunman']        = { img : "TNRnTS-62" , name : "Lone Gunman", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
-//  deck['colonial']          = { img : "TNRnTS-63" , name : "Colonial Rear Guards", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
+  deck['lonegunman']        = { img : "TNRnTS-62" , name : "Lone Gunman", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
+  deck['colonial']          = { img : "TNRnTS-63" , name : "Colonial Rear Guards", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
   deck['panamacanal']       = { img : "TNRnTS-64" , name : "Panama Canal Returned", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
   deck['campdavid']         = { img : "TNRnTS-65" , name : "Camp David Accords", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
-//  deck['puppet']            = { img : "TNRnTS-66" , name : "Puppet Governments", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+  deck['puppet']            = { img : "TNRnTS-66" , name : "Puppet Governments", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   deck['grainsales']        = { img : "TNRnTS-67" , name : "Grain Sales to Soviets", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
-//  deck['johnpaul']          = { img : "TNRnTS-68" , name : "John Paul II Elected Pope", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+  deck['johnpaul']          = { img : "TNRnTS-68" , name : "John Paul II Elected Pope", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   deck['deathsquads']       = { img : "TNRnTS-69" , name : "Latin American Death Squads", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
-//  deck['oas']               = { img : "TNRnTS-70" , name : "OAS Founded", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
+  deck['oas']               = { img : "TNRnTS-70" , name : "OAS Founded", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
   deck['nixon']             = { img : "TNRnTS-71" , name : "Nixon Plays the China Card", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   deck['sadat']             = { img : "TNRnTS-72" , name : "Sadat Expels Soviets", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
   deck['shuttle']           = { img : "TNRnTS-73" , name : "Shuttle Diplomacy", scoring : 0 , player : "us" , recurring : 1 , ops : 3 };
-//  deck['voiceofamerica']    = { img : "TNRnTS-74" , name : "Voice of America", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
-//  deck['liberation']        = { img : "TNRnTS-75" , name : "Liberation Theology", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
-//  deck['ussuri']            = { img : "TNRnTS-76" , name : "Ussuri River Skirmish", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+  deck['voiceofamerica']    = { img : "TNRnTS-74" , name : "Voice of America", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
+  deck['liberation']        = { img : "TNRnTS-75" , name : "Liberation Theology", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
+  deck['ussuri']            = { img : "TNRnTS-76" , name : "Ussuri River Skirmish", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   deck['asknot']            = { img : "TNRnTS-77" , name : "Ask Not What Your Country...", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   deck['alliance']          = { img : "TNRnTS-78" , name : "Alliance for Progress", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   deck['africa']            = { img : "TNRnTS-79" , name : "Africa Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
@@ -6946,7 +6983,20 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       twilight_self.playerFinishedPlacingInfluence();
 
-      this.updateStatus("Pick first target for coup:");
+      let user_message = "Che takes effect. Pick first target for coup:<p></p><ul>";
+          user_message += '<li class="card" id="skipche">or skip coup</li>';
+          user_message += '</ul>';
+      twilight_self.updateStatus(user_message);
+
+      $('.card').off();
+      $('.card').on('click', function() {
+        let action2 = $(this).attr("id");
+	if (action2 == "skipche") {
+	  twilight_self.updateStatus("Skipping Che coups...");
+	  twilight_self.addMove("resolve\tche");
+	  twilight_self.endMove();
+	}
+      });
 
       for (var i in twilight_self.countries) {
 
@@ -8303,9 +8353,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (this.game.state.defcon <= 1) {
       if (this.game.state.turn == 0) {
-        this.endGame("ussr", "defcon");
-      } else {
         this.endGame("us", "defcon");
+      } else {
+        this.endGame("ussr", "defcon");
       }
       return 0;
     }
