@@ -19,6 +19,7 @@ function Twilight(app) {
   this.handlesEmail    = 1;
   this.emailAppName    = "Twilight Struggle";
   this.useHUD          = 1;
+  this.addHUDMenu      = ['Deck'];
 
   //
   // this sets the ratio used for determining
@@ -34,6 +35,64 @@ function Twilight(app) {
 module.exports = Twilight;
 util.inherits(Twilight, Game);
 
+
+
+
+
+
+Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
+
+  let twilight_self = this;
+
+  if (menuitem === "deck") {
+
+    let user_message = "View which deck: <p></p><ul>";
+        user_message += '<li class="card" id="discards">discard pile</li>';
+        user_message += '<li class="card" id="removed">removed cards</li>';
+        user_message += '</ul>';
+
+    $('.hud_menu_overlay').html(user_message);
+
+    // leave actions enabled on other panels
+    //$('.card').off();
+    $('.card').on('click', function() {
+
+      let action2 = $(this).attr("id");
+
+      if (action2 === "discards") {
+
+        let user_message = "List of cards in discard pile: <p></p><ul>";
+	let cards_in_discard_pile = 0;
+	for (var z in twilight_self.game.deck[0].discards) {
+	  cards_in_discard_pile++;
+            user_message += '<li class="card showcard" id="'+z+'">'+twilight_self.game.deck[0].discards[z].name+'</li>';
+	}
+        user_message += '</ul>';
+	if (cards_in_discard_pile == 0) {
+          user_message = "There are no cards in the discard pile.";
+	}
+        $('.hud_menu_overlay').html(user_message);
+
+      }
+      if (action2 === "removed") {
+
+        let user_message = "List of cards in discard pile: <p></p><ul>";
+	let cards_in_discard_pile = 0;
+	for (var z in twilight_self.game.deck[0].removed) {
+	  cards_in_discard_pile++;
+          user_message += '<li class="card showcard" id="'+z+'">'+twilight_self.game.deck[0].removed[z].name+'</li>';
+	}
+	if (cards_in_discard_pile == 0) {
+          user_message = "There are no cards removed from the game.";
+	}
+        user_message += '</ul>';
+        $('.hud_menu_overlay').html(user_message);
+
+      }
+
+    });
+  }
+}
 
 
 
