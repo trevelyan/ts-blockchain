@@ -147,7 +147,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     this.game.queue.push("DECKENCRYPT\t1\t1");
     this.game.queue.push("DECKXOR\t1\t2");
     this.game.queue.push("DECKXOR\t1\t1");
-    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMidWarCards()));
     this.game.queue.push("init");
 
   }
@@ -280,7 +280,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       // coup [us/ussr] countryname influence
       // realign [us/ussr] countryname
       // card [us/ussr] card  --> hand card to play
-      // vp [us/ussr] points
+      // vp [us/ussr] points [delay_settlement_until_end_of_turn=1]
       // discard [us/ussr] card --> discard from hand
       // discard [ussr/us] card
       // deal [1/2]  --- player decides how many cards they need, adds DEAL and clears when ready
@@ -479,7 +479,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	          if (action2 == "skipche") {
 	            twilight_self.updateStatus("Skipping Che coups...");
 	            twilight_self.addMove("resolve\tchecoup");
-	            twilight_self.endMove();
+	            twilight_self.endTurn();
 	          }
 	        });
 
@@ -1032,7 +1032,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
   	  if (action2 == "skiptear") {
 	    twilight_self.updateStatus("Skipping Tear Down this Wall...");
 	    twilight_self.addMove("resolve\tteardownthiswall");
-	    twilight_self.endMove();
+	    twilight_self.endTurn();
 	  }
 
   	  if (action2 == "taketear") {
@@ -1114,13 +1114,24 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "vp") {
-        this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
-        if (mv[1] === "us") {
-          this.game.state.vp += parseInt(mv[2]);
-        } else {
-          this.game.state.vp -= parseInt(mv[2]);
-        }
-        this.updateVictoryPoints();
+	if (mv.length > 3) {
+	  if (parseInt(mv[3]) == 1) {
+            this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
+            if (mv[1] === "us") {
+	      this.game.state.vp_outstanding += parseInt(mv[3]);
+	    } else {
+	      this.game.state.vp_outstanding -= parseInt(mv[3]);
+	    }
+	  }
+	} else {
+          this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
+          if (mv[1] === "us") {
+            this.game.state.vp += parseInt(mv[2]);
+          } else {
+            this.game.state.vp -= parseInt(mv[2]);
+          }
+          this.updateVictoryPoints();
+	}
         this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "coup") {
@@ -1446,6 +1457,12 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
       }
       if (mv[0] === "round") {
+
+	//
+	// settle outstanding VP issue
+	//
+	this.settleVPOutstanding();
+
 
 	//
 	// show active events
@@ -1814,6 +1831,11 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	// it is no longer the headline
 	//
 	this.game.state.headline = 0;
+
+	//
+	// resolve outstanding VP
+	//
+	this.settleVPOutstanding();
 
 	//
 	// show active events
@@ -2987,8 +3009,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     if (twilight_self.game.state.events.wwby == 1) {
       if (player == "us") {
         if (card != "unintervention") {
-          twilight_self.addMove("notify\tWe Will Bury You triggers +3 VP for USSR");
-          twilight_self.addMove("vp\tussr\t3");
+	  twilight_self.game.state.events.wwby_triggers = 1;
 	}
         twilight_self.game.state.events.wwby = 0;
       }
@@ -3000,7 +3021,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     if (twilight_self.game.state.events.u2 == 1) {
       if (card == "unintervention" ) {
         twilight_self.addMove("notify\tU2 Intervention triggers +1 VP for USSR");
-        twilight_self.addMove("vp\tussr\t1");
+        twilight_self.addMove("vp\tussr\t1\t1");
       }
     }
 
@@ -3157,7 +3178,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	    if (twilight_self.game.state.events.flowerpower == 1) {
 	      if (card == "arabisraeli" || card == "koreanwar" || card == "brushwar" || card == "indopaki" || card == "iraniraq") {
                 twilight_self.addMove("notify\tFlower Power triggered by "+card);
-                twilight_self.addMove("vp\tussr\t2");
+                twilight_self.addMove("vp\tussr\t2\t1");
 	      }
 	    }
 
@@ -3176,7 +3197,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	    if (twilight_self.game.state.events.flowerpower == 1) {
 	      if (card == "arabisraeli" || card == "koreanwar" || card == "brushwar" || card == "indopaki" || card == "iraniraq") {
                 twilight_self.addMove("notify\tFlower Power triggered by "+card);
-                twilight_self.addMove("vp\tussr\t2");
+                twilight_self.addMove("vp\tussr\t2\t1");
 	      }
 	    }
 
@@ -3249,7 +3270,7 @@ Twilight.prototype.playerTriggerEvent = function playerTriggerEvent(player, card
   if (twilight_self.game.state.events.flowerpower == 1) {
     if (card == "arabisraeli" || card == "koreanwar" || card == "brushwar" || card == "indopaki" || card == "iraniraq") {
       twilight_self.addMove("notify\tFlower Power triggered by "+card);
-      twilight_self.addMove("vp\tussr\t2");
+      twilight_self.addMove("vp\tussr\t2\t1");
     }
   }
 
@@ -4318,6 +4339,15 @@ Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
   $(".card").off();
   $(".country").off();
 
+  //
+  // we will bury you scores first!
+  //
+  if (this.game.state.events.wwby_triggers == 1) {
+    this.addMove("notify\tWe Will Bury You triggers +3 VP for USSR");
+    this.addMove("vp\tussr\t3");
+    this.game.state.events.wwby_triggers = 0;
+  }
+
   let cards_in_hand = this.game.deck[0].hand.length;
   for (let z = 0; z < this.game.deck[0].hand.length; z++) {
     if (this.game.deck[0].hand[z] == "china") {
@@ -4397,6 +4427,7 @@ Twilight.prototype.endRound = function endRound() {
   this.game.state.eagle_has_landed_bonus_taken = 0;
   this.game.state.space_shuttle_bonus_taken = 0;
 
+  this.game.state.events.wwby_triggers = 0;
   this.game.state.events.region_bonus = "";
   this.game.state.events.u2 = 0;
   this.game.state.events.containment = 0;
@@ -4545,6 +4576,8 @@ Twilight.prototype.returnState = function returnState() {
   state.opponent_cards_in_hand = 0;
   state.event_before_ops = 0;
   state.event_name = "";
+
+  state.vp_outstanding = 0; // vp not settled yet
 
   state.animal_in_space = "";
   state.man_in_earth_orbit = "";
@@ -4698,6 +4731,7 @@ Twilight.prototype.returnState = function returnState() {
   state.events.kitchendebates     = 0;
   state.events.brezhnev           = 0;
   state.events.wwby               = 0;
+  state.events.wwby_triggers      = 0;
   state.events.willybrandt        = 0;
   state.events.shuttlediplomacy   = 0;
   state.events.deathsquads        = 0;
@@ -4894,16 +4928,16 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
   var deck = {};
 
   deck['brushwar']          = { img : "TNRnTS-36" , name : "Brush War", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
-  deck['centralamerica']    = { img : "TNRnTS-37" , name : "Central America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
-  deck['seasia']            = { img : "TNRnTS-38" , name : "Southeast Asia Scoring", scoring : 1 , player : "both" , recurring : 0 , ops : 0 };
+  //deck['centralamerica']    = { img : "TNRnTS-37" , name : "Central America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
+  //deck['seasia']            = { img : "TNRnTS-38" , name : "Southeast Asia Scoring", scoring : 1 , player : "both" , recurring : 0 , ops : 0 };
   deck['armsrace']          = { img : "TNRnTS-39" , name : "Arms Race", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
   deck['cubanmissile']      = { img : "TNRnTS-40" , name : "Cuban Missile Crisis", scoring : 0 , player : "both" , recurring : 0 , ops : 3 };
-  deck['nuclearsubs']       = { img : "TNRnTS-41" , name : "Nuclear Subs", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
-  deck['quagmire']          = { img : "TNRnTS-42" , name : "Quagmire", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+  //deck['nuclearsubs']       = { img : "TNRnTS-41" , name : "Nuclear Subs", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+  //deck['quagmire']          = { img : "TNRnTS-42" , name : "Quagmire", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['saltnegotiations']  = { img : "TNRnTS-43" , name : "Salt Negotiations", scoring : 0 , player : "both" , recurring : 0 , ops : 3 };
-  deck['beartrap']          = { img : "TNRnTS-44" , name : "Bear Trap", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
-  deck['summit']            = { img : "TNRnTS-45" , name : "Summit", scoring : 0 , player : "both" , recurring : 1 , ops : 1 };
-  deck['howilearned']       = { img : "TNRnTS-46" , name : "How I Learned to Stop Worrying", scoring : 0 , player : "both" , recurring : 0 , ops : 2 };
+  //deck['beartrap']          = { img : "TNRnTS-44" , name : "Bear Trap", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+  //deck['summit']            = { img : "TNRnTS-45" , name : "Summit", scoring : 0 , player : "both" , recurring : 1 , ops : 1 };
+  //deck['howilearned']       = { img : "TNRnTS-46" , name : "How I Learned to Stop Worrying", scoring : 0 , player : "both" , recurring : 0 , ops : 2 };
   deck['junta']             = { img : "TNRnTS-47" , name : "Junta", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['kitchendebates']    = { img : "TNRnTS-48" , name : "Kitchen Debates", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
   deck['missileenvy']       = { img : "TNRnTS-49" , name : "Missile Envy", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
@@ -4914,31 +4948,31 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
   deck['allende']           = { img : "TNRnTS-54" , name : "Allende", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['willybrandt']       = { img : "TNRnTS-55" , name : "Willy Brandt", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
   deck['muslimrevolution']  = { img : "TNRnTS-56" , name : "Muslim Revolution", scoring : 0 , player : "ussr" , recurring : 1 , ops : 4 };
-  deck['abmtreaty']         = { img : "TNRnTS-57" , name : "ABM Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
+  //deck['abmtreaty']         = { img : "TNRnTS-57" , name : "ABM Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
   deck['culturalrev']       = { img : "TNRnTS-58" , name : "Cultural Revolution", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['flowerpower']       = { img : "TNRnTS-59" , name : "Flower Power", scoring : 0 , player : "ussr" , recurring : 0 , ops : 4 };
   deck['u2']                = { img : "TNRnTS-60" , name : "U2 Incident", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['opec']              = { img : "TNRnTS-61" , name : "OPEC", scoring : 0 , player : "ussr" , recurring : 1 , ops : 3 };
-  deck['lonegunman']        = { img : "TNRnTS-62" , name : "Lone Gunman", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
-  deck['colonial']          = { img : "TNRnTS-63" , name : "Colonial Rear Guards", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
+  //deck['lonegunman']        = { img : "TNRnTS-62" , name : "Lone Gunman", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
+  //deck['colonial']          = { img : "TNRnTS-63" , name : "Colonial Rear Guards", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
   deck['panamacanal']       = { img : "TNRnTS-64" , name : "Panama Canal Returned", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
   deck['campdavid']         = { img : "TNRnTS-65" , name : "Camp David Accords", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
-  deck['puppet']            = { img : "TNRnTS-66" , name : "Puppet Governments", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
-  deck['grainsales']        = { img : "TNRnTS-67" , name : "Grain Sales to Soviets", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
+  //deck['puppet']            = { img : "TNRnTS-66" , name : "Puppet Governments", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+  //deck['grainsales']        = { img : "TNRnTS-67" , name : "Grain Sales to Soviets", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
   deck['johnpaul']          = { img : "TNRnTS-68" , name : "John Paul II Elected Pope", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   deck['deathsquads']       = { img : "TNRnTS-69" , name : "Latin American Death Squads", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
-  deck['oas']               = { img : "TNRnTS-70" , name : "OAS Founded", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
+  //deck['oas']               = { img : "TNRnTS-70" , name : "OAS Founded", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
   deck['nixon']             = { img : "TNRnTS-71" , name : "Nixon Plays the China Card", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   deck['sadat']             = { img : "TNRnTS-72" , name : "Sadat Expels Soviets", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
   deck['shuttle']           = { img : "TNRnTS-73" , name : "Shuttle Diplomacy", scoring : 0 , player : "us" , recurring : 1 , ops : 3 };
-  deck['voiceofamerica']    = { img : "TNRnTS-74" , name : "Voice of America", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
+  //deck['voiceofamerica']    = { img : "TNRnTS-74" , name : "Voice of America", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
   deck['liberation']        = { img : "TNRnTS-75" , name : "Liberation Theology", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
-  deck['ussuri']            = { img : "TNRnTS-76" , name : "Ussuri River Skirmish", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+  //deck['ussuri']            = { img : "TNRnTS-76" , name : "Ussuri River Skirmish", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   deck['asknot']            = { img : "TNRnTS-77" , name : "Ask Not What Your Country...", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   deck['alliance']          = { img : "TNRnTS-78" , name : "Alliance for Progress", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
-  deck['africa']            = { img : "TNRnTS-79" , name : "Africa Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
-  deck['onesmallstep']      = { img : "TNRnTS-80" , name : "One Small Step", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
-  deck['southamerica']      = { img : "TNRnTS-81" , name : "South America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
+  //deck['africa']            = { img : "TNRnTS-79" , name : "Africa Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
+  //deck['onesmallstep']      = { img : "TNRnTS-80" , name : "One Small Step", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+  //deck['southamerica']      = { img : "TNRnTS-81" , name : "South America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
 
   //
   // OPTIONS - we default to the expanded deck
@@ -5531,7 +5565,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tus\tus\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
               twilight_self.addMove("remove\tus\tussr\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
               twilight_self.addMove("milops\tus\t2");
-              twilight_self.addMove("vp\tus\t2");
+	      if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tus\t2\t1");
+	      } else {
+                twilight_self.addMove("vp\tus\t2");
+	      }
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "us");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "ussr");
 	      twilight_self.endTurn();
@@ -5540,7 +5578,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tussr\tussr\tpakistan\t"+twilight_self.countries['pakistan'].us);
               twilight_self.addMove("remove\tussr\tus\tpakistan\t"+twilight_self.countries['pakistan'].us);
               twilight_self.addMove("milops\tussr\t2");
-              twilight_self.addMove("vp\tussr\t2");
+	      if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tussr\t2\t1");
+	      } else {
+                twilight_self.addMove("vp\tussr\t2");
+	      }
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].us, "ussr");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].us, "us");
 	      twilight_self.endTurn();
@@ -5572,6 +5614,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tus\tus\tindia\t"+twilight_self.countries['india'].ussr);
               twilight_self.addMove("remove\tus\tussr\tindia\t"+twilight_self.countries['india'].ussr);
               twilight_self.addMove("milops\tus\t2");
+	      if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tus\t2\t1");
+	      } else {
+                twilight_self.addMove("vp\tus\t2");
+	      }
               twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].ussr, "us");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].ussr, "ussr");
@@ -5581,6 +5628,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tussr\tussr\tindia\t"+twilight_self.countries['india'].us);
               twilight_self.addMove("remove\tussr\tus\tindia\t"+twilight_self.countries['india'].us);
               twilight_self.addMove("milops\tussr\t2");
+	      if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tussr\t2\t1");
+	      } else {
+                twilight_self.addMove("vp\tussr\t2");
+	      }
               twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].us, "ussr");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].us, "us");
@@ -5633,7 +5685,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.updateLog("USSR wins the Arab-Israeli War");
       this.placeInfluence("israel", this.countries['israel'].us, "ussr");
       this.removeInfluence("israel", this.countries['israel'].us, "us");
-      this.game.state.vp -= 2;
+      if (this.game.state.events.flowerpower == 1) {
+        this.game.state.vp_outstanding -= 2;
+      } else {
+        this.game.state.vp -= 2;
+      }
       this.game.state.milops_ussr += 2;
       this.updateVictoryPoints();
       this.updateMilitaryOperations();
@@ -5670,7 +5726,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.updateLog("North Korea wins the Korean War");
       this.placeInfluence("southkorea", this.countries['southkorea'].us, "ussr");
       this.removeInfluence("southkorea", this.countries['southkorea'].us, "us");
-      this.game.state.vp -= 2;
+      if (this.game.state.events.flowerpower == 1) {
+        this.game.state.vp_outstanding -= 2;
+      } else {
+        this.game.state.vp -= 2;
+      }
       this.game.state.milops_ussr += 2;
       this.updateMilitaryOperations();
       this.updateVictoryPoints();
@@ -7053,7 +7113,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	if (action2 == "skipche") {
 	  twilight_self.updateStatus("Skipping Che coups...");
 	  twilight_self.addMove("resolve\tche");
-	  twilight_self.endMove();
+	  twilight_self.endTurn();
 	}
       });
 
@@ -7152,7 +7212,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	  cards_discarded++;
           twilight_self.removeCardFromHand(action2);
           twilight_self.addMove("discard\tus\t"+action2);
-          twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+action2+"\">"+twilight_self.game.deck[0].cards[action2].name + "</span>");
         }
       });
     }
@@ -8455,23 +8514,19 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   //
   if (card == "alliance") {
 
-    if (this.game.state.events.northseaoil == 0) {
+    let us_bonus = 0;
 
-      let us_bonus = 0;
+    if (this.isControlled("us", "mexico") == 1)     { us_bonus++; }
+    if (this.isControlled("us", "cuba") == 1)       { us_bonus++; }
+    if (this.isControlled("us", "panama") == 1)     { us_bonus++; }
+    if (this.isControlled("us", "chile") == 1)      { us_bonus++; }
+    if (this.isControlled("us", "argentina") == 1)  { us_bonus++; }
+    if (this.isControlled("us", "brazil") == 1)     { us_bonus++; }
+    if (this.isControlled("us", "venezuela") == 1)  { us_bonus++; }
 
-      if (this.isControlled("us", "mexico") == 1)     { us_bonus++; }
-      if (this.isControlled("us", "cuba") == 1)       { us_bonus++; }
-      if (this.isControlled("us", "panama") == 1)     { us_bonus++; }
-      if (this.isControlled("us", "chile") == 1)      { us_bonus++; }
-      if (this.isControlled("us", "argentina") == 1)  { us_bonus++; }
-      if (this.isControlled("us", "brazil") == 1)     { us_bonus++; }
-      if (this.isControlled("us", "venezuela") == 1)  { us_bonus++; }
-
-      this.game.state.vp += us_bonus;
-      this.updateVictoryPoints();  
-      this.updateLog("US VP bonus is: " + us_bonus);
-
-    }
+    this.game.state.vp += us_bonus;
+    this.updateVictoryPoints();  
+    this.updateLog("US VP bonus is: " + us_bonus);
 
     return 1;
 
@@ -8613,12 +8668,22 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 		twilight_self.placeInfluence(c, ussrinf, "us");
 	        twilight_self.addMove("remove\tus\tussr\t"+c+"\t"+ussrinf);
 	        twilight_self.addMove("place\tus\tus\t"+c+"\t"+ussrinf);
+      		if (twilight_self.game.state.events.flowerpower == 1) {
+		  twilight_self.addMove("vp\tus\t1\t1");
+		} else {
+		  twilight_self.addMove("vp\tus\t1");
+		}
 		twilight_self.endTurn();
 	      } else {
 		twilight_self.removeInfluence(c, usinf, "us");
 		twilight_self.placeInfluence(c, usinf, "ussr");
 	        twilight_self.addMove("remove\tussr\tus\t"+c+"\t"+usinf);
 	        twilight_self.addMove("place\tussr\tussr\t"+c+"\t"+usinf);
+      		if (twilight_self.game.state.events.flowerpower == 1) {
+		  twilight_self.addMove("vp\tussr\t1\t1");
+		} else {
+		  twilight_self.addMove("vp\tussr\t1");
+		}
 	      }
 	      twilight_self.addMove("notify\tBrush War in "+twilight_self.countries[c].name+" succeeded.");
 	      twilight_self.endTurn();
@@ -8912,7 +8977,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tus\tus\tiran\t"+twilight_self.countries['iran'].ussr);
               twilight_self.addMove("remove\tus\tussr\tiran\t"+twilight_self.countries['iran'].ussr);
 	      twilight_self.addMove("milops\tus\t2");
-	      twilight_self.addMove("vp\tus\t2");
+	      if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tus\t2\t1");
+	      } else {
+                twilight_self.addMove("vp\tus\t2");
+	      }
               twilight_self.placeInfluence("iran", twilight_self.countries['iran'].ussr, "us");
               twilight_self.removeInfluence("iran", twilight_self.countries['iran'].ussr, "ussr");
 	      twilight_self.endTurn();
@@ -8921,7 +8990,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tussr\tussr\tiran\t"+twilight_self.countries['iran'].us);
               twilight_self.addMove("remove\tussr\tus\tiran\t"+twilight_self.countries['iran'].us);
 	      twilight_self.addMove("milops\tussr\t2");
-	      twilight_self.addMove("vp\tussr\t2");
+	      if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tus\t2\t1");
+	      } else {
+                twilight_self.addMove("vp\tus\t2");
+	      }
               twilight_self.placeInfluence("iran", twilight_self.countries['iran'].us, "ussr");
               twilight_self.removeInfluence("iran", twilight_self.countries['iran'].us, "us");
 	      twilight_self.endTurn();
@@ -11291,6 +11364,11 @@ Twilight.prototype.updateMilitaryOperations = function updateMilitaryOperations(
 }
 Twilight.prototype.updateVictoryPoints = function updateVictoryPoints() {
 
+  //
+  // if VP are outstanding, do not update VP and trigger end
+  //
+  if (this.game.state.vp_outstanding != 0) { return; }
+
   let dt = 0;
   let dl = 0;
 
@@ -11663,6 +11741,14 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
 }
 
+Twilight.prototype.settleVPOutstanding = function settleVPOutstanding() {
 
+  if (this.game.state.vp_outstanding != 0) {
+    this.game.state.vp += this.game.state.vp_outstanding;
+    this.game.state.vp_outstanding = 0;
+    this.updateVictoryPoints();
+  }
+
+}
 
 
