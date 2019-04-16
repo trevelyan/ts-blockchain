@@ -1114,13 +1114,14 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "vp") {
+console.log("MVLENGTH: " + mv.length)
 	if (mv.length > 3) {
 	  if (parseInt(mv[3]) == 1) {
             this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
             if (mv[1] === "us") {
-	      this.game.state.vp_outstanding += parseInt(mv[3]);
+	      this.game.state.vp_outstanding += parseInt(mv[2]);
 	    } else {
-	      this.game.state.vp_outstanding -= parseInt(mv[3]);
+	      this.game.state.vp_outstanding -= parseInt(mv[2]);
 	    }
 	  }
 	} else {
@@ -6995,34 +6996,40 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       let selected_ops   = 0;
       let multiple_cards = 0;
 
+      if (this.game.deck[0].hand.length == 0) {
+        this.addMove("notify\t"+opponent.toUpperCase()+" hand contains no cards.");
+        this.endTurn();
+	return 0;
+      }
+
+
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-	let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
 
-	//
-	// if the first pull is China, move on
-	//
-	if (card == "china" && i == 0) {
+	if (this.game.deck[0].hand[i] == "china") { 
 	  i++;
-
 	  if (this.game.deck[0].hand.length < 2) {
             this.addMove("notify\t"+opponent.toUpperCase()+" hand contains only the China card.");
             this.endTurn();
 	    return 0;
 	  }
+	}
 
-	  card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
-        }
+	if (i < this.game.deck[0].hand.length) {
 
-        if (card != "china") {
-	  if (card.ops == selected_ops) {
-	    multiple_cards++;
-	  }
-	  if (card.ops > selected_ops) {
-	    selected_ops  = card.ops;
-	    selected_card = this.game.deck[0].hand[i];
-	    multiple_cards = 0;
+  	  let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
+
+          if (card != "china") {
+	    if (card.ops == selected_ops) {
+	      multiple_cards++;
+	    }
+	    if (card.ops > selected_ops) {
+	      selected_ops  = card.ops;
+	      selected_card = this.game.deck[0].hand[i];
+	      multiple_cards = 0;
+            }
           }
-        }
+	}
+
       }
 
 
@@ -11743,11 +11750,13 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
 Twilight.prototype.settleVPOutstanding = function settleVPOutstanding() {
 
+console.log("\n\n\nSettling Outstanding VP: " + this.game.state.vp_outstanding);
+
   if (this.game.state.vp_outstanding != 0) {
     this.game.state.vp += this.game.state.vp_outstanding;
-    this.game.state.vp_outstanding = 0;
-    this.updateVictoryPoints();
   }
+  this.game.state.vp_outstanding = 0;
+  this.updateVictoryPoints();
 
 }
 
