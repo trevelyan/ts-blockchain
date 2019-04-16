@@ -1,3 +1,10 @@
+.status {
+  height: 400px;
+}
+.log {
+  width: 70%;
+}
+
 body {
   font-family: arial, helvetica, sans-serif;
   font-size: 13px;
@@ -161,7 +168,7 @@ body {
   background-size: cover;
   z-index: 1000;
   display: none;
-  top: 40%;
+  top: 30%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
