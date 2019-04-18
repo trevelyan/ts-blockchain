@@ -1108,7 +1108,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (mv[1] === "us") {
           this.game.state.milops_us += parseInt(mv[2]);
         } else {
-          this.game.state.milops_ussr -= parseInt(mv[2]);
+          this.game.state.milops_ussr += parseInt(mv[2]);
         }
         this.updateMilitaryOperations();
         this.game.queue.splice(qe, 1);
@@ -5640,11 +5640,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 	    if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
-              twilight_self.updateVictoryPoints();
 	      twilight_self.endTurn();
 	    } else {
               twilight_self.addMove("milops\tussr\t2");
-              twilight_self.updateVictoryPoints();
  	      twilight_self.endTurn();
 	    }
 	  }
