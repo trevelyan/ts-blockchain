@@ -5593,11 +5593,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 	    if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
-              twilight_self.updateVictoryPoints();
 	      twilight_self.endTurn();
 	    } else {
               twilight_self.addMove("milops\tussr\t2");
-              twilight_self.updateVictoryPoints();
 	      twilight_self.endTurn();
 	    }
 	  }
@@ -5620,7 +5618,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      } else {
                 twilight_self.addMove("vp\tus\t2");
 	      }
-              twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].ussr, "us");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].ussr, "ussr");
 	      twilight_self.endTurn();
@@ -5634,7 +5631,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      } else {
                 twilight_self.addMove("vp\tussr\t2");
 	      }
-              twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].us, "ussr");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].us, "us");
  	      twilight_self.endTurn();
