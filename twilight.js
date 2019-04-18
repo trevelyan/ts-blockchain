@@ -9741,6 +9741,7 @@ Twilight.prototype.isRegionBonus = function isRegionBonus() {
   // Vietnam Revolts
   //
   if (this.game.state.events.vietnam_revolts == 1 && this.game.state.events.vietnam_revolts_eligible == 1 && this.game.player == 1) {
+console.log("VIETNAME CARD BONUS");
     this.updateStatus("Extra 1 OP Available for Southeast Asia");
     this.game.state.events.region_bonus = "seasia"; 
     return 1;
@@ -9750,6 +9751,7 @@ Twilight.prototype.isRegionBonus = function isRegionBonus() {
   // The China Card
   //
   if (this.game.state.events.china_card_in_play == 1 && this.game.state.events.china_card_eligible == 1) {
+console.log("CHINA CARD BONUS");
     this.updateStatus("Extra 1 OP Available for Asia");
     this.game.state.events.region_bonus = "asia"; 
     return 1;
@@ -9757,11 +9759,13 @@ Twilight.prototype.isRegionBonus = function isRegionBonus() {
   return 0;
 }
 Twilight.prototype.endRegionBonus = function endRegionBonus() {
-  if (this.game.state.events.vietnam_revolts_eligible == 1) {
+  if (this.game.state.events.vietnam_revolts_eligible == 1 && this.game.state.events.vietnam_revolts == 1) {
+console.log("REMOVING CHINA CARD VIETNAM BONUS");
     this.game.state.events.vietnam_revolts_eligible = 0;
     return;
   }
   if (this.game.state.events.china_card_eligible == 1) {
+console.log("REMOVING CHINA CARD BONUS");
     this.game.state.events.china_card_eligible = 0;
     return;
   }
