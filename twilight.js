@@ -10750,7 +10750,9 @@ Twilight.prototype.lowerDefcon = function lowerDefcon() {
   if (this.game.state.defcon == 2) {
     if (this.game.state.events.norad == 1) {
       if (this.isControlled("us","uk") == 1) {
-	this.game.state.us_defcon_bonus = 1;
+        if (this.game.state.headline != 1) {
+	  this.game.state.us_defcon_bonus = 1;
+	}
       }
     }
   }
