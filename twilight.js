@@ -4038,6 +4038,17 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
       let valid_target = 0;
       let countryname = $(this).attr('id');
 
+      //
+      // sanity DEFCON check
+      //
+      if (twilight_self.game.state.defcon == 2 && twilight_self.game.countries[countryname].bg == 1) {
+	if (confirm("Are you sure you wish to coup a Battleground State? (DEFCON is 2)")) {
+	} else {
+	  twilight_self.playOps(player, ops, card);
+	  return;
+	}
+      } 
+
       if (player == "us") {
         if (twilight_self.countries[countryname].ussr <= 0) { alert("Cannot Coup"); } else { valid_target = 1; }
       } else {
@@ -4192,7 +4203,7 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
       alert("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
     }
 
-    this.updateLog(player.toUpperCase() + " rolls " + roll + " ("+winning+" added)");
+    this.updateLog(player.toUpperCase() + " rolls " + roll);
 
     while (winning > 0) {
 
