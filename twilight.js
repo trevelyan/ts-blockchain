@@ -151,7 +151,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     this.game.queue.push("init");
 
   }
-  if (this.game.dice == "") {
+  if (this.game.dice === "") {
     this.initializeDice();
   }
 
@@ -896,9 +896,11 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       if (mv[0] == "dice") {
         if (mv[1] == "burn") { 
           if (this.game.player == 1 && mv[2] == "ussr") {
+console.log("ROLLING DICE 1!");
 	    roll = this.rollDice(6);
           }
           if (this.game.player == 2 && mv[2] == "us")   { 
+console.log("ROLLING DICE 2!");
 	    roll = this.rollDice(6); 
 	  }
         }
@@ -5726,6 +5728,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.isControlled("us", "taiwan") == 1) { target++; }
 
     let roll = this.rollDice(6);
+
     this.updateLog("Korean War happens (roll: " + roll + ")");
 
     if (roll >= target) {
@@ -6204,14 +6207,10 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         let action = $(this).attr("id");
 
 	if (action == "boycott") {
-  	  let usroll   = twilight_self.rollDice(6);
-	  let ussrroll = twilight_self.rollDice(6);
 	  twilight_self.addMove("ops\t"+opponent+"\tolympic\t4");
 	  twilight_self.addMove("defcon\tlower");
 	  twilight_self.addMove("notify\t"+opponent.toUpperCase()+" plays 4 OPS");
 	  twilight_self.addMove("notify\t"+me.toUpperCase()+" boycotts the Olympics");
-	  twilight_self.addMove("dice\tburn\t"+player);
-	  twilight_self.addMove("dice\tburn\t"+player);
 	  twilight_self.endTurn();
 	  return;
 	}
@@ -6221,7 +6220,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 	  while (winner == 0) {
 
+console.log("OLYMPIC ROLL!");
   	    let usroll   = twilight_self.rollDice(6);
+console.log("OLYMPIC ROLL!");
 	    let ussrroll = twilight_self.rollDice(6);
 
 	    twilight_self.addMove("dice\tburn\t"+player);
@@ -7596,7 +7597,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (this.game.state.events.china_card == 1) {
 
-      this.game.state.vp -= 2;
+      this.game.state.vp -= 1;
       this.updateVictoryPoints();
 
     } else {
@@ -7624,7 +7625,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
           }
 
 	  if (do_i_have_cc == 1) {
-	    this.game.state.vp -= 2;
+	    this.game.state.vp -= 1;
 	    this.updateVictoryPoints();
 	  } else {
 	    if (! this.game.deck[0].hand.includes("china")) {
@@ -7652,7 +7653,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      }
 	    }
 	  } else {
-	    this.game.state.vp -= 2;
+	    this.game.state.vp -= 1;
 	    this.updateVictoryPoints();
 	  }
         }
