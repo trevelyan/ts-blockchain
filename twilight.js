@@ -150,9 +150,10 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
     this.game.queue.push("init");
 
-  }
-  if (this.game.dice === "") {
-    this.initializeDice();
+    if (this.game.dice === "") {
+      this.initializeDice();
+    }
+
   }
 
   this.countries = this.game.countries;
@@ -228,8 +229,6 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
     return 0;
   }
 
-console.log("HERE: " + JSON.stringify(msg));
-
   if (msg != null) {
     if (msg.extra != null) {
 
@@ -238,7 +237,6 @@ console.log("HERE: " + JSON.stringify(msg));
       //
       if (msg.extra.target == this.game.player) {
         this.game.state.opponent_cards_in_hand = msg.extra.cards_in_hand;
-console.log("OPPONENT CARDS IN HAND: " + this.game.state.opponent_cards_in_hand);
       }
     }
   }
@@ -896,11 +894,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       if (mv[0] == "dice") {
         if (mv[1] == "burn") { 
           if (this.game.player == 1 && mv[2] == "ussr") {
-console.log("ROLLING DICE 1!");
 	    roll = this.rollDice(6);
           }
           if (this.game.player == 2 && mv[2] == "us")   { 
-console.log("ROLLING DICE 2!");
 	    roll = this.rollDice(6); 
 	  }
         }
@@ -1116,7 +1112,6 @@ console.log("ROLLING DICE 2!");
         this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "vp") {
-console.log("MVLENGTH: " + mv.length)
 	if (mv.length > 3) {
 	  if (parseInt(mv[3]) == 1) {
             this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
@@ -2709,6 +2704,24 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
             let action2 = $(this).attr("id");
             if (action2 == "cancelrealign") {
+
+	      //
+	      // reverse order of realigns
+	      //
+	      // they need to be executed in the order that we did them for bonuses to work properly
+	      //
+	      let new_moves = [];
+	      for (let z = twilight_self.moves.length-1; z >= 0; z--) {
+		let tmpar = twilight_self.moves[z].split("\t");
+		if (tmpar[0] === "realign") {
+		  new_moves.push(twilight_self.moves[z]);
+		} else {
+		  new_moves.unshift(twilight_self.moves[z])
+		}
+	      }
+	      twilight_self.moves = new_moves;
+
+
               twilight_self.endTurn();
 	      return;
 	    }
@@ -2722,6 +2735,23 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
               twilight_self.limitToRegionBonus();
               twilight_self.endRegionBonus();
             } else {
+
+              //
+              // reverse order of realigns
+              //
+              // they need to be executed in the order that we did them for bonuses to work properly
+              //
+              let new_moves = [];
+              for (let z = twilight_self.moves.length-1; z >= 0; z--) {
+                let tmpar = twilight_self.moves[z].split("\t");
+                if (tmpar[0] === "realign") {
+                  new_moves.push(twilight_self.moves[z]);
+                } else {
+                  new_moves.unshift(twilight_self.moves[z])
+                }
+              }
+              twilight_self.moves = new_moves;
+
               twilight_self.endTurn();
               return;
             }
@@ -4275,14 +4305,14 @@ Twilight.prototype.playRealign = function playRealign(country) {
     //
     // handle adjacent influence
     //
-    if (country == "mexico") { bonus_us++; }
-    if (country == "cuba")   { bonus_us++; }
-    if (country == "japan")  { bonus_us++; }
-    if (country == "canada") { bonus_us++; }
-    if (country == "finland") { bonus_ussr++; }
-    if (country == "romania") { bonus_ussr++; }
-    if (country == "afghanistan") { bonus_ussr++; }
-    if (country == "northkorea") { bonus_ussr++; }
+    if (country === "mexico") { bonus_us++; }
+    if (country === "cuba")   { bonus_us++; }
+    if (country === "japan")  { bonus_us++; }
+    if (country === "canada") { bonus_us++; }
+    if (country === "finland") { bonus_ussr++; }
+    if (country === "romania") { bonus_ussr++; }
+    if (country === "afghanistan") { bonus_ussr++; }
+    if (country === "northkorea") { bonus_ussr++; }
 
 
     //
@@ -6220,9 +6250,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 	  while (winner == 0) {
 
-console.log("OLYMPIC ROLL!");
   	    let usroll   = twilight_self.rollDice(6);
-console.log("OLYMPIC ROLL!");
 	    let ussrroll = twilight_self.rollDice(6);
 
 	    twilight_self.addMove("dice\tburn\t"+player);
@@ -9753,7 +9781,6 @@ Twilight.prototype.isRegionBonus = function isRegionBonus() {
   // Vietnam Revolts
   //
   if (this.game.state.events.vietnam_revolts == 1 && this.game.state.events.vietnam_revolts_eligible == 1 && this.game.player == 1) {
-console.log("VIETNAME CARD BONUS");
     this.updateStatus("Extra 1 OP Available for Southeast Asia");
     this.game.state.events.region_bonus = "seasia"; 
     return 1;
@@ -9763,7 +9790,6 @@ console.log("VIETNAME CARD BONUS");
   // The China Card
   //
   if (this.game.state.events.china_card_in_play == 1 && this.game.state.events.china_card_eligible == 1) {
-console.log("CHINA CARD BONUS");
     this.updateStatus("Extra 1 OP Available for Asia");
     this.game.state.events.region_bonus = "asia"; 
     return 1;
@@ -9772,12 +9798,10 @@ console.log("CHINA CARD BONUS");
 }
 Twilight.prototype.endRegionBonus = function endRegionBonus() {
   if (this.game.state.events.vietnam_revolts_eligible == 1 && this.game.state.events.vietnam_revolts == 1) {
-console.log("REMOVING CHINA CARD VIETNAM BONUS");
     this.game.state.events.vietnam_revolts_eligible = 0;
     return;
   }
   if (this.game.state.events.china_card_eligible == 1) {
-console.log("REMOVING CHINA CARD BONUS");
     this.game.state.events.china_card_eligible = 0;
     return;
   }
@@ -11761,8 +11785,6 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 }
 
 Twilight.prototype.settleVPOutstanding = function settleVPOutstanding() {
-
-console.log("\n\n\nSettling Outstanding VP: " + this.game.state.vp_outstanding);
 
   if (this.game.state.vp_outstanding != 0) {
     this.game.state.vp += this.game.state.vp_outstanding;
