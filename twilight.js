@@ -347,14 +347,16 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         } else {
           for (var i in this.game.deck[0].cards) {
             if (mv[2] == i) {
-              //
-              // move to discard pile
-              //
-              this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
-	      //
-	      // discard pile is parallel to normal
-	      //
-              this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
+	      if (this.game.deck[0].cards[mv[2]] != undefined) {
+                //
+                // move to discard pile
+                //
+                this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
+	        //
+	        // discard pile is parallel to normal
+	        //
+                this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
+	      }
 	    }
           }
         }
@@ -3259,7 +3261,6 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	  return;
         }
 
-	//
 	// our event or both
 	//
 	twilight_self.playerTriggerEvent(player, card);
@@ -5165,7 +5166,15 @@ Twilight.prototype.returnDiscardedCards = function returnDiscardedCards() {
 //
 Twilight.prototype.playEvent = function playEvent(player, card) {
 
-  this.updateStatus("Playing event: " + this.game.deck[0].cards[card].name);
+  if (this.game.deck[0].cards[card] != undefined) {
+    this.updateStatus("Playing event: " + this.game.deck[0].cards[card].name);
+  } else {
+    //
+    // event already run - sync loading error
+    //
+    this.console.log("sync loading error -- playEvent");
+    return 1;
+  }
 
 
   ///////////////
@@ -5192,7 +5201,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   // Defectors
   //
   if (card == "defectors") {
-    if (this.game.state.headline == 0) {
+    if (this.game.state.headline == 0 && this.game.state.turn == 0) {
       this.game.state.vp += 1;
       this.updateLog("US gains 1 VP from Defectors");
       this.updateDefcon();
@@ -5257,6 +5266,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         $(divname).on('click', function() {
 
 	  twilight_self.addMove("resolve\tspecialrelation");
+	  if (twilight_self.game.state.events.nato == 1) {
+  	    twilight_self.addMove("vp\tus\t2");
+	  }
 
 	  let c = $(this).attr('id');
 
@@ -9073,7 +9085,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       twilight_self.playerFinishedPlacingInfluence();
 
       twilight_self.addMove("resolve\tiraniraq");
-      twilight_self.updateStatus('Iran-Iraq War:<p></p><ul><li class="card" id="iraq">Iran invades Iraq</li><li class="card" id="iran">Iraq invades Iran</li></ul>');
+      twilight_self.updateStatus('Iran-Iraq War. Choose Target:<p></p><ul><li class="card" id="invadeiraq">Iraq</li><li class="card" id="invadeiran">Iran</li></ul>');
 
       let target = 4;
 
@@ -9082,7 +9094,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
         let invaded = $(this).attr("id");
 
-        if (invaded == "iran") {
+        if (invaded == "invadeiran") {
 
           if (twilight_self.isControlled(opponent, "pakistan") == 1) { target++; }
           if (twilight_self.isControlled(opponent, "iraq") == 1) { target++; }
@@ -9133,7 +9145,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	  }
 
 	}
-        if (invaded == "iraq") {
+        if (invaded == "invadeiraq") {
 
           if (twilight_self.isControlled(opponent, "iran") == 1) { target++; }
           if (twilight_self.isControlled(opponent, "jordan") == 1) { target++; }
@@ -10203,7 +10215,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("ussr", "dominicanrepublic") == 1) { total_ussr++; }
 
     if (total_us > 0) { vp_us = 1; }
-    if (total_ussr> 0) { vp_ussr = 1; }
+    if (total_ussr > 0) { vp_ussr = 1; }
     
     if (bg_us > bg_ussr && total_us > bg_us && total_us > total_ussr) { vp_us = 3; }
     if (bg_ussr > bg_us && total_ussr > bg_ussr && total_ussr > total_us) { vp_ussr = 3; }

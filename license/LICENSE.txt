@@ -25,13 +25,7 @@ The files contained in the /web/images directory are from a Game Module released
 	E-Mail: gmtoffice@gmtgames.com
 
 
-
-The blockchain module files not explicitly owned by GMT Games are happily released under the MIT license. These are:
-
-  twilight.js
-  web/index.html
-  web/style.css
-  web/script.js
+The blockchain module files not explicitly owned by GMT Games are happily released under the same license as the Saito engine.
 
 - - - - - - - - - - - - - - - - - - - 
 
