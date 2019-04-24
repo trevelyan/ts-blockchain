@@ -7553,19 +7553,18 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       if (my_go == 1) {
  
-
-       if (us_roll > ussr_roll) {
-	 twilight_self.addMove("vp\tus\t2");
-       } else {
-	 twilight_self.addMove("vp\tussr\t2");
-       }
-
-
 	let twilight_self = this;
+
+        if (us_roll > ussr_roll) {
+	  twilight_self.addMove("vp\tus\t2");
+        } else {
+ 	  twilight_self.addMove("vp\tussr\t2");
+        }
+
         let x = 0;
         let y = 0;
 
-        twilight_self.updateStatus('You win the Summit:<p></p><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li></ul>');
+        this.updateStatus('You win the Summit:<p></p><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li></ul>');
 
         $('.card').off();
         $('.card').on('click', function() {
