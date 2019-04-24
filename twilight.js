@@ -2495,15 +2495,11 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       }
 
       if (player_to_go == this.game.player) {
-        //if (this.game.state.headline_card !== my_card) { card_player = opponent; }
-        //this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
         this.addMove("discard\t"+card_player+"\t"+my_card);
         this.addMove("event\t"+card_player+"\t"+my_card);
         this.removeCardFromHand(my_card);
         this.endTurn();
       } else {
-        //if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
-        //this.updateLog(opponent.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
       }
 
       this.game.state.headline4 = 1;
@@ -2564,15 +2560,11 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
     let shd_continue = 1;
 
     if (player_to_go == this.game.player) {
-      //if (this.game.state.headline_card !== my_card) { card_player = opponent; }
-      //this.updateLog(player.toUpperCase() + " headlines <span class=\"logcard\" id=\""+my_card+"\">" + this.game.deck[0].cards[my_card].name + "</span>");
       this.addMove("discard\t"+card_player+"\t"+my_card);
       this.addMove("event\t"+card_player+"\t"+my_card);
       this.removeCardFromHand(my_card);
       this.endTurn();
     } else {
-      //if (this.game.state.headline_card !== opponent_card) { card_player = opponent; }
-      //this.updateLog(opponent.toUpperCase() + " headlines <span class=\"logcard\" id=\""+opponent_card+"\">" + this.game.deck[0].cards[opponent_card].name + "</span>");
     }
 
     this.game.state.headline5 = 1;
@@ -5172,7 +5164,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     //
     // event already run - sync loading error
     //
-    this.console.log("sync loading error -- playEvent");
+    console.log("sync loading error -- playEvent");
     return 1;
   }
 
@@ -7379,16 +7371,16 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     var twilight_self = this;
 
     let user_message = "Pick Card to Reclaim:<p></p><ul>";
-    let first = 0;
     for (var i in this.game.deck[0].discards) {
-      if (this.game.deck[0].cards[i].scoring == 0) {
-        user_message += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
+      if (this.game.deck[0].discards[i].scoring == 0) {
+        user_message += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].discards[i].name+'</li>';
       }
     }
     user_message += "</ul>";
     twilight_self.updateStatus(user_message);
 
     twilight_self.addMove("resolve\tsaltnegotiations");
+
 
     $('.card').off();
     $('.card').on('click', function() {
