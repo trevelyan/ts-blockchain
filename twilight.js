@@ -1401,9 +1401,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	//
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
-	    this.game.deck[0].hand = ["wwby","naziscientist","missileenvy"];
+	    this.game.deck[0].hand = ["wwby","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
-	    this.game.deck[0].hand = ["starwars","reagan","mideast","southamerica","asia","europe","seasia","centralamerica"];
+	    this.game.deck[0].hand = ["norad","reagan","mideast","southamerica","asia","europe","seasia","centralamerica"];
 	  }
 	}
 
