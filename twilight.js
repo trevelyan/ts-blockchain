@@ -201,6 +201,18 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   this.updateMilitaryOperations();
   this.updateRound();
 
+  //
+  // move cardbox left if conflicts with HUD
+  //
+  if (this.app.BROWSER == 1) {
+    if (window != undefined) {
+      if (window.innerHeight <= 975) {
+        $('.cardbox').css('left','188px');
+      }
+    }
+  }
+
+
 
   //
   // initialize interface
@@ -2797,7 +2809,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         twilight_self.updateStatus("Place " + j + " influence.");
         twilight_self.prePlayerPlaceInfluence(player);
 	if (j == 1) { 
-          twilight_self.uneventOpponentControlledCountries(player);
+          twilight_self.uneventOpponentControlledCountries(player, card);
 	}
         twilight_self.playerPlaceInfluence(player, () => {
 
@@ -2813,13 +2825,13 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 	  twilight_self.game.break_control = 0;
 
 	  if (j < 2) {
-	    twilight_self.uneventOpponentControlledCountries(player);
+	    twilight_self.uneventOpponentControlledCountries(player, card);
 	  }
 
           twilight_self.updateStatus("Place " + j + " influence");
   
         if (j <= 0) {
-	    if (twilight_self.isRegionBonus() == 1) {
+	    if (twilight_self.isRegionBonus(card) == 1) {
               twilight_self.updateStatus("Place regional bonus");
 	      j++;
 	      twilight_self.limitToRegionBonus();
@@ -2894,7 +2906,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
 
           if (j <= 0) {
-            if (twilight_self.isRegionBonus() == 1) {
+            if (twilight_self.isRegionBonus(card) == 1) {
               twilight_self.updateStatus("Realign with bonus OP");
               j++;
               twilight_self.limitToRegionBonus();
@@ -3514,9 +3526,9 @@ Twilight.prototype.playerTriggerEvent = function playerTriggerEvent(player, card
 /////////////////////
 // Place Influence //
 /////////////////////
-Twilight.prototype.uneventOpponentControlledCountries = function uneventOpponentControlledCountries(player) {
+Twilight.prototype.uneventOpponentControlledCountries = function uneventOpponentControlledCountries(player, card) {
 
-  let bonus_regions = this.returnArrayOfRegionBonuses();
+  let bonus_regions = this.returnArrayOfRegionBonuses(card);
 
   for (var i in this.countries) { 
     if (player == "us") {
@@ -5455,6 +5467,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "cambridge") {
 
     if (this.game.state.round > 7) {
+      this.updateLog("The Cambridge Five cannot be played as an event in Late War");
       this.updateStatus("The Cambridge Five cannot be played as an event in Late War");
       return 1;
     }
@@ -7320,7 +7333,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
             }
           }
 	}
-
       }
 
 
@@ -9513,7 +9525,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     let user_message = "Choose card to reclaim: <p></p><ul>";
     for (var i in this.game.deck[0].discards) {
-      user_message += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
+      if (this.game.state.headline == 1 && i == "unintervention") {} else {
+        user_message += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
+      }
     }
     user_message += '</li>';
     twilight_self.updateStatus(user_message);
@@ -10054,7 +10068,7 @@ Twilight.prototype.isControlled = function isControlled(player, country) {
   return 0;
 
 }
-Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonuses() {
+Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonuses(card="") {
 
   let regions = [];
 
@@ -10062,7 +10076,15 @@ Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonu
   // Vietnam Revolts
   //
   if (this.game.state.events.vietnam_revolts == 1 && this.game.state.events.vietnam_revolts_eligible == 1 && this.game.player == 1) {
-    regions.push("seasia");
+
+    //
+    // Vietnam Revolts does not give bonus to 1 OP card in SEA if USSR Red Purged
+    // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
+    let pushme = 1;
+    if (card != "") { if (this.game.deck[0].cards[card].ops == 1 && this.game.state.events.redscare_player1 == 1) { pushme = 0; } }
+    if (pushme == 1) {
+      regions.push("seasia");
+    }
   }
 
   //
@@ -10075,12 +10097,18 @@ Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonu
   return regions;
 
 }
-Twilight.prototype.isRegionBonus = function isRegionBonus() {
+Twilight.prototype.isRegionBonus = function isRegionBonus(card="") {
 
   //
   // Vietnam Revolts
   //
   if (this.game.state.events.vietnam_revolts == 1 && this.game.state.events.vietnam_revolts_eligible == 1 && this.game.player == 1) {
+
+    //
+    // Vietnam Revolts does not give bonus to 1 OP card in SEA if USSR Red Purged
+    // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
+    if (card != "") { if (this.game.deck[0].cards[card].ops == 1 && this.game.state.events.redscare_player1 == 1) { return 0; } }
+
     this.updateStatus("Extra 1 OP Available for Southeast Asia");
     this.game.state.events.region_bonus = "seasia"; 
     return 1;
