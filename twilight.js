@@ -1238,6 +1238,13 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 		  let event_removal = 1;
 
 		  //
+		  // Wargames not removed if DEFCON > 2
+		  // 
+		  if (this.game.state.defcon > 2 && mv[2] == "wargames") {
+		    event_removal = 0;
+		  }
+
+		  //
 		  // NATO not removed if prerequisitcs not met
 		  // 
 		  if (this.game.state.events.nato == 0 && mv[2] == "nato") {
