@@ -7572,11 +7572,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
           let action2 = $(this).attr("id");
 
   	  if (action2 == "raise") {
+	    twilight_self.updateStatus("broadcasting choice....");
             twilight_self.addMove("resolve\tsummit");
             twilight_self.addMove("defcon\traise");
 	    twilight_self.endTurn();
           }
   	  if (action2 == "lower") {
+	    twilight_self.updateStatus("broadcasting choice....");
             twilight_self.addMove("resolve\tsummit");
             twilight_self.addMove("defcon\tlower");
 	    twilight_self.endTurn();

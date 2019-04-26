@@ -1,5 +1,5 @@
 
-This is an implementation of Twilight Struggle written for the open source Saito Game Engine Module. It is intended as a demonstration of running complicated, rules-based games on a blockchain, letting the underlying game engire provide provably-fair dice rolls and deck management.
+This is an implementation of Twilight Struggle written for the open source Saito Game Engine Module. It is intended as a demonstration of running complicated, rules-based games on a blockchain, letting the underlying game engire provide provably-fair dice rolls and deck management. You can try it out on the Saito Arcade (https://apps.saito.network/arcade).
 
 As a fan of GMT Games and Twilight Struggle, our hope is that this module helps introduce new players to the company and the game, supports the Twilight Struggle community, and encourages the emergence of improved ecosystems for online gaming which will give games publishers like GMT Games more freedom to license their games for direct play on a game-by-game basis if they wish. We strive to make this game as standards-compliant as possible.
 
