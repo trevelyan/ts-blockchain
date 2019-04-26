@@ -1,5 +1,5 @@
 .status {
-  height: 400px;
+  height: 450px;
 }
 .log {
   width: 70%;
@@ -151,6 +151,7 @@ body {
   cursor: pointer;
 }
 
+
 .cardimg {
   position: absolute;
   left: 0;
@@ -166,7 +167,7 @@ body {
   width: 375px;
   background-image: url("/twilight/images/Base.svg");
   background-size: cover;
-  z-index: 1000;
+  z-index: 2;
   display: none;
   top: 30%;
   left: 50%;
