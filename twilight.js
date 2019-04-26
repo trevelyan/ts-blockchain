@@ -147,8 +147,8 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
         this.game.queue.push("placement_bonus\t2\t"+this.game.options.usbonus);
       }
     }
-//    this.game.queue.push("placement\t2");
-//    this.game.queue.push("placement\t1");
+    this.game.queue.push("placement\t2");
+    this.game.queue.push("placement\t1");
     this.game.queue.push("EMAIL\tready");
     this.game.queue.push("DEAL\t1\t2\t8");
     this.game.queue.push("DEAL\t1\t1\t8");
@@ -2806,7 +2806,10 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 	  //
 	  // breaking control must be costly
 	  //
-	  if (twilight_self.game.break_control == 1) { j--; }
+	  if (twilight_self.game.break_control == 1) { 
+	    j--;
+	    if (j < 0) { twilight_self.endRegionBonus(); j = 0; }
+	  }
 	  twilight_self.game.break_control = 0;
 
 	  if (j < 2) {
@@ -3513,26 +3516,48 @@ Twilight.prototype.playerTriggerEvent = function playerTriggerEvent(player, card
 /////////////////////
 Twilight.prototype.uneventOpponentControlledCountries = function uneventOpponentControlledCountries(player) {
 
+  let bonus_regions = this.returnArrayOfRegionBonuses();
+
   for (var i in this.countries) { 
     if (player == "us") {
       if (this.isControlled("ussr", i) == 1) {
-        this.countries[i].place = 0; 
-	let divname = '#'+i;
-	$(divname).off();
-	//$(divname).on('click', function() {
-	//  alert("invalid selection");
-	//});
+
+	//
+	// allow bonus regions to break control with bonuses
+	//
+	let bonus_region_applies = 0;
+	for (let z = 0; z < bonus_regions.length; z++) {
+	  if (this.countries[i].region.indexOf(bonus_regions[z]) > -1) { bonus_region_applies = 1; }
+	}
+	
+	if (bonus_region_applies == 1) {
+	} else {
+          this.countries[i].place = 0; 
+	  let divname = '#'+i;
+	  $(divname).off();
+	}
+
       }
     }
 
     if (player == "ussr") {
       if (this.isControlled("us", i) == 1) {
-        this.countries[i].place = 0; 
-	let divname = '#'+i;
-	$(divname).off();
-	//$(divname).on('click', function() {
-	//  alert("invalid selection");
-	//});
+
+	//
+	// allow bonus regions to break control with bonuses
+	//
+	let bonus_region_applies = 0;
+	for (let z = 0; z < bonus_regions.length; z++) {
+	  if (this.countries[i].region.indexOf(bonus_regions[z]) > -1) { bonus_region_applies = 1; }
+	}
+	
+	if (bonus_region_applies == 1) {
+	} else {
+          this.countries[i].place = 0; 
+	  let divname = '#'+i;
+	  $(divname).off();
+	}
+
       }
     }
   }
@@ -5051,8 +5076,8 @@ Twilight.prototype.returnCountries = function returnCountries() {
   countries['pakistan'] = { top : 1450, left : 3345, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'iran','afghanistan','india' ], region : "asia" , name : "Pakistan"}
   countries['india'] = { top : 1552, left : 3585, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'pakistan','burma' ], region : "asia" , name : "India"};
   countries['burma'] = { top : 1580, left : 3855, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'india','laos' ], region : "seasia" , name : "Burma"};
-  countries['laos'] = { top : 1600, left : 4070, us : 3 , ussr : 1 , control : 1 , bg : 0 , neighbours : [ 'burma','thailand','vietnam' ], region : "seasia" , name : "Laos"};
-  countries['thailand'] = { top : 1769, left : 3980, us : 0 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'laos','vietnam','malaysia' ], region : "seasia" , name : "Thailand"};
+  countries['laos'] = { top : 1600, left : 4070, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'burma','thailand','vietnam' ], region : "seasia" , name : "Laos"};
+  countries['thailand'] = { top : 1769, left : 3980, us : 3 , ussr : 1 , control : 2 , bg : 1 , neighbours : [ 'laos','vietnam','malaysia' ], region : "seasia" , name : "Thailand"};
   countries['vietnam'] = { top : 1760, left : 4200, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'laos','thailand' ], region : "seasia" , name : "Vietnam"};
   countries['malaysia'] = { top : 1990, left : 4080, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'thailand','australia','indonesia' ], region : "seasia" , name : "Malaysia"};
   countries['australia'] = { top : 2442, left : 4450, us : 4 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'malaysia' ], region : "seasia" , name : "Australia" };
