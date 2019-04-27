@@ -19,7 +19,8 @@ function Twilight(app) {
   this.handlesEmail    = 1;
   this.emailAppName    = "Twilight Struggle";
   this.useHUD          = 1;
-  this.addHUDMenu      = ['Deck'];
+  this.addHUDMenu      = ['Deck','Lang'];
+  this.lang            = "zh";
 
   //
   // this sets the ratio used for determining
@@ -97,6 +98,34 @@ Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
         user_message += '</ul>';
         $('.hud_menu_overlay').html(user_message);
 
+      }
+
+    });
+  }
+
+
+
+
+  if (menuitem === "lang") {
+
+    let user_message = "Select Language: <p></p><ul>";
+        user_message += '<li class="card" id="english">English</li>';
+        user_message += '<li class="card" id="chinese">简体中文</li>';
+        user_message += '</ul>';
+
+    $('.hud_menu_overlay').html(user_message);
+
+    // leave action enabled on other panels
+    //$('.card').off();
+    $('.card').on('click', function() {
+
+      let action2 = $(this).attr("id");
+
+      if (action2 === "english") {
+	twilight_self.lang = "en";
+      }
+      if (action2 === "chinese") {
+	twilight_self.lang = "zh";
       }
 
     });
@@ -11967,6 +11996,18 @@ Twilight.prototype.webServer = function webServer(app, expressapp) {
     res.sendFile(__dirname + imgf);
     return;
   });
+  expressapp.get('/twilight/images/zh/:imagefile', function (req, res) {
+    var imgf = '/web/images/zh/'+req.params.imagefile;
+    if (imgf.indexOf("\/") != false) { return; }
+    res.sendFile(__dirname + imgf);
+    return;
+  });
+  expressapp.get('/twilight/images/en/:imagefile', function (req, res) {
+    var imgf = '/web/images/en/'+req.params.imagefile;
+    if (imgf.indexOf("\/") != false) { return; }
+    res.sendFile(__dirname + imgf);
+    return;
+  });
 
 }
 
@@ -11977,7 +12018,7 @@ Twilight.prototype.showCard = function showCard(cardname) {
   if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
   if (c == undefined) { c = this.game.deck[0].removed[cardname]; }
 
-  let url = '<img class="cardimg" src="/twilight/images/' + c.img + '.svg" />';
+  let url = '<img class="cardimg" src="/twilight/images/' + this.lang + "/" + c.img + '.svg" />';
       url +='<img class="cardimg" src="/twilight/images/EarlyWar.svg" />';
   if (c.player == "both") {
       url +='<img class="cardimg" src="/twilight/images/BothPlayerCard.svg" />';

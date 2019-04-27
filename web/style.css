@@ -235,6 +235,6 @@ body {
   .cardbox {
     position: fixed;
     float: none;
-    z-index: 40000;
+    z-index: 2;
   }
 }
