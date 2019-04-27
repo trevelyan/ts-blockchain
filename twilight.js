@@ -4864,6 +4864,9 @@ Twilight.prototype.returnState = function returnState() {
 
   state.vp_outstanding = 0; // vp not settled yet
 
+  state.space_race_us = 0;
+  state.space_race_ussr = 0;
+
   state.animal_in_space = "";
   state.man_in_earth_orbit = "";
   state.eagle_has_landed = "";
@@ -4873,8 +4876,6 @@ Twilight.prototype.returnState = function returnState() {
 
   state.space_race_us_counter = 0;
   state.space_race_ussr_counter = 0;
-  state.space_race_us = 0;
-  state.space_race_ussr = 0;
 
   state.limit_coups = 0;
   state.limit_realignments = 0;
