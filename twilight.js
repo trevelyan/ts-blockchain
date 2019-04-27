@@ -7695,33 +7695,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	keys_given++;
       } 
       this.addMove("tehran\tussr\t"+keys_given);
-
-      //
-      // and reshuffle the deck if we are at the end of it
-      //
-      if (5 > twilight_self.game.deck[0].crypt.length) {
-
-        let discarded_cards = twilight_self.returnDiscardedCards();
-        if (Object.keys(discarded_cards).length > 0) {
-
-          //
-          // shuffle in discarded cards
-          //
-          twilight_self.addMove("SHUFFLE\t1");
-          twilight_self.addMove("DECKRESTORE\t1");
-          twilight_self.addMove("DECKENCRYPT\t1\t2");
-          twilight_self.addMove("DECKENCRYPT\t1\t1");
-          twilight_self.addMove("DECKXOR\t1\t2");
-          twilight_self.addMove("DECKXOR\t1\t1");
-          twilight_self.addMove("flush\tdiscards"); // opponent should know to flush discards as we have
-          twilight_self.addMove("DECK\t1\t"+JSON.stringify(discarded_cards));
-          twilight_self.addMove("DECKBACKUP\t1");
-          twilight_self.updateLog("cards remaining: " + twilight_self.game.deck[0].crypt.length);
-          twilight_self.updateLog("Shuffling discarded cards back into the deck...");
-
-        }
-      }
-
       this.endTurn();
     }
     return 0;
