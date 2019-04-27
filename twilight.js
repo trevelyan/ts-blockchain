@@ -122,9 +122,11 @@ Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
       let action2 = $(this).attr("id");
 
       if (action2 === "english") {
+	alert("Card settings changed to English");
 	twilight_self.lang = "en";
       }
       if (action2 === "chinese") {
+	alert("卡牌语言改成简体中文");
 	twilight_self.lang = "zh";
       }
 
