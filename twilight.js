@@ -37,7 +37,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   return this;
 
@@ -1452,7 +1452,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	//
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
-	    this.game.deck[0].hand = ["wwby","degaulle","nato","naziscientist","missileenvy"];
+	    this.game.deck[0].hand = ["tehran", "nato", "decolonization", "wwby","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
 	    this.game.deck[0].hand = ["norad","reagan","mideast","southamerica","asia","europe","seasia","centralamerica"];
 	  }
@@ -3545,6 +3545,39 @@ Twilight.prototype.playerTriggerEvent = function playerTriggerEvent(player, card
   twilight_self.game.state.event_name = twilight_self.game.deck[0].cards[card].name;
   twilight_self.addMove("event\t"+player+"\t"+card);
   twilight_self.removeCardFromHand(card);
+
+
+  //
+  // Our Man in Tehran -- check if reshuffle is needed
+  //
+  if (card == "tehran") {
+
+    //
+    // reshuffle needed before event
+    //
+    if (5 > twilight_self.game.deck[0].crypt.length) {
+
+      let discarded_cards = twilight_self.returnDiscardedCards();
+      if (Object.keys(discarded_cards).length > 0) {
+
+        //
+        // shuffle in discarded cards -- eliminate SHUFFLE here as unnecessary
+        //
+        twilight_self.addMove("DECKRESTORE\t1");
+        twilight_self.addMove("DECKENCRYPT\t1\t2");
+        twilight_self.addMove("DECKENCRYPT\t1\t1");
+        twilight_self.addMove("DECKXOR\t1\t2");
+        twilight_self.addMove("DECKXOR\t1\t1");
+        twilight_self.addMove("flush\tdiscards"); // opponent should know to flush discards as we have
+        twilight_self.addMove("DECK\t1\t"+JSON.stringify(discarded_cards));
+        twilight_self.addMove("DECKBACKUP\t1");
+        twilight_self.updateLog("cards remaining: " + twilight_self.game.deck[0].crypt.length);
+        twilight_self.updateLog("Shuffling discarded cards back into the deck...");
+
+      }
+    }
+  }
+
   twilight_self.endTurn();
   return;
 
