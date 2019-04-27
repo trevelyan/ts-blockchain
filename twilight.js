@@ -191,6 +191,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     //
     // TESTING
     //
+/***
     if (this.is_testing == 1) {
       let a = this.returnEarlyWarCards();
       let b = this.returnMidWarCards();
@@ -202,7 +203,8 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     } else {
       this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnEarlyWarCards()));
     }
-
+***/
+    this.game.queue.push("DECK\t1\t"+JSON.stringify(this.returnMidWarCards()));
     this.game.queue.push("init");
 
     if (this.game.dice === "") {
@@ -330,6 +332,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       // che ussr country_of_target1
       //
       // start round
+      // flush [discards] // empty discards pile if exists
       // placement (initial placement)
       // ops [us/ussr] card num
       // round
@@ -815,6 +818,14 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (mv[1] == "ignoredefcon") { this.game.state.limit_ignoredefcon = 1; }
         if (mv[1] == "region") { this.game.state.limit_region += mv[2]; }
         this.game.queue.splice(qe, 1);
+      }
+      if (mv[0] == "flush") {
+
+	if (mv[1] == "discards") {
+	  this.game.deck[0].discards = {};
+	}
+        this.game.queue.splice(qe, 1);
+
       }
       //
       // latinamericandebtcrisis
@@ -3051,6 +3062,7 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
 Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
+
   if (this.browser_active == 0) { return; }
 
   //
@@ -3065,6 +3077,8 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   let player = "ussr";
   let opponent = "us";
   if (this.game.player == 2) { player = "us"; opponent = "ussr"; }
+
+  let is_this_missile_envy_noneventable = this.game.state.events.missileenvy;
 
   let user_message = "";
   if (selected_card == null) {
@@ -3300,11 +3314,6 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	}
       }
 
-      //
-      // Missile Envy SR check
-      //
-      if (card == "missileenvy" && twilight_self.game.state.events.missileenvy == 1) { sre = 0; }
-
 
       let announcement = player.toUpperCase() + ' playing '+twilight_self.game.deck[0].cards[card].name+'<p></p><ul>';
 
@@ -3313,7 +3322,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       //
       let can_play_event = 1;
       if (card == "china") { can_play_event = 0; }
-      if (card == "missileenvy" && twilight_self.game.state.events.missileenvy == 1) { can_play_event = 0; }
+      if (card == "missileenvy" && is_this_missile_envy_noneventable == 1) { can_play_event = 0; }
       if (can_play_event == 1) { announcement += '<li class="card" id="event">play event</li>'; } 
 
       announcement += '<li class="card" id="ops">play ops</li>';
@@ -5245,59 +5254,59 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
 
   var deck = {};
 
-  deck['brushwar']          = { img : "TNRnTS-36" , name : "Brush War", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
+//  deck['brushwar']          = { img : "TNRnTS-36" , name : "Brush War", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
   deck['centralamerica']    = { img : "TNRnTS-37" , name : "Central America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
   deck['seasia']            = { img : "TNRnTS-38" , name : "Southeast Asia Scoring", scoring : 1 , player : "both" , recurring : 0 , ops : 0 };
   deck['armsrace']          = { img : "TNRnTS-39" , name : "Arms Race", scoring : 0 , player : "both" , recurring : 1 , ops : 3 };
   deck['cubanmissile']      = { img : "TNRnTS-40" , name : "Cuban Missile Crisis", scoring : 0 , player : "both" , recurring : 0 , ops : 3 };
   deck['nuclearsubs']       = { img : "TNRnTS-41" , name : "Nuclear Subs", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
-  deck['quagmire']          = { img : "TNRnTS-42" , name : "Quagmire", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
-  deck['saltnegotiations']  = { img : "TNRnTS-43" , name : "Salt Negotiations", scoring : 0 , player : "both" , recurring : 0 , ops : 3 };
-  deck['beartrap']          = { img : "TNRnTS-44" , name : "Bear Trap", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+//  deck['quagmire']          = { img : "TNRnTS-42" , name : "Quagmire", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+//  deck['saltnegotiations']  = { img : "TNRnTS-43" , name : "Salt Negotiations", scoring : 0 , player : "both" , recurring : 0 , ops : 3 };
+//  deck['beartrap']          = { img : "TNRnTS-44" , name : "Bear Trap", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   deck['summit']            = { img : "TNRnTS-45" , name : "Summit", scoring : 0 , player : "both" , recurring : 1 , ops : 1 };
   deck['howilearned']       = { img : "TNRnTS-46" , name : "How I Learned to Stop Worrying", scoring : 0 , player : "both" , recurring : 0 , ops : 2 };
-  deck['junta']             = { img : "TNRnTS-47" , name : "Junta", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
+//  deck['junta']             = { img : "TNRnTS-47" , name : "Junta", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['kitchendebates']    = { img : "TNRnTS-48" , name : "Kitchen Debates", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
   deck['missileenvy']       = { img : "TNRnTS-49" , name : "Missile Envy", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
   deck['wwby']              = { img : "TNRnTS-50" , name : "We Will Bury You", scoring : 0 , player : "ussr" , recurring : 0 , ops : 4 };
   deck['brezhnev']          = { img : "TNRnTS-51" , name : "Brezhnev Doctrine", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['portuguese']        = { img : "TNRnTS-52" , name : "Portuguese Empire Crumbles", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
-  deck['southafrican']      = { img : "TNRnTS-53" , name : "South African Unrest", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
+//  deck['southafrican']      = { img : "TNRnTS-53" , name : "South African Unrest", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
   deck['allende']           = { img : "TNRnTS-54" , name : "Allende", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
   deck['willybrandt']       = { img : "TNRnTS-55" , name : "Willy Brandt", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
-  deck['muslimrevolution']  = { img : "TNRnTS-56" , name : "Muslim Revolution", scoring : 0 , player : "ussr" , recurring : 1 , ops : 4 };
-  deck['abmtreaty']         = { img : "TNRnTS-57" , name : "ABM Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
+//  deck['muslimrevolution']  = { img : "TNRnTS-56" , name : "Muslim Revolution", scoring : 0 , player : "ussr" , recurring : 1 , ops : 4 };
+//  deck['abmtreaty']         = { img : "TNRnTS-57" , name : "ABM Treaty", scoring : 0 , player : "both" , recurring : 1 , ops : 4 };
   deck['culturalrev']       = { img : "TNRnTS-58" , name : "Cultural Revolution", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
-  deck['flowerpower']       = { img : "TNRnTS-59" , name : "Flower Power", scoring : 0 , player : "ussr" , recurring : 0 , ops : 4 };
-  deck['u2']                = { img : "TNRnTS-60" , name : "U2 Incident", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
+//  deck['flowerpower']       = { img : "TNRnTS-59" , name : "Flower Power", scoring : 0 , player : "ussr" , recurring : 0 , ops : 4 };
+//  deck['u2']                = { img : "TNRnTS-60" , name : "U2 Incident", scoring : 0 , player : "ussr" , recurring : 0 , ops : 3 };
   deck['opec']              = { img : "TNRnTS-61" , name : "OPEC", scoring : 0 , player : "ussr" , recurring : 1 , ops : 3 };
-  deck['lonegunman']        = { img : "TNRnTS-62" , name : "Lone Gunman", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
-  deck['colonial']          = { img : "TNRnTS-63" , name : "Colonial Rear Guards", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
-  deck['panamacanal']       = { img : "TNRnTS-64" , name : "Panama Canal Returned", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
-  deck['campdavid']         = { img : "TNRnTS-65" , name : "Camp David Accords", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
-  deck['puppet']            = { img : "TNRnTS-66" , name : "Puppet Governments", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
-  deck['grainsales']        = { img : "TNRnTS-67" , name : "Grain Sales to Soviets", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
-  deck['johnpaul']          = { img : "TNRnTS-68" , name : "John Paul II Elected Pope", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+//  deck['lonegunman']        = { img : "TNRnTS-62" , name : "Lone Gunman", scoring : 0 , player : "ussr" , recurring : 0 , ops : 1 };
+//  deck['colonial']          = { img : "TNRnTS-63" , name : "Colonial Rear Guards", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
+//  deck['panamacanal']       = { img : "TNRnTS-64" , name : "Panama Canal Returned", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
+//  deck['campdavid']         = { img : "TNRnTS-65" , name : "Camp David Accords", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+//  deck['puppet']            = { img : "TNRnTS-66" , name : "Puppet Governments", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+//  deck['grainsales']        = { img : "TNRnTS-67" , name : "Grain Sales to Soviets", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
+//  deck['johnpaul']          = { img : "TNRnTS-68" , name : "John Paul II Elected Pope", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   deck['deathsquads']       = { img : "TNRnTS-69" , name : "Latin American Death Squads", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
-  deck['oas']               = { img : "TNRnTS-70" , name : "OAS Founded", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
-  deck['nixon']             = { img : "TNRnTS-71" , name : "Nixon Plays the China Card", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
-  deck['sadat']             = { img : "TNRnTS-72" , name : "Sadat Expels Soviets", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
-  deck['shuttle']           = { img : "TNRnTS-73" , name : "Shuttle Diplomacy", scoring : 0 , player : "us" , recurring : 1 , ops : 3 };
-  deck['voiceofamerica']    = { img : "TNRnTS-74" , name : "Voice of America", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
-  deck['liberation']        = { img : "TNRnTS-75" , name : "Liberation Theology", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
-  deck['ussuri']            = { img : "TNRnTS-76" , name : "Ussuri River Skirmish", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+//  deck['oas']               = { img : "TNRnTS-70" , name : "OAS Founded", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
+//  deck['nixon']             = { img : "TNRnTS-71" , name : "Nixon Plays the China Card", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+//  deck['sadat']             = { img : "TNRnTS-72" , name : "Sadat Expels Soviets", scoring : 0 , player : "us" , recurring : 0 , ops : 1 };
+//  deck['shuttle']           = { img : "TNRnTS-73" , name : "Shuttle Diplomacy", scoring : 0 , player : "us" , recurring : 1 , ops : 3 };
+//  deck['voiceofamerica']    = { img : "TNRnTS-74" , name : "Voice of America", scoring : 0 , player : "us" , recurring : 1 , ops : 2 };
+// deck['liberation']        = { img : "TNRnTS-75" , name : "Liberation Theology", scoring : 0 , player : "ussr" , recurring : 1 , ops : 2 };
+//  deck['ussuri']            = { img : "TNRnTS-76" , name : "Ussuri River Skirmish", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   deck['asknot']            = { img : "TNRnTS-77" , name : "Ask Not What Your Country...", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
-  deck['alliance']          = { img : "TNRnTS-78" , name : "Alliance for Progress", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
-  deck['africa']            = { img : "TNRnTS-79" , name : "Africa Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
+//  deck['alliance']          = { img : "TNRnTS-78" , name : "Alliance for Progress", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+//  deck['africa']            = { img : "TNRnTS-79" , name : "Africa Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
   deck['onesmallstep']      = { img : "TNRnTS-80" , name : "One Small Step", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
-  deck['southamerica']      = { img : "TNRnTS-81" , name : "South America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
+//  deck['southamerica']      = { img : "TNRnTS-81" , name : "South America Scoring", scoring : 1 , player : "both" , recurring : 1 , ops : 0 };
 
   //
   // OPTIONS - we default to the expanded deck
   //
   if (this.game.options.deck != "original" ) {
-    deck['che']               = { img : "TNRnTS-107" , name : "Che", scoring : 0 , player : "ussr" , recurring : 1 , ops : 3 };
-    deck['tehran']            = { img : "TNRnTS-108" , name : "Our Man in Tehran", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
+//    deck['che']               = { img : "TNRnTS-107" , name : "Che", scoring : 0 , player : "ussr" , recurring : 1 , ops : 3 };
+//    deck['tehran']            = { img : "TNRnTS-108" , name : "Our Man in Tehran", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   }
 
   return deck;
@@ -6163,34 +6172,35 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       var options_purge = [];
 
-      if (twilight_self.countries['canada'].ussr > 0 && twilight_self.isControlled('ussr', 'canada') != 1) { options_purge.push('canada'); }
-      if (twilight_self.countries['uk'].ussr > 0 && twilight_self.isControlled('ussr', 'uk') != 1) { options_purge.push('uk'); }
-      if (twilight_self.countries['france'].ussr > 0 && twilight_self.isControlled('ussr', 'france') != 1) { options_purge.push('france'); }
-      if (twilight_self.countries['spain'].ussr > 0 && twilight_self.isControlled('ussr', 'spain') != 1) { options_purge.push('spain'); }
-      if (twilight_self.countries['greece'].ussr > 0 && twilight_self.isControlled('ussr', 'greece') != 1) { options_purge.push('greece'); }
-      if (twilight_self.countries['turkey'].ussr > 0 && twilight_self.isControlled('ussr', 'turkey') != 1) { options_purge.push('turkey'); }
-      if (twilight_self.countries['italy'].ussr > 0 && twilight_self.isControlled('ussr', 'italy') != 1) { options_purge.push('italy'); }
-      if (twilight_self.countries['westgermany'].ussr > 0 && twilight_self.isControlled('ussr', 'westgermany') != 1) { options_purge.push('westgermany'); }
-      if (twilight_self.countries['eastgermany'].ussr > 0 && twilight_self.isControlled('ussr', 'eastgermany') != 1) { options_purge.push('eastgermany'); }
-      if (twilight_self.countries['poland'].ussr > 0 && twilight_self.isControlled('ussr', 'poland') != 1) { options_purge.push('poland'); }
-      if (twilight_self.countries['benelux'].ussr > 0 && twilight_self.isControlled('ussr', 'benelux') != 1) { options_purge.push('benelux'); }
-      if (twilight_self.countries['denmark'].ussr > 0 && twilight_self.isControlled('ussr', 'denmark') != 1) { options_purge.push('denmark'); }
-      if (twilight_self.countries['norway'].ussr > 0 && twilight_self.isControlled('ussr', 'norway') != 1) { options_purge.push('norway'); }
-      if (twilight_self.countries['finland'].ussr > 0 && twilight_self.isControlled('ussr', 'finland') != 1) { options_purge.push('finland'); }
-      if (twilight_self.countries['sweden'].ussr > 0 && twilight_self.isControlled('ussr', 'sweden') != 1) { options_purge.push('sweden'); }
-      if (twilight_self.countries['yugoslavia'].ussr > 0 && twilight_self.isControlled('ussr', 'yugoslavia') != 1) { options_purge.push('yugoslavia'); }
-      if (twilight_self.countries['czechoslovakia'].ussr > 0 && twilight_self.isControlled('ussr', 'czechoslovakia') != 1) { options_purge.push('czechoslovakia'); }
-      if (twilight_self.countries['bulgaria'].ussr > 0 && twilight_self.isControlled('ussr', 'bulgaria') != 1) { options_purge.push('bulgaria'); }
-      if (twilight_self.countries['hungary'].ussr > 0 && twilight_self.isControlled('ussr', 'hungary') != 1) { options_purge.push('hungary'); }
-      if (twilight_self.countries['romania'].ussr > 0 && twilight_self.isControlled('ussr', 'romania') != 1) { options_purge.push('romania'); }
-      if (twilight_self.countries['austria'].ussr > 0 && twilight_self.isControlled('ussr', 'austria') != 1) { options_purge.push('austria'); }
 
+      if (twilight_self.countries['canada'].ussr > 0 && twilight_self.isControlled('ussr', 'canada') != 1 && twilight_self.isControlled('us', 'canada') != 1) { options_purge.push('canada'); }
+      if (twilight_self.countries['uk'].ussr > 0 && twilight_self.isControlled('ussr', 'uk') != 1 && twilight_self.isControlled('us', 'uk') != 1) { options_purge.push('uk'); }
+      if (twilight_self.countries['france'].ussr > 0 && twilight_self.isControlled('ussr', 'france') != 1 && twilight_self.isControlled('us', 'france') != 1) { options_purge.push('france'); }
+      if (twilight_self.countries['spain'].ussr > 0 && twilight_self.isControlled('ussr', 'spain') != 1 && twilight_self.isControlled('us', 'spain') != 1) { options_purge.push('spain'); }
+      if (twilight_self.countries['greece'].ussr > 0 && twilight_self.isControlled('ussr', 'greece') != 1 && twilight_self.isControlled('us', 'greece') != 1) { options_purge.push('greece'); }
+      if (twilight_self.countries['turkey'].ussr > 0 && twilight_self.isControlled('ussr', 'turkey') != 1 && twilight_self.isControlled('us', 'turkey') != 1) { options_purge.push('turkey'); }
+      if (twilight_self.countries['italy'].ussr > 0 && twilight_self.isControlled('ussr', 'italy') != 1 && twilight_self.isControlled('us', 'italy') != 1) { options_purge.push('italy'); }
+      if (twilight_self.countries['westgermany'].ussr > 0 && twilight_self.isControlled('ussr', 'westgermany') != 1 && twilight_self.isControlled('us', 'westgermany') != 1) { options_purge.push('westgermany'); }
+      if (twilight_self.countries['eastgermany'].ussr > 0 && twilight_self.isControlled('ussr', 'eastgermany') != 1 && twilight_self.isControlled('us', 'eastgermany') != 1) { options_purge.push('eastgermany'); }
+      if (twilight_self.countries['poland'].ussr > 0 && twilight_self.isControlled('ussr', 'poland') != 1 && twilight_self.isControlled('us', 'poland') != 1) { options_purge.push('poland'); }
+      if (twilight_self.countries['benelux'].ussr > 0 && twilight_self.isControlled('ussr', 'benelux') != 1 && twilight_self.isControlled('us', 'benelux') != 1) { options_purge.push('benelux'); }
+      if (twilight_self.countries['denmark'].ussr > 0 && twilight_self.isControlled('ussr', 'denmark') != 1 && twilight_self.isControlled('us', 'denmark') != 1) { options_purge.push('denmark'); }
+      if (twilight_self.countries['norway'].ussr > 0 && twilight_self.isControlled('ussr', 'norway') != 1 && twilight_self.isControlled('us', 'norway') != 1) { options_purge.push('norway'); }
+      if (twilight_self.countries['finland'].ussr > 0 && twilight_self.isControlled('ussr', 'finland') != 1 && twilight_self.isControlled('us', 'finland') != 1) { options_purge.push('finland'); }
+      if (twilight_self.countries['sweden'].ussr > 0 && twilight_self.isControlled('ussr', 'sweden') != 1 && twilight_self.isControlled('us', 'sweden') != 1) { options_purge.push('sweden'); }
+      if (twilight_self.countries['yugoslavia'].ussr > 0 && twilight_self.isControlled('ussr', 'yugoslavia') != 1 && twilight_self.isControlled('us', 'yugoslavia') != 1) { options_purge.push('yugoslavia'); }
+      if (twilight_self.countries['czechoslovakia'].ussr > 0 && twilight_self.isControlled('ussr', 'czechoslovakia') != 1 && twilight_self.isControlled('us', 'czechoslovakia') != 1) { options_purge.push('czechoslovakia'); }
+      if (twilight_self.countries['bulgaria'].ussr > 0 && twilight_self.isControlled('ussr', 'bulgaria') != 1 && twilight_self.isControlled('us', 'bulgaria') != 1) { options_purge.push('bulgaria'); }
+      if (twilight_self.countries['hungary'].ussr > 0 && twilight_self.isControlled('ussr', 'hungary') != 1 && twilight_self.isControlled('us', 'hungary') != 1) { options_purge.push('hungary'); }
+      if (twilight_self.countries['romania'].ussr > 0 && twilight_self.isControlled('ussr', 'romania') != 1 && twilight_self.isControlled('us', 'romania') != 1) { options_purge.push('romania'); }
+      if (twilight_self.countries['austria'].ussr > 0 && twilight_self.isControlled('ussr', 'austria') != 1 && twilight_self.isControlled('us', 'austria') != 1) { options_purge.push('austria'); }
+  
       if (options_purge.length == 0) {
         twilight_self.addMove("notify\tUSSR has no influence that can be removed");
         twilight_self.endTurn();
       }
 
-      twilight_self.updateStatus("Select a non-USSR controlled country in Europe to remove all USSR influence: ");
+      twilight_self.updateStatus("Select a non-controlled country in Europe to remove all USSR influence: ");
 
       for (let i = 0; i < options_purge.length; i++) {
 
@@ -7546,8 +7556,37 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         let action2 = $(this).attr("id");
 
         if (action2 == "finished") {
+
           twilight_self.addMove("DEAL\t1\t2\t"+cards_discarded);
+
+	  //
+	  // are there enough cards available, if not, reshuffle
+	  //
+	  if (cards_discarded > twilight_self.game.deck[0].crypt.length) {
+
+            let discarded_cards = twilight_self.returnDiscardedCards();
+            if (Object.keys(discarded_cards).length > 0) {
+
+              //
+              // shuffle in discarded cards
+              //
+              twilight_self.addMove("SHUFFLE\t1");
+              twilight_self.addMove("DECKRESTORE\t1");
+              twilight_self.addMove("DECKENCRYPT\t1\t2");
+              twilight_self.addMove("DECKENCRYPT\t1\t1");
+              twilight_self.addMove("DECKXOR\t1\t2");
+              twilight_self.addMove("DECKXOR\t1\t1");
+              twilight_self.addMove("flush\tdiscards"); // opponent should know to flush discards as we have
+              twilight_self.addMove("DECK\t1\t"+JSON.stringify(discarded_cards));
+              twilight_self.addMove("DECKBACKUP\t1");
+              twilight_self.updateLog("cards remaining: " + twilight_self.game.deck[0].crypt.length);
+              twilight_self.updateLog("Shuffling discarded cards back into the deck...");
+
+            }
+	  }
+
           twilight_self.endTurn();
+
         } else {
           $(this).hide();
 	  cards_discarded++;
@@ -7659,6 +7698,33 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	keys_given++;
       } 
       this.addMove("tehran\tussr\t"+keys_given);
+
+      //
+      // and reshuffle the deck if we are at the end of it
+      //
+      if (5 > twilight_self.game.deck[0].crypt.length) {
+
+        let discarded_cards = twilight_self.returnDiscardedCards();
+        if (Object.keys(discarded_cards).length > 0) {
+
+          //
+          // shuffle in discarded cards
+          //
+          twilight_self.addMove("SHUFFLE\t1");
+          twilight_self.addMove("DECKRESTORE\t1");
+          twilight_self.addMove("DECKENCRYPT\t1\t2");
+          twilight_self.addMove("DECKENCRYPT\t1\t1");
+          twilight_self.addMove("DECKXOR\t1\t2");
+          twilight_self.addMove("DECKXOR\t1\t1");
+          twilight_self.addMove("flush\tdiscards"); // opponent should know to flush discards as we have
+          twilight_self.addMove("DECK\t1\t"+JSON.stringify(discarded_cards));
+          twilight_self.addMove("DECKBACKUP\t1");
+          twilight_self.updateLog("cards remaining: " + twilight_self.game.deck[0].crypt.length);
+          twilight_self.updateLog("Shuffling discarded cards back into the deck...");
+
+        }
+      }
+
       this.endTurn();
     }
     return 0;
@@ -7941,7 +8007,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       if (this.game.state.events.china_card == 2) {
 
-	if (! this.game.deck[0].hand.includes("china")) {
+	if (this.game.player == 1) {
 	  this.game.deck[0].hand.push("china");
 	}
 	this.game.state.events.china_card = 0;
