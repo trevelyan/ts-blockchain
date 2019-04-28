@@ -2364,7 +2364,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
           twilight_self.game.state.headline_card = card;
           twilight_self.game.state.headline_xor = "MAN_IN_EARTH_ORBIT";
           twilight_self.game.state.headline_hash = "MAN_IN_EARTH_ORBIT";
-	  twilight_self.updateStatus("headline card selected");
+	  twilight_self.updateStatus("headline card selected, please wait...");
 
           twilight_self.game.turn = [];
 
@@ -2575,6 +2575,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       this.game.state.headline4 = 1;
       this.game.state.headline5 = 1;
       this.game.state.headline  = 0;
+      // debugging test
       //this.saveGame(this.game.id);
 
       //
@@ -2598,6 +2599,8 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
         this.updateLog("USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. US headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
       }
 
+      this.game.state.headline4 = 1;
+
       if (player_to_go == this.game.player) {
         this.addMove("discard\t"+card_player+"\t"+my_card);
         this.addMove("event\t"+card_player+"\t"+my_card);
@@ -2606,8 +2609,8 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       } else {
       }
 
-      this.game.state.headline4 = 1;
-      this.saveGame(this.game.id);
+      // debugging
+      //this.saveGame(this.game.id);
 
       //
       // only one player should trigger next round
@@ -2616,6 +2619,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
 
     return 0;
   }
+
 
 
   if (this.game.state.headline5 == 0) {
@@ -2663,6 +2667,8 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
 
     let shd_continue = 1;
 
+    this.game.state.headline5 = 1;
+
     if (player_to_go == this.game.player) {
       this.addMove("discard\t"+card_player+"\t"+my_card);
       this.addMove("event\t"+card_player+"\t"+my_card);
@@ -2671,8 +2677,8 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
     } else {
     }
 
-    this.game.state.headline5 = 1;
-    this.saveGame(this.game.id);
+    // debugging
+    // this.saveGame(this.game.id);
 
     return 0;
 
@@ -9041,7 +9047,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       for (var i in twilight_self.countries) {
 
-        if (twilight_self.countries[i].control <= 2) {
+        if (twilight_self.countries[i].control <= 2 && (i != "italy" && twilight_self.game.state.events.nato != 1 && twilight_self.isControlled("us", "italy") == 1)) {
 
 	  let divname = "#" + i;
 
