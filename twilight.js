@@ -6009,6 +6009,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       return 0;
     } else {
 
+      let twilight_self = this;
+
       //
       // U2
       //
