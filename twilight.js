@@ -37,7 +37,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   return this;
 
@@ -1452,9 +1452,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	//
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
-	    this.game.deck[0].hand = ["tehran", "nato", "decolonization", "wwby","degaulle","nato","naziscientist","missileenvy"];
+	    this.game.deck[0].hand = ["cubanmissile", "tehran", "nato", "decolonization","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
-	    this.game.deck[0].hand = ["norad","reagan","mideast","southamerica","asia","europe","seasia","centralamerica"];
+	    this.game.deck[0].hand = ["norad","reagan","wwby","starwars","destalinization","europe","seasia","centralamerica"];
 	  }
 	}
 
@@ -2942,8 +2942,6 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 		}
 	      }
 	      twilight_self.moves = new_moves;
-
-
               twilight_self.endTurn();
 	      return;
 	    }
@@ -2973,7 +2971,6 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
                 }
               }
               twilight_self.moves = new_moves;
-
               twilight_self.endTurn();
               return;
             }
@@ -3313,15 +3310,6 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       }
     }
 
-    //
-    // U2
-    //
-    if (twilight_self.game.state.events.u2 == 1) {
-      if (card == "unintervention" ) {
-        twilight_self.addMove("notify\tU2 Intervention triggers +1 VP for USSR");
-        twilight_self.addMove("vp\tussr\t1\t1");
-      }
-    }
 
     if (twilight_self.game.deck[0].cards[card].scoring == 1) { 
       twilight_self.updateStatus('Playing '+twilight_self.game.deck[0].cards[card].name+':<p></p><ul><li class="card" id="event">score region</li></ul>');
@@ -3360,13 +3348,13 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	  let tmpc = twilight_self.game.deck[0].hand[b];
 	  if (tmpc != "china") {
 	    if (twilight_self.game.player == 1) {
-	      if (twilight_self.game.deck[0].cards[tmpc].player == "us") { opponent_event_in_hand = 1; }
+	      if (twilight_self.game.deck[0].cards[tmpc].player === "us") { opponent_event_in_hand = 1; }
 	    } else {
-	      if (twilight_self.game.deck[0].cards[tmpc].player == "ussr") { opponent_event_in_hand = 1; }
+	      if (twilight_self.game.deck[0].cards[tmpc].player === "ussr") { opponent_event_in_hand = 1; }
 	    }
 	  }
 	}
-	if (opponent_event_in_hand == 1) { can_play_event = 1; }
+	if (opponent_event_in_hand == 0) { can_play_event = 0; }
       }
       if (card == "china") { can_play_event = 0; }
       if (card == "missileenvy" && is_this_missile_envy_noneventable == 1) { can_play_event = 0; }
@@ -4206,6 +4194,20 @@ Twilight.prototype.playerRealign = function playerRealign(player, card, mycallba
 
 
     //
+    // Can Only Realign Countries with Opponent Influence
+    //
+    if (twilight_self.game.player == 1) {
+      if (twilight_self.countries[countryname].us < 1) {
+        valid_target = 0;
+      }
+    } else {
+      if (twilight_self.countries[countryname].ussr < 1) {
+        valid_target = 0;
+      }
+    }
+
+
+    //
     // Region Restrictions
     //
     if (twilight_self.game.state.limit_region.indexOf(twilight_self.countries[countryname].region) > -1) {
@@ -4347,7 +4349,7 @@ Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, 
 		//
 	        if (twilight_self.app.BROWSER == 1) {
 
-		  let removeinf = confirm("Do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
+		  let removeinf = confirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
 	          if (removeinf) {
 
 	            if (countryname === "turkey") {
@@ -4403,7 +4405,7 @@ Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, 
 		//
 	        if (twilight_self.app.BROWSER == 1) {
 
-		  let removeinf = confirm("Do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
+		  let removeinf = confirm("You are placing 1 influence in "+twilight_self.countries[countryname].name+". Once this is done, do you want to cancel the Cuban Missile Crisis by removing 2 influence in "+twilight_self.countries[countryname].name+"?");
 	          if (removeinf) {
 
 	            if (countryname === "cuba") {
@@ -6006,6 +6008,15 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (player != me) {
       return 0;
     } else {
+
+      //
+      // U2
+      //
+      if (twilight_self.game.state.events.u2 == 1) {
+        twilight_self.addMove("notify\tU2 activates and triggers +1 VP for USSR");
+        twilight_self.addMove("vp\tussr\t1\t1");
+      }
+
       //
       // let player pick another turn
       //
