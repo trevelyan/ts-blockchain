@@ -7330,6 +7330,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   //
   if (card == "muslimrevolution") {
 
+    if (this.game.state.events.awacs == 1) { return 1; }
+
     var countries_to_purge = 2; 
     let countries_with_us_influence = 0;
     if (this.countries["sudan"].us > 0) { countries_with_us_influence++; }
