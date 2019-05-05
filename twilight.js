@@ -508,15 +508,15 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	let target1 = mv[2];
 	let original_us = this.countries[mv[2]].us;
 	let twilight_self = this;
+	let couppower = mv[3];
 
 	//
 	// this is the first coup, which runs on both 
 	// computers, so they can collectively see the
 	// results.
 	//
-	twilight_self.playCoup("ussr", mv[2], 3, function() {
+	twilight_self.playCoup("ussr", mv[2], couppower, function() {
 	  if (twilight_self.countries[mv[2]].us < original_us) {
-
 	    let valid_targets = 0;
 	    for (var i in twilight_self.countries) {
 	      let countryname = i;
@@ -554,28 +554,20 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 
       	        for (var i in twilight_self.countries) {
-
 	          let countryname  = i;
 	          let divname      = '#'+i;
-
 	          if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") ) {
-
 	            $(divname).off();
 	            $(divname).on('click', function() {
 		      let c = $(this).attr('id');
-		      twilight_self.addMove("unlimit\tmilops");
-		      twilight_self.addMove("coup\tussr\t"+c+"\t3");
-		      twilight_self.addMove("limit\tmilops");
+		      twilight_self.addMove("coup\tussr\t"+c+"\t"+couppower);
 		      twilight_self.endTurn();
 		    });
-
 		  } else {
-
 	            $(divname).off();
 	            $(divname).on('click', function() {
 		      alert("Invalid Target");
 		    });
-
 		  }
 	        }
 	      }
@@ -7602,6 +7594,10 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     let twilight_self = this;
     let valid_targets = 0;
+    let couppower = 3;
+
+    if (player == "us") { couppower = this.modifyOps(3,2); }
+    if (player == "ussr") { couppower = this.modifyOps(3,1); }
 
     for (var i in this.countries) {
       let countryname = i;
@@ -7615,8 +7611,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       return 1;
     }
 
-
-
     if (this.game.player == 2) {
       this.updateStatus("Waiting for USSR to play Che");
       return 0;
@@ -7624,7 +7618,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.game.player == 1) {
 
       twilight_self.playerFinishedPlacingInfluence();
-
       let user_message = "Che takes effect. Pick first target for coup:<p></p><ul>";
           user_message += '<li class="card" id="skipche">or skip coup</li>';
           user_message += '</ul>';
@@ -7653,7 +7646,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    let c = $(this).attr('id');
 
 	    twilight_self.addMove("resolve\tche");
-	    twilight_self.addMove("checoup\tussr\t"+c);
+	    twilight_self.addMove("checoup\tussr\t"+c+"\t"+couppower);
+            twilight_self.addMove("milops\tussr\t"+couppower);
 	    twilight_self.endTurn();
 	  });
 	} else {
@@ -8568,6 +8562,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       if (this.game.player == 1) {
 
 	let do_i_have_cc = 0;
+
+	if (this.game.state.events.china_card == 1) { do_i_have_cc = 1; }
 
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
     	  if (this.game.deck[0].hand[i] == "china") {
@@ -9850,6 +9846,21 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       return 1;
     }
 
+/*****
+    let player_to_go = 1;
+    if (player == "us") { player_to_go = 2; }
+
+    let choicehtml = 'Wargames triggers. Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponents)<p></p><ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
+
+    if (player_to_go == this.game.player) {
+      this.updateStatus(choicehtml);
+    } else {
+      this.updateStatus(choicehtml);
+      return 0;
+    }
+****/
+
+
     if (player == "us") {
       this.game.state.vp -= 6;
       this.updateVictoryPoints();
@@ -10403,20 +10414,23 @@ Twilight.prototype.limitToRegionBonus = function limitToRegionBonus() {
   }
   return;
 }
-Twilight.prototype.modifyOps = function modifyOps(ops) {
-  if (this.game.state.events.brezhnev == 1 && this.game.player == 1) { 
+Twilight.prototype.modifyOps = function modifyOps(ops,playernum=0) {
+
+  if (playernum == 0) { playernum = this.game.player; }
+
+  if (this.game.state.events.brezhnev == 1 && playernum == 1) { 
     this.updateLog("USSR gets Brezhnev bonus +1");
     ops++;
   }
-  if (this.game.state.events.containment == 1 && this.game.player == 2) { 
+  if (this.game.state.events.containment == 1 && playernum == 2) { 
     this.updateLog("US gets Containment bonus +1");
     ops++;
   }
-  if (this.game.state.events.redscare_player1 == 1 && this.game.player == 1) { 
+  if (this.game.state.events.redscare_player1 == 1 && playernum == 1) { 
     this.updateLog("USSR is affected by Red Purge");
     ops--; 
   }
-  if (this.game.state.events.redscare_player2 == 1 && this.game.player == 2) { 
+  if (this.game.state.events.redscare_player2 == 1 && playernum == 2) { 
     this.updateLog("US is affected by Red Scare");
     ops--;
   }
