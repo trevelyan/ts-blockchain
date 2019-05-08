@@ -4777,6 +4777,9 @@ Twilight.prototype.playRealign = function playRealign(country) {
         this.removeInfluence(country, diff, "us");
       }
     }
+    if (roll_us === roll_ussr) {
+      outcome_determined = 1;
+    } 
   }
 
   this.showInfluence(country, "us");
@@ -5047,7 +5050,7 @@ Twilight.prototype.returnState = function returnState() {
   state.turn  = 0;
   state.turn_in_round = 0;
   state.broke_control = 0;
-  state.us_defcon_bonus = 0;
+  state.us_efcon_bonus = 0;
   state.opponent_cards_in_hand = 0;
   state.event_before_ops = 0;
   state.event_name = "";
