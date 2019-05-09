@@ -37,7 +37,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   return this;
 
@@ -1442,6 +1442,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	// them manually here. Be sure that all of the cards have been
 	// dealt into the DECK during the setup phase though.
 	//
+
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
 	    this.game.deck[0].hand = ["cubanmissile", "tehran", "nato", "decolonization","degaulle","nato","naziscientist","missileenvy"];
@@ -1449,6 +1450,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	    this.game.deck[0].hand = ["norad","reagan","wwby","starwars","destalinization","europe","seasia","centralamerica"];
 	  }
 	}
+
 
         //
         // add china card
@@ -2733,9 +2735,9 @@ console.log("SCORING CARDS: " + scoring_cards_available);
       if (this.game.state.events.missile_envy == 1) {
 
 	//
-	// if must play scoring card
+	// if must play scoring card -- moves remaining at 0 in last move
 	//
-	if (scoring_cards_available >= moves_remaining) {
+	if (scoring_cards_available > moves_remaining) {
 	  this.playerTurn("scoringcard");
 	} else {
 
@@ -2774,7 +2776,10 @@ console.log("SCORING CARDS: " + scoring_cards_available);
       }
 
       if (this.game.state.events.missile_envy == 2) {
-	if (scoring_cards_available >= moves_remaining) {
+	//
+	// moves remaining will be 0 last turn
+	//
+	if (scoring_cards_available > moves_remaining) {
 	  this.playerTurn("scoringcard");
 	} else {
 
