@@ -7960,6 +7960,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
  
 	let twilight_self = this;
 
+        twilight_self.addMove("resolve\tsummit"); 
+
         if (us_roll > ussr_roll) {
 	  twilight_self.addMove("vp\tus\t2");
         } else {
