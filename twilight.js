@@ -1167,6 +1167,10 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       if (mv[0] === "ops") {
         if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
         this.updateLog(mv[1].toUpperCase() + " plays <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> for " + mv[3] + " OPS"); 
+	//
+	// unset formosan if China card played by US
+	//
+        if (mv[1] == "us" && mv[2] == "china") { this.game.state.events.formosan = 0; }
         this.playOps(mv[1], mv[3], mv[2]);
         this.game.queue.splice(qe, 1);
         shd_continue = 0;
@@ -3505,8 +3509,10 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	    //
 	    if (twilight_self.game.state.events.flowerpower == 1) {
 	      if (card == "arabisraeli" || card == "koreanwar" || card == "brushwar" || card == "indopaki" || card == "iraniraq") {
-                twilight_self.addMove("notify\tFlower Power triggered by "+card);
-                twilight_self.addMove("vp\tussr\t2\t1");
+		if (player === "us") {
+                  twilight_self.addMove("notify\tFlower Power triggered by "+card);
+                  twilight_self.addMove("vp\tussr\t2\t1");
+		}
 	      }
 	    }
 
@@ -3524,8 +3530,10 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 	    //
 	    if (twilight_self.game.state.events.flowerpower == 1) {
 	      if (card == "arabisraeli" || card == "koreanwar" || card == "brushwar" || card == "indopaki" || card == "iraniraq") {
-                twilight_self.addMove("notify\tFlower Power triggered by "+card);
-                twilight_self.addMove("vp\tussr\t2\t1");
+		if (player === "us") {
+                  twilight_self.addMove("notify\tFlower Power triggered by "+card);
+                  twilight_self.addMove("vp\tussr\t2\t1");
+		}
 	      }
 	    }
 
@@ -3597,8 +3605,10 @@ Twilight.prototype.playerTriggerEvent = function playerTriggerEvent(player, card
   //
   if (twilight_self.game.state.events.flowerpower == 1) {
     if (card == "arabisraeli" || card == "koreanwar" || card == "brushwar" || card == "indopaki" || card == "iraniraq") {
-      twilight_self.addMove("notify\tFlower Power triggered by "+card);
-      twilight_self.addMove("vp\tussr\t2\t1");
+      if (player === "us") {
+        twilight_self.addMove("notify\tFlower Power triggered by "+card);
+        twilight_self.addMove("vp\tussr\t2\t1");
+      }
     }
   }
 
@@ -7824,6 +7834,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     $('.card').off();
     $('.card').on('click', function() {
+
       let action2 = $(this).attr("id");
 
       if (i != "nocard") {
