@@ -1449,9 +1449,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
-	    this.game.deck[0].hand = ["cubanmissile", "tehran", "nato", "decolonization","degaulle","nato","naziscientist","missileenvy"];
+	    this.game.deck[0].hand = ["cubanmissile", "quagmire", "junta", "decolonization","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
-	    this.game.deck[0].hand = ["norad","reagan","wwby","starwars","destalinization","europe","seasia","centralamerica"];
+	    this.game.deck[0].hand = ["norad","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
 	  }
 	}
 
@@ -2918,6 +2918,27 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         let j = ops;
         twilight_self.playerRealign(player, card, () => {
 
+          //
+          // disable countries without 
+          //
+	  for (var countryname in twilight_self.countries) {
+
+	    let divname3 = "#"+countryname;
+
+            if (twilight_self.game.player == 1) {
+              if (twilight_self.countries[countryname].us < 1) {
+	        $(divname3).off();
+	        $(divname3).on('click',()=>{ alert('invalid realign target'); });
+              }
+            } else {
+              if (twilight_self.countries[countryname].ussr < 1) {
+	        $(divname3).off();
+	        $(divname3).on('click',()=>{ alert('invalid realign target'); });
+              }
+            }
+	  }
+
+
           j--;
 
           twilight_self.updateStatus("Realign with " + j + " OPS, or:<p></p><ul><li class=\"card\" id=\"cancelrealign\">stop realigning</li></ul>");
@@ -3130,6 +3151,14 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     //
     let cards_available = 0;
     let scoring_cards_available = 0;
+
+    //
+    // how many turns left?
+    //
+    let rounds_in_turn = 6;
+    if (this.game.state.round > 3) { rounds_in_turn = 7; }
+    let moves_remaining = rounds_in_turn - this.game.state.turn_in_round;
+
     
     if (this.game.state.events.beartrap == 1) {
       user_message = "Select a card for Bear Trap: <p></p><ul>";
@@ -3150,7 +3179,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     //
     // do we have any cards to play?
     //
-    if (cards_available > 0) {
+    if (cards_available > 0 && scoring_cards_available <= moves_remaining) {
       this.updateStatus(user_message);
     } else {
       if (scoring_cards_available > 0) {
@@ -3219,12 +3248,18 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     // Quagmire / Bear Trap
     // 
     if (twilight_self.game.state.headline == 0 && (twilight_self.game.state.events.quagmire == 1 && twilight_self.game.player == 2) || (twilight_self.game.state.events.beartrap == 1 && twilight_self.game.player == 1) ) {
-      twilight_self.hideCard(card);
-      twilight_self.removeCardFromHand(card);
-      twilight_self.addMove("resolve\tplay");
-      twilight_self.addMove("quagmire\t"+player+"\t"+card);
-      twilight_self.endTurn();
-      return 0;
+
+      //
+      // scoring cards score, not get discarded
+      //
+      if (twilight_self.game.deck[0].cards[card].scoring == 0) { 
+        twilight_self.hideCard(card);
+        twilight_self.removeCardFromHand(card);
+        twilight_self.addMove("resolve\tplay");
+        twilight_self.addMove("quagmire\t"+player+"\t"+card);
+        twilight_self.endTurn();
+        return 0;
+      }
     }
 
 
@@ -3260,7 +3295,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
           user_message += '<li class="card showcard" id="westgermany">West Germany</li>';
         }
         user_message += '</ul>';
-        this.updateStatus(user_message);
+        twilight_self.updateStatus(user_message);
 
         $('.card').off();
         $('.card').on('click', function() {
@@ -3431,7 +3466,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
             user_message += '<li class="card showcard" id="westgermany">West Germany</li>';
           }
           user_message += '</ul>';
-          this.updateStatus(user_message);
+          twilight_self.updateStatus(user_message);
 
           $('.card').off();
           $('.card').on('click', function() {
@@ -7837,7 +7872,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       let action2 = $(this).attr("id");
 
-      if (i != "nocard") {
+      if (action2 != "nocard") {
         twilight_self.game.deck[0].hand.push(action2);
         twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);
       } else {
