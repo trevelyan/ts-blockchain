@@ -521,7 +521,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	    for (var i in twilight_self.countries) {
 	      let countryname = i;
 	      if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && twilight_self.countries[countryname].us > 0 ) {
-	        valid_targets++;
+	        if (countryname !== target1) {
+	          valid_targets++;
+		}
 	      }
 	    }
 
@@ -556,7 +558,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       	        for (var i in twilight_self.countries) {
 	          let countryname  = i;
 	          let divname      = '#'+i;
-	          if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") ) {
+	          if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && countryname !== target1) {
 	            $(divname).off();
 	            $(divname).on('click', function() {
 		      let c = $(this).attr('id');
@@ -1449,7 +1451,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
-	    this.game.deck[0].hand = ["cubanmissile", "quagmire", "junta", "decolonization","degaulle","nato","naziscientist","missileenvy"];
+	    this.game.deck[0].hand = ["cubanmissile", "quagmire", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
 	    this.game.deck[0].hand = ["norad","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
 	  }
@@ -3107,7 +3109,19 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
     user_message = player.toUpperCase() + " pick a card: <p></p><ul>";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
-      user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+      //
+      // when UN Intervention is eventing, we can only select opponent cards
+      //
+      if (this.game.state.events.unintervention == 1) {
+	if (this.game.player == 1 && this.game.deck[0].cards[this.game.deck[0].hand[i]].player === "us") {
+          user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+        } 
+	if (this.game.player == 2 && this.game.deck[0].cards[this.game.deck[0].hand[i]].player === "ussr") {
+          user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+        } 
+      } else {
+        user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+      }
     };
   } else {
 
