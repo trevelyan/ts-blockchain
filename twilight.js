@@ -649,7 +649,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
         let roll = this.rollDice(6);
 
-	this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
+	//this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
 	this.updateLog(mv[1].toUpperCase() + " rolls a " + roll);
 
         if (roll < 5) {
@@ -1451,9 +1451,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
-	    this.game.deck[0].hand = ["cubanmissile", "quagmire", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+	    this.game.deck[0].hand = ["decolonization","cubanmissile", "quagmire", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
-	    this.game.deck[0].hand = ["norad","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
+	    this.game.deck[0].hand = ["defectors","norad","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
 	  }
 	}
 
@@ -2364,7 +2364,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
           twilight_self.game.state.headline_card = card;
           twilight_self.game.state.headline_xor = "MAN_IN_EARTH_ORBIT";
           twilight_self.game.state.headline_hash = "MAN_IN_EARTH_ORBIT";
-	  twilight_self.updateStatus("headline card selected, please wait...");
+	  twilight_self.updateStatus("Headline card selected, please wait...");
 
           twilight_self.game.turn = [];
 
@@ -2430,7 +2430,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
           if (card == "china") { alert("You cannot headline China"); return; }
           if (card == "unintervention") { alert("You cannot headline UN Intervention"); return; }
 
-	  twilight_self.updateStatus("headline card selected");
+	  twilight_self.updateStatus("Headline card selected, waiting for opponent response....");
           twilight_self.game.state.headline_card = card;
           twilight_self.game.state.headline_xor = "MAN_IN_EARTH_ORBIT";
           twilight_self.game.state.headline_hash = "MAN_IN_EARTH_ORBIT";
@@ -2475,8 +2475,10 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       if (this.game.player == first_picker) {
         this.game.state.headline_opponent_card = msg.extra.headline_card;
         this.game.state.headline_card = msg.extra.headline_opponent_card;
+        this.removeCardFromHand(this.game.state.headline_card);
       } else {
         this.game.state.headline_card = msg.extra.headline_card;
+        this.removeCardFromHand(this.game.state.headline_card);
       }
     }
 
@@ -2557,19 +2559,18 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
     }
 
 
-
     if (us_plays_defectors == 1) {
 
       this.updateLog("US headlines <span class=\"logcard\" id=\"defectors\">Defectors</span>");
 
       this.game.turn = [];
-      this.addMove("discard\tus\tdefectors");
+      this.game.queue.push("discard\tus\tdefectors");
       if (my_card != "defectors") {
         this.updateLog("USSR headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
-        this.addMove("discard\tussr\t"+my_card);
+        this.game.queue.push("discard\tussr\t"+my_card);
       } else {
         this.updateLog("USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>");
-        this.addMove("discard\tussr\t"+opponent_card);
+        this.game.queue.push("discard\tussr\t"+opponent_card);
       }
 
       this.game.state.headline4 = 1;
@@ -2577,6 +2578,9 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       this.game.state.headline  = 0;
       // debugging test
       //this.saveGame(this.game.id);
+
+      this.updateLog("Defectors cancels USSR headline.");
+      this.updateStatus("Defectors cancels USSR headline. Moving into first turn...");
 
       //
       // only one player should trigger next round
@@ -3271,6 +3275,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
         twilight_self.removeCardFromHand(card);
         twilight_self.addMove("resolve\tplay");
         twilight_self.addMove("quagmire\t"+player+"\t"+card);
+        twilight_self.addMove("discard\t"+player+"\t"+card);
         twilight_self.endTurn();
         return 0;
       }
@@ -3349,9 +3354,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     }
 
     //
-    // WWBY
+    // WWBY triggers on non-headlines, so Grain Sales headline shdn't trigger
     //
-    if (twilight_self.game.state.events.wwby == 1) {
+    if (twilight_self.game.state.events.wwby == 1 && twilight_self.game.state.headline == 0) {
       if (player == "us") {
         if (card != "unintervention") {
 	  twilight_self.game.state.events.wwby_triggers = 1;
@@ -8758,7 +8763,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
 
-      twilight_self.updateStatus('USSR chooses:<p></p><ul><li class="card" id="southafrica">2 Influence in South Africa</li><li class="card" id="adjacent">1 Influence in South Africa and 2 Influence in any adjacent country</li></ul>');
+      twilight_self.updateStatus('USSR chooses:<p></p><ul><li class="card" id="southafrica">2 Influence in South Africa</li><li class="card" id="adjacent">1 Influence in South Africa and 2 Influence in adjacent countries</li></ul>');
 
       $('.card').off();
       $('.card').on('click', function() {
