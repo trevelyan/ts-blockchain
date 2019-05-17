@@ -37,7 +37,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   return this;
 
@@ -429,6 +429,55 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         }
         this.game.queue.splice(qe, 1);
       }
+      //
+      // wargames
+      //
+      if (mv[0] == "wargames") {
+
+        let player = mv[1];
+        let activate = parseInt(mv[2]);
+
+	if (activate == 0) {
+
+	  //
+	  // card is discarded, nothing happens
+	  //
+	
+	} else {
+
+          if (player == "us") {
+            this.game.state.vp -= 6;
+            this.updateVictoryPoints();
+            if (this.game.state.vp > 0) {
+    	      this.endGame("ussr","Wargames");
+            }
+            if (this.game.state.vp < 0) {
+  	      this.endGame("ussr","Wargames");
+            }
+            if (this.game.state.vp == 0) {
+	      this.endGame("ussr","Wargames");
+            }
+          } else {
+            this.game.state.vp += 6;
+            this.updateVictoryPoints();
+            if (this.game.state.vp > 0) {
+  	      this.endGame("ussr","Wargames");
+            }
+            if (this.game.state.vp < 0) {
+	      this.endGame("ussr","Wargames");
+            }
+            if (this.game.state.vp == 0) {
+	      this.endGame("us","Wargames");
+            }
+          }
+
+	}
+
+        this.game.queue.splice(qe, 1);
+      }
+     
+
+
       //
       // grainsales
       //
@@ -1453,7 +1502,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  if (this.game.player == 1) {
 	    this.game.deck[0].hand = ["decolonization","cubanmissile", "quagmire", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
-	    this.game.deck[0].hand = ["defectors","norad","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
+	    this.game.deck[0].hand = ["wargames","norad","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
 	  }
 	}
 
@@ -1675,7 +1724,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  if (this.game.state.eagle_has_landed == "us") { bonus_player = 2; }
 
           if (this.game.player != bonus_player) {
-            this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to take extra turn");
+            this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to discard a card");
 	    this.saveGame(this.game.id);
             return 0;
           } 
@@ -9917,11 +9966,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "wargames") {
 
     if (this.game.state.defcon != 2) {
-      this.updateLog("Wargames cancelled as DEFCON is not at 2");
+      this.updateLog("Wargames event cannot trigger as DEFCON is not at 2");
       return 1;
     }
 
-/*****
+    let twilight_self = this;
     let player_to_go = 1;
     if (player == "us") { player_to_go = 2; }
 
@@ -9930,44 +9979,28 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (player_to_go == this.game.player) {
       this.updateStatus(choicehtml);
     } else {
-      this.updateStatus(choicehtml);
+      this.updateStatus("Opponent deciding whether to trigger Wargames...");
       return 0;
     }
-****/
 
+    $('.card').off();
+    $('.card').on('click', function() {
+      let action2 = $(this).attr("id");
+      if (action2 == "endgame") {
+        twilight_self.updateStatus("Triggering Wargames...");
+        twilight_self.addMove("resolve\twargames");
+        twilight_self.addMove("wargames\t"+player+"\t1");
+        twilight_self.endTurn();
+      } 
+      if (action2 == "cont") {
+        twilight_self.updateStatus("Discarding Wargames...");
+        twilight_self.addMove("resolve\twargames");
+        twilight_self.addMove("wargames\t"+player+"\t0");
+        twilight_self.endTurn();
+      } 
+    });
 
-    if (player == "us") {
-      this.game.state.vp -= 6;
-      this.updateVictoryPoints();
-
-      if (this.game.state.vp > 0) {
-	this.endGame("ussr","Wargames");
-      }
-      if (this.game.state.vp < 0) {
-	this.endGame("ussr","Wargames");
-      }
-      if (this.game.state.vp == 0) {
-	this.endGame("ussr","Wargames");
-      }
-
-    } else {
-
-      this.game.state.vp += 6;
-      this.updateVictoryPoints();
-
-      if (this.game.state.vp > 0) {
-	this.endGame("ussr","Wargames");
-      }
-      if (this.game.state.vp < 0) {
-	this.endGame("ussr","Wargames");
-      }
-      if (this.game.state.vp == 0) {
-	this.endGame("us","Wargames");
-      }
-    }
-
-    return 1;
-
+    return 0;
   }
 
 
