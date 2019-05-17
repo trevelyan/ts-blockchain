@@ -37,7 +37,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   return this;
 
@@ -1026,6 +1026,24 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       //
       // aldrich ames
       //
+      if (mv[0] == "aldrichreveal") {
+
+        if (this.game.player == 2) {
+
+          let cards_to_reveal = this.game.deck[0].hand.length;
+	  let revealed = "";
+          for (let i = 0; i < this.game.deck[0].hand.length; i++) {
+	    if (i > 0) { revealed += ", "; }
+            revealed += this.game.deck[0].hand[i];
+          }
+          this.addMove("notify\tUS hand contains: "+revealed);
+	  this.endTurn();
+	}
+
+        this.game.queue.splice(qe, 1);
+	return 0;
+
+      }
       if (mv[0] == "aldrich") {
 
 	//
@@ -1034,7 +1052,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (mv[1] == "us") { 
 
 	  let num = mv[2];
-	  let html = "Aldrich Ames triggered. USSR discard card from US hand: ";
+	  let html = "Aldrich Ames triggered. USSR discard card from US hand:<p></p><ul>";
           this.game.queue.splice(qe, 1);
 
           for (let i = 0; i < num; i++) {
@@ -1500,9 +1518,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
-	    this.game.deck[0].hand = ["decolonization","cubanmissile", "quagmire", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+	    this.game.deck[0].hand = ["decolonization","cubanmissile", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
-	    this.game.deck[0].hand = ["wargames","norad","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
+	    this.game.deck[0].hand = ["wargames","aldrichames","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
 	  }
 	}
 
@@ -5040,6 +5058,7 @@ Twilight.prototype.endRound = function endRound() {
   this.game.state.events.yuri = 0;
   this.game.state.events.irancontra = 0;
   this.game.state.events.chernobyl = "";
+  this.game.state.events.aldrich = 0;
 
   //
   // increase DEFCON by one
@@ -5352,6 +5371,7 @@ Twilight.prototype.returnState = function returnState() {
   state.events.northseaoil_bonus  = 0;
   state.events.evilempire         = 0;
   state.events.yuri               = 0;
+  state.events.aldrich            = 0;
 
   return state;
 
@@ -7843,6 +7863,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
         if (action2 == "finished") {
 
+	  //
+	  // if Aldrich Ames is active, US must reveal cards
+	  //
+          if (twilight_self.game.state.events.aldrich == 1) {
+            twilight_self.addMove("aldrichreveal\tus");
+	  }
+
           twilight_self.addMove("DEAL\t1\t2\t"+cards_discarded);
 
 	  //
@@ -9833,6 +9860,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   // Aldrich Ames Remix
   //
   if (card == "aldrichames") {
+
+    this.game.state.events.aldrich = 1;
 
     if (this.game.player == 1) {
       this.updateStatus("US is revealing its cards to USSR");
