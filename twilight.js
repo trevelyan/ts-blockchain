@@ -9433,10 +9433,17 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
                   }
                 }
                 twilight_self.addMove("notify\tBrush War in "+twilight_self.countries[c].name+" succeeded.");
+                twilight_self.addMove("notify\tBrush War rolls "+dieroll);
                 twilight_self.endTurn();
 
               } else {
+                if (me == "us") {
+	          twilight_self.addMove("milops\tus\t3");
+		} else {
+	          twilight_self.addMove("milops\tussr\t3");
+		}
                 twilight_self.addMove("notify\tBrush War in "+twilight_self.countries[c].name+" failed.");
+                twilight_self.addMove("notify\tBrush War rolls "+dieroll);
                 twilight_self.endTurn();
               }
             });
