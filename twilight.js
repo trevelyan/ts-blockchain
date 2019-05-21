@@ -2252,7 +2252,14 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
           return 0;
 
         } else {
+
           this.updateStatus("Waiting for USSR to send confirming information");
+
+	  //
+	  // try saving here to avoid headline issues
+	  //
+	  //this.saveGame(this.game.id);
+
         }
         return 0;
       }
@@ -2333,7 +2340,18 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
           return 0;
 
         } else {
-          this.updateStatus("Waiting for US to decrypt USSR headline card...");
+
+          this.updateStatus("Waiting for US to decrypt USSR headline card 2...");
+
+	  //
+	  // try saving here to avoid headline issues
+	  //
+	  // we sometimes have issues with player 2 dropping
+	  // in the case of unreliable reloads, so we are 
+	  // saving the game here.
+	  //
+	  //this.saveGame(this.game.id);
+
         }
         return 0;
       }
@@ -2671,6 +2689,8 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       }
 
       this.game.state.headline4 = 1;
+
+console.log("HERE: " + player_to_go + " --- " + this.game.player);
 
       if (player_to_go == this.game.player) {
         this.addMove("discard\t"+card_player+"\t"+my_card);
@@ -5438,7 +5458,7 @@ Twilight.prototype.returnCountries = function returnCountries() {
   countries['elsalvador'] = { top : 1690, left : 295, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'honduras','guatemala' ], region : "camerica" , name : "El Salvador"};
   countries['honduras'] = { top : 1675, left : 515, us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'nicaragua','costarica','guatemala','elsalvador' ], region : "camerica" , name : "Honduras"};
   countries['nicaragua'] = { top : 1675, left : 735, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'costarica','honduras','cuba' ], region : "camerica" , name : "Nicaragua"};
-  countries['costarica'] = { top : 1830, left : 495, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'panama','nicaragua' ], region : "camerica" , name : "Costa Rica"};
+  countries['costarica'] = { top : 1830, left : 495, us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'honduras', 'panama','nicaragua' ], region : "camerica" , name : "Costa Rica"};
   countries['panama'] = { top : 1830, left : 738, us : 1 , ussr : 0 , control : 2 , bg : 1 , neighbours : [ 'colombia','costarica' ], region : "camerica" , name : "Panama"};
   countries['cuba'] = { top : 1480, left : 750, us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'haiti','nicaragua' ], region : "camerica" , name : "Cuba"};
   countries['haiti'] = { top : 1620, left : 970, us : 0 , ussr : 0 , control : 1 , bg : 0 , neighbours : [ 'cuba','dominicanrepublic' ], region : "camerica" , name : "Haiti"};
