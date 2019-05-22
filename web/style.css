@@ -1,9 +1,6 @@
 .status {
   height: 450px;
 }
-.log {
-  width: 70%;
-}
 
 body {
   font-family: arial, helvetica, sans-serif;
@@ -260,11 +257,11 @@ body {
     background: black;
     overflow: hidden;
     margin-bottom: 0px;
+    width: 100%;
   }
 
   .cardbox {
     position: fixed;
-    top: 0;
-    bottom: 0;
+    left: 50%;
   }
 }

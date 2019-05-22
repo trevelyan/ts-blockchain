@@ -19,7 +19,7 @@ function Twilight(app) {
   this.handlesEmail    = 1;
   this.emailAppName    = "Twilight Struggle";
   this.useHUD          = 1;
-  this.addHUDMenu      = ['Deck','Lang'];
+  this.addHUDMenu      = ['Deck','Lang','Log'];
   this.lang            = "en";
 
   //
@@ -103,9 +103,6 @@ Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
     });
   }
 
-
-
-
   if (menuitem === "lang") {
 
     let user_message = "Select Language: <p></p><ul>";
@@ -131,6 +128,18 @@ Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
       }
 
     });
+  }
+
+  if (menuitem == "log") {
+    $('.hud_menu_overlay').html($('.log').html());
+    $('.logcard').mouseover(function() {
+      let card = $(this).attr("id");
+      twilight_self.showCard(card);
+    }).mouseout(function() {
+      let card = $(this).attr("id");
+      twilight_self.hideCard(card);
+    });
+    //     $('.log').css({ height: '250px', overflow: "scroll" });
   }
 }
 
@@ -236,7 +245,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   //
   if (this.app.BROWSER == 1) {
     if (window != undefined) {
-      if (window.innerHeight <= 975) {
+      if (window.innerHeight <= 975 && $(window).width() > 700) {
         $('.cardbox').css('left','188px');
       }
     }
@@ -5512,12 +5521,10 @@ Twilight.prototype.returnCountries = function returnCountries() {
   return countries;
 
 }
+
 Twilight.prototype.returnChinaCard = function returnChinaCard() {
   return { img : "TNRnTS-06" , name : "China" , scoring : 0 , bg : 0 , player : "both" , recurring : 1 , ops : 4 };
 }
-
-
-
 
 Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
 
