@@ -1542,8 +1542,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
       if (mv[0] === "headline") {
 
-	// set to first player if needed
-	let reloaded = 0;
+	// set to player1
+	if (msg == null) { msg = {}; }
 	if (msg.extra == undefined) { msg.extra = {}; }
 	if (msg.extra.target == undefined) { msg.extra.target = 1; }
 
@@ -4339,20 +4339,6 @@ Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, 
   this.playerFinishedPlacingInfluence();
 
   var twilight_self = this;
-
-  //
-  // set place to only choose valid countries
-  //
-  // handled directly in "place" now, but 
-  // leaving here temporarily in case this
-  // triggers an error as a reminder of how
-  // we used to handle it.
-  //
-  // putting this here "resets" the unsetting
-  // of opponent-controlled countries and 
-  // permits breaking control with 1 OP cards
-  //
-  //this.prePlayerPlaceInfluence(player);
 
   for (var i in this.countries) {
       
