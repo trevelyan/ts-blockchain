@@ -19,7 +19,7 @@ function Twilight(app) {
   this.handlesEmail    = 1;
   this.emailAppName    = "Twilight Struggle";
   this.useHUD          = 1;
-  this.addHUDMenu      = ['Deck','Lang','Log'];
+  this.addHUDMenu      = ['Deck','Lang', 'Log'];
   this.lang            = "en";
 
   //
@@ -538,7 +538,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	    $('.card').off();
       $('.showcard').off();
 
-  	  $('.showcard').mouseover(function() {
+  	    $('.showcard').mouseover(function() {
 	      let card = $(this).attr("id");
 	      twilight_self.showCard(card);
 	    }).mouseout(function() {
