@@ -505,30 +505,30 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	    let twilight_self = this;
 
 	    $('.card').off();
-  	    $('.showcard').off();
-  	    $('.showcard').mouseover(function() {
+      $('.showcard').off();
+
+  	  $('.showcard').mouseover(function() {
 	      let card = $(this).attr("id");
 	      twilight_self.showCard(card);
 	    }).mouseout(function() {
 	      let card = $(this).attr("id");
 	      twilight_self.hideCard(card);
-	    });
+      });
+
 	    $('.card').on('click', function() {
+        let action2 = $(this).attr("id");
 
-	      let action2 = $(this).attr("id");
-
-	      if (action2 == "play") {
-		// trigger play of selected card
-		twilight_self.addMove("resolve\tgrainsales");
-		twilight_self.playerTurn(mv[2]);
-	      }
-	      if (action2 == "nope") {
-		twilight_self.addMove("resolve\tgrainsales");
-		twilight_self.addMove("ops\tus\tgrainsales\t2");
-		twilight_self.addMove("grainsales\tus\t"+mv[2]);
-		twilight_self.endTurn();
-	      }
-
+        if (action2 == "play") {
+          // trigger play of selected card
+          twilight_self.addMove("resolve\tgrainsales");
+          twilight_self.playerTurn(mv[2]);
+        }
+        if (action2 == "nope") {
+          twilight_self.addMove("resolve\tgrainsales");
+          twilight_self.addMove("ops\tus\tgrainsales\t2");
+          twilight_self.addMove("grainsales\tus\t"+mv[2]);
+          twilight_self.endTurn();
+        }
 	    });
 	  }
 	  shd_continue = 0;
@@ -1609,8 +1609,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
       if (mv[0] === "headline") {
 
-	// set to first player if needed
-	let reloaded = 0;
+	// set to player1
+	if (msg == null) { msg = {}; }
 	if (msg.extra == undefined) { msg.extra = {}; }
 	if (msg.extra.target == undefined) { msg.extra.target = 1; }
 
@@ -4432,20 +4432,6 @@ Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, 
 
   var twilight_self = this;
 
-  //
-  // set place to only choose valid countries
-  //
-  // handled directly in "place" now, but 
-  // leaving here temporarily in case this
-  // triggers an error as a reminder of how
-  // we used to handle it.
-  //
-  // putting this here "resets" the unsetting
-  // of opponent-controlled countries and 
-  // permits breaking control with 1 OP cards
-  //
-  //this.prePlayerPlaceInfluence(player);
-
   for (var i in this.countries) {
       
     let countryname  = i;
@@ -5236,8 +5222,10 @@ Twilight.prototype.returnState = function returnState() {
 
   // track as US (+) and USSR (-)
   state.vp    = 0;
- 
+
   state.ar_ps         = [];
+
+  // relative --> top: 38px
   state.ar_ps[0]      = { top : 208 , left : 920 };
   state.ar_ps[1]      = { top : 208 , left : 1040 };
   state.ar_ps[2]      = { top : 208 , left : 1155 };
@@ -5401,7 +5389,7 @@ Twilight.prototype.returnCountries = function returnCountries() {
   var countries = {};
 
   // EUROPE
-  countries['canada'] = { top : 752, left : 842 , us : 2 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'uk' ] , region : "europe" , name : "Canada" };
+  countries['canada'] = { top : -130, left : 842 , us : 2 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'uk' ] , region : "europe" , name : "Canada" };
   countries['uk'] = { top : 572, left : 1690 , us : 5 , ussr : 0 , control : 5 , bg : 0 , neighbours : [ 'canada','norway','benelux','france' ] , region : "europe" , name : "UK" };
   countries['benelux'] = { top : 728, left : 1860 , us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'uk','westgermany' ] , region : "europe" , name : "Benelux" };
   countries['france'] = { top : 906, left : 1820 , us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'algeria', 'uk','italy','spain','westgermany' ] , region : "europe" , name : "France" };
@@ -5414,6 +5402,7 @@ Twilight.prototype.returnCountries = function returnCountries() {
   countries['turkey'] = { top : 1056, left : 2788 , us : 0 , ussr : 0 , control : 2 , bg : 0 , neighbours : [ 'syria', 'greece','romania','bulgaria' ] , region : "europe"  , name : "Turkey"};
   countries['yugoslavia'] = { top : 1038, left : 2342 , us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'italy','hungary','romania','greece' ] , region : "europe" , name : "Yugoslavia" };
   countries['bulgaria'] = { top : 1038, left : 2570 , us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'greece','turkey' ] , region : "europe" , name : "Bulgaria" };
+
   countries['romania'] = { top : 880, left : 2614 , us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'turkey','hungary','yugoslavia' ] , region : "europe" , name : "Romania" };
   countries['hungary'] = { top : 880, left : 2394 , us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'austria','czechoslovakia','romania','yugoslavia' ] , region : "europe" , name : "Hungary" };
   countries['austria'] = { top : 880, left : 2172 , us : 0 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'hungary','italy','westgermany','eastgermany' ] , region : "europe" , name : "Austria" };
