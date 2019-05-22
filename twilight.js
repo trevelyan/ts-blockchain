@@ -271,6 +271,28 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     if (this.countries[i].ussr > 0) { this.showInfluence(i, "ussr"); }
   } 
 
+
+  //
+  // pinch-to-zoom
+  //
+  var element = document.getElementById('gameboard');
+  var hammertime = Hammer(element);
+  hammertime.get('pinch').set({ enable: true });
+  hammertime.on('pinch', function(event) {
+    alert('hello!');
+  });
+  hammertime.on('pinchin', function(event) {
+    alert('hello2!');
+  });
+  hammertime.on('pinchout', function(event) {
+    alert('hello3!');
+  });
+
+  //
+  //
+  //
+  alert(navigator.userAgent);
+
 }
 
 
