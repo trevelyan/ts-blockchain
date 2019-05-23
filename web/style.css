@@ -240,7 +240,34 @@ body {
   }
 }
 
-@media only screen and (max-width: 750px) {
+@media only screen and (orientation: portrait) and (max-width: 750px) {
+  .status > ul {
+    margin: 0;
+  }
+
+  .status > ul > li {
+    padding: 20px;
+  }
+
+  .log {
+    height: 15px;
+    bottom: 0;
+    padding: 0.2rem;
+    position: fixed;
+    background: black;
+    overflow: hidden;
+    margin-bottom: 0px;
+    width: 100%;
+  }
+
+  .cardbox {
+    position: fixed;
+    /* top: 0;
+    bottom: 0; */
+  }
+}
+
+@media only screen and (orientation: landscape) and (max-height: 700px) {
   .status > ul {
     margin: 0;
   }
