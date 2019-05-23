@@ -173,7 +173,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   //
   if (this.game.countries == undefined) {
     this.game.countries = this.returnCountries();
-  } 
+  }
   if (this.game.state == undefined) {
     this.game.state = this.returnState();
   }
@@ -285,23 +285,19 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   // pinch-to-zoom
   //
   var element = document.getElementById('gameboard');
-  var hammertime = Hammer(element);
+  var hammertime = new Hammer(element, {});
+
   hammertime.get('pinch').set({ enable: true });
+
   hammertime.on('pinch', function(event) {
     alert('hello!');
   });
-  hammertime.on('pinchin', function(event) {
+  hammertime.on('pinchend', function(event) {
     alert('hello2!');
   });
   hammertime.on('pinchout', function(event) {
     alert('hello3!');
   });
-
-  //
-  //
-  //
-  alert(navigator.userAgent);
-
 }
 
 
