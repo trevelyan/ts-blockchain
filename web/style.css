@@ -12,12 +12,7 @@
  vertical-align: middle;
  line-height: 20px;
 }
-.status {
-  height: 450px;
-}
-.log {
-  width: 70%;
-}
+
 .action_round_cover {
   position: absolute;
   background-color: black;
