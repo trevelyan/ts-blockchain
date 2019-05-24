@@ -3,6 +3,8 @@ var Game = require('../../lib/templates/game');
 var util = require('util');
 
 
+
+
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -46,6 +48,12 @@ module.exports = Twilight;
 util.inherits(Twilight, Game);
 
 
+
+
+//
+// Missile Envy is a bit messy 
+//
+var is_this_missile_envy_noneventable = 0;
 
 
 
@@ -136,13 +144,7 @@ Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
   //
   if (menuitem == "log") {
     $('.hud_menu_overlay').html($('.log').html());
-    $('.logcard').mouseover(function() {
-      let card = $(this).attr("id");
-      twilight_self.showCard(card);
-    }).mouseout(function() {
-      let card = $(this).attr("id");
-      twilight_self.hideCard(card);
-    });
+    twilight_self.addLogCardEvents();
   }
 
 }
@@ -701,30 +703,22 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	    let twilight_self = this;
 
 	    $('.card').off();
-      $('.showcard').off();
-
-  	    $('.showcard').mouseover(function() {
-	      let card = $(this).attr("id");
-	      twilight_self.showCard(card);
-	    }).mouseout(function() {
-	      let card = $(this).attr("id");
-	      twilight_self.hideCard(card);
-      });
+	    twilight_self.addShowCardEvents();
 
 	    $('.card').on('click', function() {
-        let action2 = $(this).attr("id");
+            let action2 = $(this).attr("id");
 
-        if (action2 == "play") {
-          // trigger play of selected card
-          twilight_self.addMove("resolve\tgrainsales");
-          twilight_self.playerTurn(mv[2]);
-        }
-        if (action2 == "nope") {
-          twilight_self.addMove("resolve\tgrainsales");
-          twilight_self.addMove("ops\tus\tgrainsales\t2");
-          twilight_self.addMove("grainsales\tus\t"+mv[2]);
-          twilight_self.endTurn();
-        }
+              if (action2 == "play") {
+                // trigger play of selected card
+                twilight_self.addMove("resolve\tgrainsales");
+                twilight_self.playerTurn(mv[2]);
+              }
+              if (action2 == "nope") {
+                twilight_self.addMove("resolve\tgrainsales");
+                twilight_self.addMove("ops\tus\tgrainsales\t2");
+                twilight_self.addMove("grainsales\tus\t"+mv[2]);
+                twilight_self.endTurn();
+              }
 	    });
 	  }
 	  shd_continue = 0;
@@ -1269,14 +1263,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             let twilight_self = this;
 
             $('.card').off();
-            $('.showcard').off();
-            $('.showcard').mouseover(function() {
-              let card = $(this).attr("id");
-              twilight_self.showCard(card);
-            }).mouseout(function() {
-              let card = $(this).attr("id");
-              twilight_self.hideCard(card);
-            });
+	    twilight_self.addShowCardEvents();
             $('.card').on('click', function() {
 
               let action2 = $(this).attr("id");
@@ -1995,14 +1982,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	      twilight_self.updateStatus(user_message);
 
 	      $('.card').off();
-	      $('.showcard').off();
-	      $('.showcard').mouseover(function() {
-	        let card = $(this).attr("id");
-	        twilight_self.showCard(card);
-	      }).mouseout(function() {
-	        let card = $(this).attr("id");
-	        twilight_self.hideCard(card);
-	      });
+	      twilight_self.addShowCardEvents();
 	      $('.card').on('click', function() {
 
 	        let action2 = $(this).attr("id");
@@ -2631,14 +2611,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
         let twilight_self = this;
 
         $('.card').off();
-        $('.showcard').off();
-        $('.showcard').mouseover(function() {
-          let card = $(this).attr("id");
-          twilight_self.showCard(card);
-        }).mouseout(function() {
-          let card = $(this).attr("id");
-          twilight_self.hideCard(card);
-        });
+	twilight_self.addShowCardEvents();
         $('.card').on('click', function() {
 
           let card = $(this).attr("id");
@@ -2700,14 +2673,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
         let twilight_self = this;
 
         $('.card').off();
-        $('.showcard').off();
-        $('.showcard').mouseover(function() {
-          let card = $(this).attr("id");
-          twilight_self.showCard(card);
-        }).mouseout(function() {
-          let card = $(this).attr("id");
-          twilight_self.hideCard(card);
-        });
+	twilight_self.addShowCardEvents();
         $('.card').on('click', function() {
 
           let card = $(this).attr("id");
@@ -3330,14 +3296,7 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
   let twilight_self = this;  
 
   $('.card').off();
-  $('.showcard').off();
-  $('.showcard').mouseover(function() {
-    let card = $(this).attr("id");
-    twilight_self.showCard(card);
-  }).mouseout(function() {
-    let card = $(this).attr("id");
-    twilight_self.hideCard(card);
-  });
+  twilight_self.addShowCardEvents();
   $('.card').on('click', function() {
 
     let card = $(this).attr("id");
@@ -3394,7 +3353,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   let opponent = "us";
   if (this.game.player == 2) { player = "us"; opponent = "ussr"; }
 
-  let is_this_missile_envy_noneventable = this.game.state.events.missileenvy;
+  is_this_missile_envy_noneventable = this.game.state.events.missileenvy;
 
   let user_message = "";
   if (selected_card == null) {
@@ -3538,17 +3497,32 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
 
   $('.card').off();
-  $('.showcard').off();
-  $('.showcard').mouseover(function() {
-    let card = $(this).attr("id");
-    twilight_self.showCard(card);
-  }).mouseout(function() {
-    let card = $(this).attr("id");
-    twilight_self.hideCard(card);
-  });
+  twilight_self.addShowCardEvents();
   $('.card').on('click', function() {
 
     let card = $(this).attr("id");
+   
+    //
+    // mobile clients have sanity check on card check
+    //
+    if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+      twilight_self.hideCard();
+      twilight_self.showCard(card);    
+      twilight_self.showCardOptions(card, player);
+      return;
+    }
+
+    twilight_self.playerTurnCardSelected(card, player);
+
+  });
+}
+
+
+Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card, player) {
+
+  let twilight_self = this;
+  let opponent = "us";
+  if (this.game.player == 2) { opponent = "ussr"; }
 
 
     //
@@ -3952,7 +3926,6 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
     });
 
-  });
 }
 
 
@@ -4154,16 +4127,7 @@ console.log(this.game.deck[0].hand[i]);
     }
     x += ']';
     this.updateStatus(x);
-
-
-    $('.showcard').off();
-    $('.showcard').mouseover(function() {
-      let card = $(this).attr("id");
-      twilight_self.showCard(card);
-    }).mouseout(function() {
-      let card = $(this).attr("id");
-      twilight_self.hideCard(card);
-    });
+    this.addShowCardEvents();
 
 
     var placeable = [];
@@ -4220,14 +4184,7 @@ console.log(this.game.deck[0].hand[i]);
     x += ']';
     this.updateStatus(x);
 
-    $('.showcard').off();
-    $('.showcard').mouseover(function() {
-      let card = $(this).attr("id");
-      twilight_self.showCard(card);
-    }).mouseout(function() {
-      let card = $(this).attr("id");
-      twilight_self.hideCard(card);
-    });
+    this.addShowCardEvents();
 
     var placeable = [];
 
@@ -4292,16 +4249,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
     }
     x += ']';
     this.updateStatus(x);
-
-
-    $('.showcard').off();
-    $('.showcard').mouseover(function() {
-      let card = $(this).attr("id");
-      twilight_self.showCard(card);
-    }).mouseout(function() {
-      let card = $(this).attr("id");
-      twilight_self.hideCard(card);
-    });
+    this.addShowCardEvents();
 
     let ops_to_place = bonus;
 
@@ -4344,15 +4292,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
     x += ']';
     this.updateStatus(x);
 
-
-    $('.showcard').off();
-    $('.showcard').mouseover(function() {
-      let card = $(this).attr("id");
-      twilight_self.showCard(card);
-    }).mouseout(function() {
-      let card = $(this).attr("id");
-      twilight_self.hideCard(card);
-    });
+    this.addShowCardEvents();
 
     let ops_to_place = bonus;
 
@@ -8058,7 +7998,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       let user_message = "Select cards to discard:<p></p><ul>";
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 	if (this.game.deck[0].hand[i] != "china") {
-          user_message += '<li class="card logcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+          user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
 	  cards_to_discard++;
 	}
       }
@@ -8075,14 +8015,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       twilight_self.addMove("resolve\tasknot");
 
       $('.card').off();
-      $('.logcard').off();
-      $('.logcard').mouseover(function() {
-        let card = $(this).attr("id");
-        twilight_self.showCard(card);
-      }).mouseout(function() {
-        let card = $(this).attr("id");
-        twilight_self.hideCard(card);
-      });
+      twilight_self.addShowCardEvents();
       $('.card').on('click', function() {
 
         let action2 = $(this).attr("id");
@@ -10174,15 +10107,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     user_message += '</li>';
     twilight_self.updateStatus(user_message);
 
-
     $('.card').off();
-    $('.card').mouseover(function() {
-      let card = $(this).attr("id");
-      twilight_self.showCard(card);
-    }).mouseout(function() {
-      let card = $(this).attr("id");
-      twilight_self.hideCard(card);
-    });
+    twilight_self.addShowCardEvents();
     $('.card').on('click', function() {
 
       let action2 = $(this).attr("id");
@@ -11671,14 +11597,7 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
     $('#status').html(this.game.status);
 
     try {
-      $('.showcard').off();
-      $('.showcard').mouseover(function() {
-        let card = $(this).attr("id");
-        twilight_self.showCard(card);
-      }).mouseout(function() {
-        let card = $(this).attr("id");
-        twilight_self.hideCard(card);
-      });
+      twilight_self.addShowCardEvents();
     } catch (err) {}
 
 
@@ -12646,6 +12565,24 @@ Twilight.prototype.webServer = function webServer(app, expressapp) {
 }
 
 
+Twilight.prototype.showCardOptions = function showCardOptions(card, player) {
+
+  let twilight_self = this;
+
+  $('.cardbox_menu').css('display','block');
+  $('.cardbox_menu_playcard').off();
+  $('.cardbox_menu_playcard').on('click', function () {
+    $('.cardbox_menu').css('display','none');
+    twilight_self.hideCard();
+    twilight_self.playerTurnCardSelected(card, player);
+  });
+  $('.cardbox_menu_cancelcard').off();
+  $('.cardbox_menu_cancelcard').on('click', function () {
+    twilight_self.hideCard();
+    $('.cardbox_menu').css('display','none');
+  });
+
+}
 Twilight.prototype.showCard = function showCard(cardname) {
 
   let c = this.game.deck[0].cards[cardname];
@@ -12693,9 +12630,9 @@ Twilight.prototype.showCard = function showCard(cardname) {
   if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
     $('.cardbox').css('top','50%');
     $('.cardbox').css('left','50%');
-    $('.cardbox_event_blocker').css('height','100%');
-    $('.cardbox_event_blocker').css('width','100%');
-    $('.cardbox_event_blocker').css('display','block');
+    //$('.cardbox_event_blocker').css('height','100%');
+    //$('.cardbox_event_blocker').css('width','100%');
+    //$('.cardbox_event_blocker').css('display','block');
   }
 
   $('#cardbox').html(url);
@@ -12703,9 +12640,9 @@ Twilight.prototype.showCard = function showCard(cardname) {
 }
 Twilight.prototype.hideCard = function hideCard() {
   $('#cardbox').hide();
-  $('.cardbox_event_blocker').css('height','0px');
-  $('.cardbox_event_blocker').css('width','0px');
-  $('.cardbox_event_blocker').css('display','none');
+  //$('.cardbox_event_blocker').css('height','0px');
+  //$('.cardbox_event_blocker').css('width','0px');
+  //$('.cardbox_event_blocker').css('display','none');
 }
 
 
@@ -12732,14 +12669,7 @@ Twilight.prototype.updateLog = function updateLog(str, length = 25) {
   if (this.app.BROWSER == 1) {
 
     $('#log').html(html);
-      $('.logcard').off();
-      $('.logcard').mouseover(function() {
-      let card = $(this).attr("id");
-      twilight_self.showCard(card);
-    }).mouseout(function() {
-      let card = $(this).attr("id");
-      twilight_self.hideCard(card);
-    });
+    twilight_self.addLogCardEvents();
 
     try {
       if (! $('#game_log').isVisible()) {
@@ -12813,5 +12743,44 @@ Twilight.prototype.settleVPOutstanding = function settleVPOutstanding() {
   this.updateVictoryPoints();
 
 }
+
+Twilight.prototype.addShowCardEvents = function addShowCardEvents() {
+
+  let twilight_self = this;
+
+  if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
+
+    $('.showcard').off();
+    $('.showcard').mouseover(function() {
+      let card = $(this).attr("id");
+      twilight_self.showCard(card);
+    }).mouseout(function() {
+      let card = $(this).attr("id");
+      twilight_self.hideCard(card);
+    });
+
+  }
+
+}
+Twilight.prototype.addLogCardEvents = function addLogCardEvents() {
+
+  let twilight_self = this;
+
+  if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
+
+    $('.logcard').off();
+    $('.logcard').mouseover(function() {
+      let card = $(this).attr("id");
+      twilight_self.showCard(card);
+    }).mouseout(function() {
+      let card = $(this).attr("id");
+      twilight_self.hideCard(card);
+    });
+
+  }
+
+}
+
+
 
 

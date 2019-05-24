@@ -179,9 +179,10 @@ body {
  position:absolute;
  width:0px;
  height:0px;
- background-color: transparent;
+ background-color: black;
  z-index: 89999;
  display:none;
+ opacity: 0.4;
 }
 .cardbox {
   position: absolute;
@@ -197,7 +198,39 @@ body {
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-
+.cardbox_menu {
+  position: absolute;
+  display: none;
+  top: 50%;
+  left: 50%;
+  width: 10%;
+  height: 10%;
+  z-index: 999999;
+  transform: translate(-50%, -50%);
+}
+.cardbox_menu_playcard {
+  position: fixed;
+  left: -150px;
+  top: 260px;
+  z-index: 900009;
+}
+.cardbox_menu_cancelcard {
+  position: fixed;
+  left: 70px;
+  top: 260px;
+  z-index: 900009;
+}
+.cardbox_menu_btn {
+  text-align:center;
+  width:60px;
+  font-size: 20px;
+  font-weight:bold;
+  background-color:#77b55a;
+  border:2px solid #4b8f29;
+  cursor:pointer;
+  padding:10px 25px;
+  text-decoration:none;
+}
 .us {
   display: inline;
   float: left;
