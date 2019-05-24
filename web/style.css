@@ -12,7 +12,6 @@
  vertical-align: middle;
  line-height: 20px;
 }
-
 .action_round_cover {
   position: absolute;
   background-color: black;
@@ -176,6 +175,14 @@ body {
   width: 375px;
 }
 
+.cardbox_event_blocker {
+ position:absolute;
+ width:0px;
+ height:0px;
+ background-color: transparent;
+ z-index: 89999;
+ display:none;
+}
 .cardbox {
   position: absolute;
   left: 413;
