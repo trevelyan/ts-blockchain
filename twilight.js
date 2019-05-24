@@ -37,7 +37,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   return this;
 
@@ -1716,7 +1716,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	  if (this.game.player == 1) {
 	    this.game.deck[0].hand = ["decolonization","cubanmissile", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
-	    this.game.deck[0].hand = ["wargames","aldrichames","reagan","wwby","starwars","destalinization","saltnegotiations","seasia","centralamerica"];
+	    this.game.deck[0].hand = ["wargames","aldrichames","reagan","wwby","southamerica","europe","asia","seasia","centralamerica"];
 	  }
 	}
 
@@ -3549,6 +3549,24 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   $('.card').on('click', function() {
 
     let card = $(this).attr("id");
+
+
+    //
+    // warn if user is leaving a scoring card in hand
+    //
+    let scoring_cards_available = 0;
+    let rounds_in_turn = 6;
+    if (twilight_self.game.state.round > 3) { rounds_in_turn = 7; }
+    let moves_remaining = rounds_in_turn - twilight_self.game.state.turn_in_round;
+
+    for (i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
+      if (twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
+    }
+
+    if (scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card].scoring == 0) {
+      let c = confirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
+      if (c) {} else { return; } 
+    }
 
     //
     // Quagmire / Bear Trap
