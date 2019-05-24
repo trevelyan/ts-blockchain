@@ -37,7 +37,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 1;
+  this.is_testing = 0;
 
   return this;
 
