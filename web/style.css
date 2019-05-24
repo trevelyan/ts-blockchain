@@ -171,8 +171,8 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  height: 520px;
-  width: 375px;
+  height: 100%;
+  width: 100%;
 }
 
 .cardbox_event_blocker {
@@ -187,8 +187,10 @@ body {
 .cardbox {
   position: absolute;
   left: 413;
-  height: 520px;
-  width: 375px;
+  height: 81vh;
+  max-height: 520px;
+  width: 100vw;
+  max-width: 375px;
   background-image: url("/twilight/images/Base.svg");
   background-size: cover;
   z-index: 2;
@@ -208,28 +210,38 @@ body {
   z-index: 999999;
   transform: translate(-50%, -50%);
 }
-.cardbox_menu_playcard {
+/* .cardbox_menu_playcard {
   position: fixed;
-  left: -150px;
-  top: 260px;
+  left: 20%;
+  top: 49%;
   z-index: 900009;
-}
-.cardbox_menu_cancelcard {
-  position: fixed;
-  left: 70px;
-  top: 260px;
-  z-index: 900009;
+  width: 45%;
+} */
+.cardbox-exit {
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  font-size: 4em;
+  z-index: 9;
+  left: 87%;
+  z-index: 9999999999;
 }
 .cardbox_menu_btn {
-  text-align:center;
-  width:60px;
-  font-size: 20px;
-  font-weight:bold;
-  background-color:#77b55a;
-  border:2px solid #4b8f29;
-  cursor:pointer;
-  padding:10px 25px;
-  text-decoration:none;
+  text-align: center;
+  width: 82%;
+  font-size: 3em;
+  font-weight: bold;
+  background-color: #eb2d2d;
+  border: 2px solid #111311;
+  cursor: pointer;
+  padding: 10px 25px;
+  text-decoration: none;
+  color: white;
+  border-radius: 10px;
+  position: fixed;
+  left: 0%;
+  top: 100%;
+  z-index: 900009;
 }
 .us {
   display: inline;
@@ -283,6 +295,15 @@ body {
   float:right;
 }
 
+.card-exit {
+  z-index: 99999999999999;
+  height: 55px;
+  width: 55px;
+  left: 86%;
+  font-size: 4em;
+  position: absolute;
+}
+
 @media only screen and (min-width: 750px) {
   .status {
     float: none;
@@ -317,8 +338,18 @@ body {
 
   .cardbox {
     position: fixed;
-    /* top: 0;
-    bottom: 0; */
+    z-index: 90000;
+    top: 25%;
+    left: 52%;
+    display: block;
+    zoom: 0.66;
+  }
+}
+
+@media only screen and (orientation: portrait) and (max-height: 700px) {
+  .cardbox {
+    zoom: 0.5;
+    top: 23%;
   }
 }
 
@@ -344,7 +375,5 @@ body {
 
   .cardbox {
     position: fixed;
-    /* top: 0;
-    bottom: 0; */
   }
 }

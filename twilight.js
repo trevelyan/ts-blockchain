@@ -290,9 +290,9 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   //
   // 
   //
-  if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
-    $('.cardbox').css('z-index','90000');
-  }
+  // if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+  //   $('.cardbox').css('z-index','90000');
+  // }
 
 /****** OLD ZOOM BUTTONS 
   //
@@ -3501,13 +3501,12 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   $('.card').on('click', function() {
 
     let card = $(this).attr("id");
-   
     //
     // mobile clients have sanity check on card check
     //
-    if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+    if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
       twilight_self.hideCard();
-      twilight_self.showCard(card);    
+      twilight_self.showCard(card);
       twilight_self.showCardOptions(card, player);
       return;
     }
@@ -12569,17 +12568,21 @@ Twilight.prototype.showCardOptions = function showCardOptions(card, player) {
 
   let twilight_self = this;
 
-  $('.cardbox_menu').css('display','block');
+  $('.cardbox_menu_playcard').css('display','block');
   $('.cardbox_menu_playcard').off();
   $('.cardbox_menu_playcard').on('click', function () {
     $('.cardbox_menu').css('display','none');
     twilight_self.hideCard();
     twilight_self.playerTurnCardSelected(card, player);
+    $(this).hide();
+    $('.cardbox-exit').hide();
   });
-  $('.cardbox_menu_cancelcard').off();
-  $('.cardbox_menu_cancelcard').on('click', function () {
+  // HERE WE ARE
+  $('.cardbox-exit').off();
+  $('.cardbox-exit').on('click', function () {
     twilight_self.hideCard();
-    $('.cardbox_menu').css('display','none');
+    $('.cardbox_menu_playcard').css('display','none');
+    $(this).css('display', 'none');
   });
 
 }
@@ -12623,21 +12626,21 @@ Twilight.prototype.showCard = function showCard(cardname) {
       url +='<img class="cardimg" src="/twilight/images/RemoveFromPlay.svg" />';
   }
 
+  // add additional html
+  url += `<div class="cardbox-exit" id="cardbox-exit">×</div>
+  <div class="cardbox_menu_playcard cardbox_menu_btn" id="cardbox_menu_playcard">PLAY</div>`
 
   //
   // mobile needs recentering
   //
   if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
-    $('.cardbox').css('top','50%');
-    $('.cardbox').css('left','50%');
-    //$('.cardbox_event_blocker').css('height','100%');
-    //$('.cardbox_event_blocker').css('width','100%');
-    //$('.cardbox_event_blocker').css('display','block');
+    $('.cardbox-exit').show();
   }
 
   $('#cardbox').html(url);
   $('#cardbox').show();
 }
+
 Twilight.prototype.hideCard = function hideCard() {
   $('#cardbox').hide();
   //$('.cardbox_event_blocker').css('height','0px');
