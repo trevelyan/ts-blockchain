@@ -272,26 +272,36 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   } 
 
 
+/****** OLD ZOOM BUTTONS 
   //
   // pinch-to-zoom
   //
-  var element = document.getElementById('gameboard');
-  var hammertime = Hammer(element);
-  hammertime.get('pinch').set({ enable: true });
-  hammertime.on('pinch', function(event) {
-    alert('hello!');
-  });
-  hammertime.on('pinchin', function(event) {
-    alert('hello2!');
-  });
-  hammertime.on('pinchout', function(event) {
-    alert('hello3!');
-  });
+  let scale = 1;
 
-  //
-  //
-  //
-  alert(navigator.userAgent);
+  if (this.app.browser.isMobileBrowser(navigator.userAgent) == 1) {
+
+    $('.menu-dropdown').html('<div style="float:left;" class="zoom_button zoomout"><span style="margin-top:7px" class="fa fa-plus-circle"> </span></div><div style="float:left;margin-left:20px;" class="zoom_button zoomin"><span style="margin-top:7px" class="fa fa-minus-circle"> </span></div>');
+    $('.menu-dropdown').css('display','block');
+    $('.menu-dropdown').css('width','140px');
+    $('.menu-dropdown').css('flex-direction','');
+    $('.status').css('background-color','black');
+    $('.status').css('width','100%');
+
+    $('.zoomin').on('click',function() {
+      scale -= 0.2;
+      if (scale < 0.2) { scale = 0.2; }
+      $('.gameboard').css('transform','scale('+scale+')');
+      $('.gameboard').css('transform-origin','0% 0% 0px');
+    });
+    $('.zoomout').on('click',function() {
+      scale += 0.2;
+      if (scale > 2) { scale = 2; }
+      $('.gameboard').css('transform','scale('+scale+')');
+      $('.gameboard').css('transform-origin','0% 0% 0px');
+    });
+
+  }
+********/
 
 }
 
@@ -11687,6 +11697,28 @@ Twilight.prototype.updateActionRound = function updateActionRound() {
     $('.action_round_us').css('top', dt);
     $('.action_round_us').css('left', dl);
   }
+
+  let rounds_this_turn = 6;
+  if (this.game.state.round > 3) { rounds_this_turn = 7; }
+  if (this.game.state.northseaoil == 1 && this.game.player == 2) { rounds_this_turn++; }
+  if (this.game.state.space_station === "us" && this.game.player == 2) { rounds_this_turn++; }
+  if (this.game.state.space_station === "ussr" && this.game.player == 1) { rounds_this_turn++; }
+
+  $('.action_round_cover').css('width', this.scale(100)+"px");
+  $('.action_round_cover').css('height', this.scale(100)+"px");
+
+  let dt8 = this.scale(this.game.state.ar_ps[7].top) + "px"; 
+  let dl8 = this.scale(this.game.state.ar_ps[7].left) + "px"; 
+  let dt7 = this.scale(this.game.state.ar_ps[6].top) + "px"; 
+  let dl7 = this.scale(this.game.state.ar_ps[6].left) + "px"; 
+
+  $('.action_round_8_cover').css('top', dt8);
+  $('.action_round_8_cover').css('left', dl8);
+  $('.action_round_7_cover').css('top', dt7);
+  $('.action_round_7_cover').css('left', dl7);
+
+  if (rounds_this_turn < 8) { $('.action_round_8_cover').css('display','all'); } else { $('.action_round_8_cover').css('display','none'); }
+  if (rounds_this_turn < 7) { $('.action_round_7_cover').css('display','all'); } else { $('.action_round_7_cover').css('display','none'); }
 
 }
 Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
