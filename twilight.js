@@ -12691,8 +12691,11 @@ Twilight.prototype.showCard = function showCard(cardname) {
   // mobile needs recentering
   //
   if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
-    $('#cardbox').css('top','100px');
-    $('#cardbox').css('left','100px');
+    $('.cardbox').css('top','50%');
+    $('.cardbox').css('left','50%');
+    $('.cardbox_event_blocker').css('height','100%');
+    $('.cardbox_event_blocker').css('width','100%');
+    $('.cardbox_event_blocker').css('display','block');
   }
 
   $('#cardbox').html(url);
@@ -12700,6 +12703,9 @@ Twilight.prototype.showCard = function showCard(cardname) {
 }
 Twilight.prototype.hideCard = function hideCard() {
   $('#cardbox').hide();
+  $('.cardbox_event_blocker').css('height','0px');
+  $('.cardbox_event_blocker').css('width','0px');
+  $('.cardbox_event_blocker').css('display','none');
 }
 
 
