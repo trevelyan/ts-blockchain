@@ -103,9 +103,6 @@ Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
     });
   }
 
-
-
-
   if (menuitem === "lang") {
 
     let user_message = "Select Language: <p></p><ul>";
@@ -132,6 +129,22 @@ Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
 
     });
   }
+
+
+  //
+  // we explicitly add this in the mobile version
+  //
+  if (menuitem == "log") {
+    $('.hud_menu_overlay').html($('.log').html());
+    $('.logcard').mouseover(function() {
+      let card = $(this).attr("id");
+      twilight_self.showCard(card);
+    }).mouseout(function() {
+      let card = $(this).attr("id");
+      twilight_self.hideCard(card);
+    });
+  }
+
 }
 
 
@@ -164,7 +177,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   //
   if (this.game.countries == undefined) {
     this.game.countries = this.returnCountries();
-  } 
+  }
   if (this.game.state == undefined) {
     this.game.state = this.returnState();
   }
@@ -236,7 +249,7 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   //
   if (this.app.BROWSER == 1) {
     if (window != undefined) {
-      if (window.innerHeight <= 975) {
+      if (window.innerHeight <= 975 && $(window).width() > 700) {
         $('.cardbox').css('left','188px');
       }
     }
@@ -272,6 +285,13 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   } 
 
 
+  //
+  // 
+  //
+  if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+    $('.cardbox').css('z-index','90000');
+  }
+
 /****** OLD ZOOM BUTTONS 
   //
   // pinch-to-zoom
@@ -302,6 +322,150 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
 
   }
 ********/
+
+
+  var element = document.getElementById('gameboard');
+
+  if (element !== null) {
+    var hammertime = new Hammer(element, {});
+
+    hammertime.get('pinch').set({ enable: true });
+    hammertime.get('pan').set({ threshold: 0 });
+
+    var fixHammerjsDeltaIssue = undefined;
+    var pinchStart = { x: undefined, y: undefined }
+    var lastEvent = undefined;
+
+    var originalSize = {
+      width: 2550,
+      height: 1650
+    }
+
+    var current = {
+      x: 0,
+      y: 0,
+      z: 1,
+      zooming: false,
+      width: originalSize.width * 1,
+      height: originalSize.height * 1,
+    }
+
+    var last = {
+      x: current.x,
+      y: current.y,
+      z: current.z
+    }
+
+    function getRelativePosition(element, point, originalSize, scale) {
+      var domCoords = getCoords(element);
+
+      var elementX = point.x - domCoords.x;
+      var elementY = point.y - domCoords.y;
+
+      var relativeX = elementX / (originalSize.width * scale / 2) - 1;
+      var relativeY = elementY / (originalSize.height * scale / 2) - 1;
+      return { x: relativeX, y: relativeY }
+    }
+
+    function getCoords(elem) { // crossbrowser version
+      var box = elem.getBoundingClientRect();
+
+      var body = document.body;
+      var docEl = document.documentElement;
+
+      var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+      var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+
+      var clientTop = docEl.clientTop || body.clientTop || 0;
+      var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+
+      var top  = box.top +  scrollTop - clientTop;
+      var left = box.left + scrollLeft - clientLeft;
+
+      return { x: Math.round(left), y: Math.round(top) };
+    }
+
+    function scaleFrom(zoomOrigin, currentScale, newScale) {
+      var currentShift = getCoordinateShiftDueToScale(originalSize, currentScale);
+      var newShift = getCoordinateShiftDueToScale(originalSize, newScale)
+
+      var zoomDistance = newScale - currentScale
+
+      var shift = {
+              x: currentShift.x - newShift.x,
+              y: currentShift.y - newShift.y,
+      }
+
+      var output = {
+          x: zoomOrigin.x * shift.x,
+          y: zoomOrigin.y * shift.y,
+          z: zoomDistance
+      }
+      return output
+    }
+
+
+    function getCoordinateShiftDueToScale(size, scale){
+      var newWidth = scale * size.width;
+      var newHeight = scale * size.height;
+      var dx = (newWidth - size.width) / 2
+      var dy = (newHeight - size.height) / 2
+      return {
+        x: dx,
+        y: dy
+      }
+    }
+
+    hammertime.on('pan', function(e) {
+      if (lastEvent !== 'pan') {
+        fixHammerjsDeltaIssue = {
+          x: e.deltaX,
+          y: e.deltaY
+        }
+      }
+
+      current.x = last.x + e.deltaX - fixHammerjsDeltaIssue.x;
+      current.y = last.y + e.deltaY - fixHammerjsDeltaIssue.y;
+      lastEvent = 'pan';
+      update();
+    });
+
+    hammertime.on('pinch', function(e) {
+      var d = scaleFrom(pinchZoomOrigin, last.z, last.z * e.scale)
+      current.x = d.x + last.x + e.deltaX;
+      current.y = d.y + last.y + e.deltaY;
+      current.z = d.z + last.z;
+      lastEvent = 'pinch';
+      update();
+    })
+
+    var pinchZoomOrigin = undefined;
+    hammertime.on('pinchstart', function(e) {
+      pinchStart.x = e.center.x;
+      pinchStart.y = e.center.y;
+      pinchZoomOrigin = getRelativePosition(element, { x: pinchStart.x, y: pinchStart.y }, originalSize, current.z);
+      lastEvent = 'pinchstart';
+    })
+
+    hammertime.on('panend', function(e) {
+      last.x = current.x;
+      last.y = current.y;
+      lastEvent = 'panend';
+    })
+
+    hammertime.on('pinchend', function(e) {
+      last.x = current.x;
+      last.y = current.y;
+      last.z = current.z;
+      lastEvent = 'pinchend';
+    })
+
+    function update() {
+      current.height = originalSize.height * current.z;
+      current.width = originalSize.width * current.z;
+      element.style.transform = "translate3d(" + current.x + "px, " + current.y + "px, 0) scale(" + current.z + ")";
+    }
+  }
 
 }
 
@@ -539,7 +703,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 	    $('.card').off();
       $('.showcard').off();
 
-  	  $('.showcard').mouseover(function() {
+  	    $('.showcard').mouseover(function() {
 	      let card = $(this).attr("id");
 	      twilight_self.showCard(card);
 	    }).mouseout(function() {
@@ -1643,8 +1807,13 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 	// set to player1
 	if (msg == null) { msg = {}; }
-	if (msg.extra == undefined) { msg.extra = {}; }
-	if (msg.extra.target == undefined) { msg.extra.target = 1; }
+	if (msg.extra == undefined) { 
+	  msg = {};
+	  msg.extra = {};
+	  msg.extra.target = 1;
+	} else {
+	  if (!(msg.extra.target > 0)) { msg.extra.target = 1; }
+	}
 
 	let x = this.playHeadline(msg);
         if (x == 1) { 
@@ -5421,7 +5590,7 @@ Twilight.prototype.returnCountries = function returnCountries() {
   var countries = {};
 
   // EUROPE
-  countries['canada'] = { top : -130, left : 842 , us : 2 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'uk' ] , region : "europe" , name : "Canada" };
+  countries['canada'] = { top : 752, left : 842 , us : 2 , ussr : 0 , control : 4 , bg : 0 , neighbours : [ 'uk' ] , region : "europe" , name : "Canada" };
   countries['uk'] = { top : 572, left : 1690 , us : 5 , ussr : 0 , control : 5 , bg : 0 , neighbours : [ 'canada','norway','benelux','france' ] , region : "europe" , name : "UK" };
   countries['benelux'] = { top : 728, left : 1860 , us : 0 , ussr : 0 , control : 3 , bg : 0 , neighbours : [ 'uk','westgermany' ] , region : "europe" , name : "Benelux" };
   countries['france'] = { top : 906, left : 1820 , us : 0 , ussr : 0 , control : 3 , bg : 1 , neighbours : [ 'algeria', 'uk','italy','spain','westgermany' ] , region : "europe" , name : "France" };
@@ -5522,12 +5691,10 @@ Twilight.prototype.returnCountries = function returnCountries() {
   return countries;
 
 }
+
 Twilight.prototype.returnChinaCard = function returnChinaCard() {
   return { img : "TNRnTS-06" , name : "China" , scoring : 0 , bg : 0 , player : "both" , recurring : 1 , ops : 4 };
 }
-
-
-
 
 Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
 
@@ -12500,6 +12667,16 @@ Twilight.prototype.showCard = function showCard(cardname) {
   if (c.recurring == 0) {
       url +='<img class="cardimg" src="/twilight/images/RemoveFromPlay.svg" />';
   }
+
+
+  //
+  // mobile needs recentering
+  //
+  if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+    $('#cardbox').css('top','100px');
+    $('#cardbox').css('left','100px');
+  }
+
   $('#cardbox').html(url);
   $('#cardbox').show();
 }

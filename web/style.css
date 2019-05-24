@@ -22,7 +22,6 @@
   position: absolute;
   background-color: black;
 }
-
 body {
   font-family: arial, helvetica, sans-serif;
   font-size: 13px;
@@ -32,8 +31,8 @@ body {
 
 .main {
   display: grid;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   overflow: scroll;
 }
 
@@ -261,7 +260,34 @@ body {
   }
 }
 
-@media only screen and (max-width: 750px) {
+@media only screen and (orientation: portrait) and (max-width: 750px) {
+  .status > ul {
+    margin: 0;
+  }
+
+  .status > ul > li {
+    padding: 20px;
+  }
+
+  .log {
+    height: 12px;
+    bottom: 0;
+    padding: 0.2rem;
+    position: fixed;
+    background: black;
+    overflow: hidden;
+    margin-bottom: 0px;
+    width: 100%;
+  }
+
+  .cardbox {
+    position: fixed;
+    /* top: 0;
+    bottom: 0; */
+  }
+}
+
+@media only screen and (orientation: landscape) and (max-height: 700px) {
   .status > ul {
     margin: 0;
   }
@@ -278,11 +304,12 @@ body {
     background: black;
     overflow: hidden;
     margin-bottom: 0px;
+    width: 100%;
   }
 
   .cardbox {
     position: fixed;
-    top: 0;
-    bottom: 0;
+    /* top: 0;
+    bottom: 0; */
   }
 }
