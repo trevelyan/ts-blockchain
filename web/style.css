@@ -11,8 +11,8 @@ body {
 
 .main {
   display: grid;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   overflow: scroll;
 }
 
@@ -250,7 +250,7 @@ body {
   }
 
   .log {
-    height: 15px;
+    height: 12px;
     bottom: 0;
     padding: 0.2rem;
     position: fixed;
