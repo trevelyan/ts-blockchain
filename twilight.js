@@ -12626,14 +12626,13 @@ Twilight.prototype.showCard = function showCard(cardname) {
       url +='<img class="cardimg" src="/twilight/images/RemoveFromPlay.svg" />';
   }
 
-  // add additional html
-  url += `<div class="cardbox-exit" id="cardbox-exit">×</div>
-  <div class="cardbox_menu_playcard cardbox_menu_btn" id="cardbox_menu_playcard">PLAY</div>`
-
   //
   // mobile needs recentering
   //
   if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
+    // add additional html
+    url += `<div class="cardbox-exit" id="cardbox-exit">×</div>
+    <div class="cardbox_menu_playcard cardbox_menu_btn" id="cardbox_menu_playcard">PLAY</div>`
     $('.cardbox-exit').show();
   }
 
