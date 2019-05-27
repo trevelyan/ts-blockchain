@@ -12692,7 +12692,7 @@ Twilight.prototype.updateLog = function updateLog(str, length = 25) {
 Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
   return `
-        <h3 style="margin-top: 10px">Twilight Struggle: </h3>
+        <h3>Twilight Struggle: </h3>
 
         <p></p>
 
