@@ -12692,14 +12692,14 @@ Twilight.prototype.updateLog = function updateLog(str, length = 25) {
 Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
   return `
-        <h3>Twilight Struggle: </h3>
+        <h3 style="margin-top: 10px">Twilight Struggle: </h3>
 
         <p></p>
 
-        <form id="options" class="options" style="font-size:1.2em">
+        <form id="options" class="options">
 
           <label for="player1">Play as:</label>
-          <select name="player1" style="font-size:1.2em">
+          <select name="player1">
             <option value="random">random</option>
             <option value="ussr" default>USSR</option>
             <option value="us">US</option>
@@ -12708,7 +12708,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
           <p></p>
 
           <label for="deck">Deck:</label>
-          <select name="deck" style="font-size:1.2em">
+          <select name="deck">
             <option value="original">original</option>
             <option value="optional" selected>optional</option>
           </select>
@@ -12716,7 +12716,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
           <p></p>
 
           <label for="usbonus">US bonus: </label>
-          <select name="usbonus" style="font-size:1.2em">
+          <select name="usbonus">
             <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>
