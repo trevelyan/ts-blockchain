@@ -1701,9 +1701,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 	if (this.is_testing == 1) {
 	  if (this.game.player == 1) {
-	    this.game.deck[0].hand = ["decolonization","cubanmissile", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+	    this.game.deck[0].hand = ["redscare","quagmire", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
 	  } else {
-	    this.game.deck[0].hand = ["wargames","aldrichames","reagan","wwby","southamerica","europe","asia","seasia","centralamerica"];
+	    this.game.deck[0].hand = ["decolonization","cia","reagan","onesmallstep","summit","lonegunman","oas","nasser","sadat"];
 	  }
 	}
 
@@ -3523,6 +3523,18 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
   let opponent = "us";
   if (this.game.player == 2) { opponent = "ussr"; }
 
+    //
+    // Skip Turn
+    // 
+    if (card == "skipturn") {
+      twilight_self.hideCard(card);
+      twilight_self.addMove("resolve\tplay");
+      twilight_self.addMove("notify\t"+player+" has no cards playable.");
+      twilight_self.endTurn();
+      return 0;
+    }
+
+
 
     //
     // warn if user is leaving a scoring card in hand
@@ -3558,18 +3570,6 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
         twilight_self.endTurn();
         return 0;
       }
-    }
-
-
-    //
-    // Skip Turn
-    // 
-    if (card == "skipturn") {
-      twilight_self.hideCard(card);
-      twilight_self.addMove("resolve\tplay");
-      twilight_self.addMove("notify\t"+player+" has no cards playable.");
-      twilight_self.endTurn();
-      return 0;
     }
 
 
