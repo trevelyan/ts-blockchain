@@ -12694,8 +12694,6 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
   return `
         <h3>Twilight Struggle: </h3>
 
-        <p></p>
-
         <form id="options" class="options">
 
           <label for="player1">Play as:</label>
@@ -12705,15 +12703,11 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
             <option value="us">US</option>
           </select>
 
-          <p></p>
-
           <label for="deck">Deck:</label>
           <select name="deck">
             <option value="original">original</option>
             <option value="optional" selected>optional</option>
           </select>
-
-          <p></p>
 
           <label for="usbonus">US bonus: </label>
           <select name="usbonus">
