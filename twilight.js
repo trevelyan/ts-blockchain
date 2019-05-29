@@ -3317,7 +3317,10 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
     if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
       twilight_self.hideCard();
       twilight_self.showCard(card);
-      twilight_self.showCardOptionsHeadline(card, player);
+      twilight_self.showCardOptions(card, player, function() {
+	twilight_self.playerTurnHeadlineSelected(card, player);
+      });
+
       return;
     }
 
@@ -3536,7 +3539,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
       twilight_self.hideCard();
       twilight_self.showCard(card);
-      twilight_self.showCardOptions(card, player);
+      twilight_self.showCardOptions(card, player, function() {
+        twilight_self.playerTurnCardSelected(card, player);
+      });
       return;
     }
 
@@ -12593,7 +12598,7 @@ Twilight.prototype.webServer = function webServer(app, expressapp) {
 }
 
 
-Twilight.prototype.showCardOptionsHeadline = function showCardOptionsHeadline(card, player) {
+Twilight.prototype.showCardOptions = function showCardOptions(card, player, mycallback) {
 
   let twilight_self = this;
 
@@ -12602,29 +12607,7 @@ Twilight.prototype.showCardOptionsHeadline = function showCardOptionsHeadline(ca
   $('.cardbox_menu_playcard').on('click', function () {
     $('.cardbox_menu').css('display','none');
     twilight_self.hideCard();
-    twilight_self.playerTurnHeadlineSelected(card, player);
-    $(this).hide();
-    $('.cardbox-exit').hide();
-  });
-  // HERE WE ARE
-  $('.cardbox-exit').off();
-  $('.cardbox-exit').on('click', function () {
-    twilight_self.hideCard();
-    $('.cardbox_menu_playcard').css('display','none');
-    $(this).css('display', 'none');
-  });
-
-}
-Twilight.prototype.showCardOptions = function showCardOptions(card, player) {
-
-  let twilight_self = this;
-
-  $('.cardbox_menu_playcard').css('display','block');
-  $('.cardbox_menu_playcard').off();
-  $('.cardbox_menu_playcard').on('click', function () {
-    $('.cardbox_menu').css('display','none');
-    twilight_self.hideCard();
-    twilight_self.playerTurnCardSelected(card, player);
+    mycallback();
     $(this).hide();
     $('.cardbox-exit').hide();
   });
