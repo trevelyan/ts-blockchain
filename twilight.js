@@ -185,6 +185,16 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   }
   if (this.game.deck.length == 0) {
 
+
+console.log("\n\n\n\n");
+console.log("---------------------------");
+console.log("---------------------------");
+console.log("------ INITIALIZE GAME ----");
+console.log("---------------------------");
+console.log("---------------------------");
+console.log("---------------------------");
+console.log("\n\n\n\n");
+
     this.updateStatus("Generating the Game");
 
     this.game.queue.push("round");
@@ -2522,7 +2532,7 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
 
         } else {
 
-          this.updateStatus("Waiting for US to decrypt USSR headline card 2...");
+          this.updateStatus("Waiting for US to decrypt USSR headline card...");
 
 	  //
 	  // try saving here to avoid headline issues
@@ -3301,35 +3311,54 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
     let card = $(this).attr("id");
 
-    // cannot pick china card or UN intervention
-    if (card == "china") { alert("You cannot headline China"); return; }
-    if (card == "unintervention") { alert("You cannot headline UN Intervention"); return; }
-
-    twilight_self.game.state.headline_card = card;
-    twilight_self.game.state.headline_xor = twilight_self.app.crypto.hash(Math.random());
-    twilight_self.game.state.headline_hash = twilight_self.app.crypto.encodeXOR(twilight_self.app.crypto.stringToHex(twilight_self.game.state.headline_card), twilight_self.game.state.headline_xor);
-
-    if (twilight_self.game.player != 1) {
-      twilight_self.game.state.headline1 = 1;
+    //
+    // mobile clients have sanity check on card check
+    //
+    if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+      twilight_self.hideCard();
+      twilight_self.showCard(card);
+      twilight_self.showCardOptionsHeadline(card, player);
+      return;
     }
-    //twilight_self.saveGame(twilight_self.game.id);
 
-    twilight_self.updateStatus("simultaneous blind pick... encrypting selected card");
-    twilight_self.game.turn = [];
-
-    let extra       = {};
-    extra.headline_hash = twilight_self.game.state.headline_hash;
-    extra.target    = twilight_self.returnNextPlayer(twilight_self.game.player);
-
-    $('.card').off();
-    $('.showcard').off();
-    twilight_self.hideCard();
-
-    twilight_self.sendMessage("game", extra);
-
-    return;
+    twilight_self.playerTurnHeadlineSelected(card, player);
 
   });
+
+}
+
+
+Twilight.prototype.playerTurnHeadlineSelected = function playerTurnHeadlineSelected(card, player) {
+
+  let twilight_self = this;
+
+  // cannot pick china card or UN intervention
+  if (card == "china") { alert("You cannot headline China"); return; }
+  if (card == "unintervention") { alert("You cannot headline UN Intervention"); return; }
+
+  twilight_self.game.state.headline_card = card;
+  twilight_self.game.state.headline_xor = twilight_self.app.crypto.hash(Math.random());
+  twilight_self.game.state.headline_hash = twilight_self.app.crypto.encodeXOR(twilight_self.app.crypto.stringToHex(twilight_self.game.state.headline_card), twilight_self.game.state.headline_xor);
+
+  if (twilight_self.game.player != 1) {
+    twilight_self.game.state.headline1 = 1;
+  }
+  //twilight_self.saveGame(twilight_self.game.id);
+
+  twilight_self.updateStatus("simultaneous blind pick... encrypting selected card");
+  twilight_self.game.turn = [];
+
+  let extra       = {};
+  extra.headline_hash = twilight_self.game.state.headline_hash;
+  extra.target    = twilight_self.returnNextPlayer(twilight_self.game.player);
+
+  $('.card').off();
+  $('.showcard').off();
+  twilight_self.hideCard();
+
+  twilight_self.sendMessage("game", extra);
+
+  return;
 
 }
 
@@ -3548,7 +3577,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       if (twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
     }
 
-    if (scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card].scoring == 0) {
+    if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card].scoring == 0) {
       let c = confirm("Holding a scoring card at the end of the turn will lose you the game. Still play this card?");
       if (c) {} else { return; } 
     }
@@ -12564,6 +12593,28 @@ Twilight.prototype.webServer = function webServer(app, expressapp) {
 }
 
 
+Twilight.prototype.showCardOptionsHeadline = function showCardOptionsHeadline(card, player) {
+
+  let twilight_self = this;
+
+  $('.cardbox_menu_playcard').css('display','block');
+  $('.cardbox_menu_playcard').off();
+  $('.cardbox_menu_playcard').on('click', function () {
+    $('.cardbox_menu').css('display','none');
+    twilight_self.hideCard();
+    twilight_self.playerTurnHeadlineSelected(card, player);
+    $(this).hide();
+    $('.cardbox-exit').hide();
+  });
+  // HERE WE ARE
+  $('.cardbox-exit').off();
+  $('.cardbox-exit').on('click', function () {
+    twilight_self.hideCard();
+    $('.cardbox_menu_playcard').css('display','none');
+    $(this).css('display', 'none');
+  });
+
+}
 Twilight.prototype.showCardOptions = function showCardOptions(card, player) {
 
   let twilight_self = this;
