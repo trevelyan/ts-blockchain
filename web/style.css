@@ -222,10 +222,23 @@ body {
   width: 55px;
   height: 55px;
   font-size: 4em;
-  z-index: 9;
-  left: 87%;
+  left: 87.9%;
+  top: -1.8%;
+  color: white;
   z-index: 9999999999;
 }
+
+#cardbox-exit-background {
+  position: absolute;
+  left: 85%;
+  width: 45px;
+  height: 45px;
+  border: 3px black solid;
+  border-radius: 100px;
+  top: -1%;
+  background: #eb2d2d;
+}
+
 .cardbox_menu_btn {
   text-align: center;
   width: 82%;
