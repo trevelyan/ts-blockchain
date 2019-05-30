@@ -992,12 +992,27 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 		let tmpar = action2.split("_");
 
-                $(this).hide();
-		pos_to_discard.push(tmpar[0]);
-	        cards_discarded++;
-                twilight_self.addMove("discard\tus\t"+tmpar[1]);
-                twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+tmpar[1]+"\">"+twilight_self.game.deck[0].cards[tmpar[1]].name +"</span>");
+    	        if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+                  twilight_self.mobileCardSelect(card, player, function() {
 
+                    $(this).hide();
+		    pos_to_discard.push(tmpar[0]);
+	            cards_discarded++;
+                    twilight_self.addMove("discard\tus\t"+tmpar[1]);
+                    twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+tmpar[1]+"\">"+twilight_self.game.deck[0].cards[tmpar[1]].name +"</span>");
+
+                  }, "discard");
+	          return 0;
+
+	        } else {
+
+                  $(this).hide();
+	  	  pos_to_discard.push(tmpar[0]);
+	          cards_discarded++;
+                  twilight_self.addMove("discard\tus\t"+tmpar[1]);
+                  twilight_self.addMove("notify\tUS discards <span class=\"logcard\" id=\""+tmpar[1]+"\">"+twilight_self.game.deck[0].cards[tmpar[1]].name +"</span>");
+
+		}
               }
             });
           }
@@ -3315,11 +3330,9 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
     // mobile clients have sanity check on card check
     //
     if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
-      twilight_self.hideCard();
-      twilight_self.showCard(card);
-      twilight_self.showCardOptions(card, player, function() {
+      twilight_self.mobileCardSelect(card, player, function() {
 	twilight_self.playerTurnHeadlineSelected(card, player);
-      });
+      }, "play");
 
       return;
     }
@@ -3537,11 +3550,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     // mobile clients have sanity check on card check
     //
     if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
-      twilight_self.hideCard();
-      twilight_self.showCard(card);
-      twilight_self.showCardOptions(card, player, function() {
+      twilight_self.mobileCardSelect(card, player, function() {
         twilight_self.playerTurnCardSelected(card, player);
-      });
+      }, "select");
       return;
     }
 
@@ -6984,6 +6995,15 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
             let card = $(this).attr("id");
 
+    	    if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+              twilight_self.mobileCardSelect(card, player, function() {
+	        twilight_self.removeCardFromHand(card);
+  	        twilight_self.addMove("notify\tus discarded "+card);
+	        twilight_self.endTurn();
+              }, "discard");
+	      return 0;
+	    }
+
 	    twilight_self.removeCardFromHand(card);
   	    twilight_self.addMove("notify\tus discarded "+card);
 	    twilight_self.endTurn();
@@ -8093,10 +8113,20 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
           twilight_self.endTurn();
 
         } else {
-          $(this).hide();
-	  cards_discarded++;
-          twilight_self.removeCardFromHand(action2);
-          twilight_self.addMove("discard\tus\t"+action2);
+
+    	  if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+            twilight_self.mobileCardSelect(card, player, function() {
+              $(this).hide();
+	      cards_discarded++;
+              twilight_self.removeCardFromHand(action2);
+              twilight_self.addMove("discard\tus\t"+action2);
+	    }, "discard");
+	  } else {
+            $(this).hide();
+  	    cards_discarded++;
+            twilight_self.removeCardFromHand(action2);
+            twilight_self.addMove("discard\tus\t"+action2);
+	  }
         }
       });
     }
@@ -8159,13 +8189,29 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       let action2 = $(this).attr("id");
 
-      if (action2 != "nocard") {
-        twilight_self.game.deck[0].hand.push(action2);
-        twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);
+      if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+        twilight_self.mobileCardSelect(card, player, function() {
+
+          if (action2 != "nocard") {
+            twilight_self.game.deck[0].hand.push(action2);
+            twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);
+          } else {
+            twilight_self.addMove("notify\t"+player+" does not retrieve card");
+          }
+          twilight_self.endTurn();
+
+	}, "retrieve");
       } else {
-        twilight_self.addMove("notify\t"+player+" does not retrieve card");
+
+        if (action2 != "nocard") {
+          twilight_self.game.deck[0].hand.push(action2);
+          twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);
+        } else {
+          twilight_self.addMove("notify\t"+player+" does not retrieve card");
+        }
+        twilight_self.endTurn();
       }
-      twilight_self.endTurn();
+
     });
 
     return 0;
@@ -10145,6 +10191,15 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     $('.card').on('click', function() {
 
       let action2 = $(this).attr("id");
+
+      if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+        twilight_self.mobileCardSelect(card, player, function() {
+          twilight_self.addMove("event\tus\t"+action2);
+          twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);
+          twilight_self.endTurn();
+        }, "play event");
+	return 0;
+      }
 
       twilight_self.addMove("event\tus\t"+action2);
       twilight_self.addMove("notify\t"+player+" retrieved "+twilight_self.game.deck[0].cards[action2].name);
@@ -12598,9 +12653,12 @@ Twilight.prototype.webServer = function webServer(app, expressapp) {
 }
 
 
-Twilight.prototype.showCardOptions = function showCardOptions(card, player, mycallback) {
+Twilight.prototype.mobileCardSelect = function mobileCardSelect(card, player, mycallback, prompttext="play") {
 
   let twilight_self = this;
+
+  twilight_self.hideCard();
+  twilight_self.showCard(card);
 
   $('.cardbox_menu_playcard').css('display','block');
   $('.cardbox_menu_playcard').off();
