@@ -5,6 +5,10 @@ var util = require('util');
 
 
 
+
+
+
+
 //////////////////
 // CONSTRUCTOR  //
 //////////////////
@@ -55,6 +59,10 @@ util.inherits(Twilight, Game);
 //
 var is_this_missile_envy_noneventable = 0;
 
+//
+// allows cancellation of pick "pickagain"
+//
+var original_selected_card = null;
 
 
 
@@ -3382,6 +3390,7 @@ Twilight.prototype.playerTurnHeadlineSelected = function playerTurnHeadlineSelec
 
 Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
+  original_selected_card = selected_card;
 
   if (this.browser_active == 0) { return; }
 
@@ -3861,7 +3870,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
 	      return;
 	    }
             if (action == "pickagain") {
-	      twilight_self.playerTurn(selected_card);
+	      twilight_self.playerTurn(original_selected_card);
 	      return;
 	    }
 
