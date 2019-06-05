@@ -12869,6 +12869,17 @@ Twilight.prototype.addLogCardEvents = function addLogCardEvents() {
 
 }
 
+Twilight.prototype.returnQuickLinkGameOptions = function returnQuickLinkGameOptions(options) {
+  let new_options = {};
+  for (var index in options) {
+    if (index == "player1") {
+      new_options[index] = options[index] == "ussr" ? "us" : "ussr";
+    } else {
+      new_options[index] = options[index]
+    }
+  }
 
+  return new_options;
+}
 
 
