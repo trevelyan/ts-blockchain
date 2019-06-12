@@ -86,6 +86,36 @@ body {
   color: #fff
 }
 
+.hud_menu_overlay > div > ul {
+  list-style-type: none;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 0.3em;
+  text-align: center;
+}
+
+.hud_menu_overlay > div > ul > li {
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+  margin: 0;
+  transition: .3s background-color;
+  transition: .1s color;
+}
+
+.hud_menu_overlay > div > ul > li:hover {
+  background-color: #005f5f;
+  color: #fff
+}
+
+#display-cards {
+  display:flex;
+  flex-direction:column;
+  overflow: scroll;
+  height: 100%;
+  width:100%;
+}
+
 .round {
   position: absolute;
   background-image: url("images/Turn.svg");
@@ -199,6 +229,28 @@ body {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+}
+.cardbox-hud {
+  display: block;
+  zoom: 0.66;
+  /* margin-top: 10em; */
+  height: 81vh;
+  min-height: 50vh;
+  max-height: 340px;
+  min-width: 240px;
+  width: 35vw;
+  background-image: url(/twilight/images/Base.svg);
+  background-size: cover;
+  z-index: 2;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* margin-right: 1em; */
+  margin-left: 15.5em;
+  margin-top: 1em;
+}
+#cardbox-hud-1 {
+  /* margin-left: 7em; */
+  margin-top: 13em;
 }
 .cardbox_menu {
   position: absolute;
@@ -338,6 +390,10 @@ body {
     padding: 20px;
   }
 
+  .hud_menu_overlay > div > ul > li {
+    padding: 20px;
+  }
+
   .log {
     height: 12px;
     bottom: 0;
@@ -357,6 +413,37 @@ body {
     display: block;
     zoom: 0.66;
   }
+
+  #display-cards {
+    flex-direction:row;
+    padding: 0.5em;
+    width: unset;
+  }
+
+  #cardbox-hud-1 {
+    margin-left: 7em;
+    margin-top: 10em;
+  }
+
+  .cardbox-hud {
+    display: block;
+    zoom: 0.66;
+    margin-top: 10em;
+    height: 81vh;
+    min-height: unset;
+    max-height: 340px;
+    min-width: 240px;
+    width: 50vw;
+    background-image: url(/twilight/images/Base.svg);
+    background-size: cover;
+    z-index: 2;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-right: 1em;
+    margin-right: 1em;
+    margin-left: 0em;
+    margin-top: 10em;
+  }
 }
 
 @media only screen and (orientation: portrait) and (max-height: 700px) {
@@ -375,6 +462,10 @@ body {
     padding: 20px;
   }
 
+  .hud_menu_overlay > div > ul > li {
+    padding: 20px;
+  }
+
   .log {
     height: 15px;
     bottom: 0;
@@ -388,5 +479,18 @@ body {
 
   .cardbox {
     position: fixed;
+  }
+
+  #display-cards {
+    height: 97%;
+  }
+
+  #cardbox-hud-1 {
+    margin-top: 9em;
+  }
+
+  .cardbox-hud {
+    margin-left: 10.5em;
+    min-height: 53vh;
   }
 }
