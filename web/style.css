@@ -16,6 +16,7 @@
   position: absolute;
   background-color: black;
 }
+
 body {
   font-family: arial, helvetica, sans-serif;
   font-size: 13px;
@@ -111,9 +112,10 @@ body {
 #display-cards {
   display:flex;
   flex-direction:column;
+  align-items: center;
   overflow: scroll;
   height: 100%;
-  width:100%;
+  width: 100%;
 }
 
 .round {
@@ -232,26 +234,19 @@ body {
 }
 .cardbox-hud {
   display: block;
-  zoom: 0.66;
-  /* margin-top: 10em; */
-  height: 10em;
-  min-height: 24em;
-  max-height: 30em;
-  min-width: 17em;
-  width: 10em;
+
+  width: 13em;
+  min-height: 18em;
+
+  margin-top: 1em;
+
   background-image: url(/twilight/images/Base.svg);
   background-size: cover;
+
   z-index: 2;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  /* margin-right: 1em; */
-  margin-left: 15.5em;
-  margin-top: 1em;
+  transform: translate(0%, 0%);
 }
-#cardbox-hud-1 {
-  /* margin-left: 7em; */
-  margin-top: 13em;
-}
+
 .cardbox_menu {
   position: absolute;
   display: none;
@@ -386,6 +381,11 @@ body {
     margin: 0;
   }
 
+  .hud_menu_overlay {
+    display: grid;
+    grid-template-rows: auto 1em;
+  }
+
   .status > ul > li {
     padding: 20px;
   }
@@ -395,7 +395,7 @@ body {
   }
 
   .log {
-    height: 12px;
+    height: 1em;
     bottom: 0;
     padding: 0.2rem;
     position: fixed;
@@ -417,32 +417,19 @@ body {
   #display-cards {
     flex-direction:row;
     padding: 0.5em;
+    /* height: 74%; */
+    height: unset;
     width: unset;
-  }
-
-  #cardbox-hud-1 {
-    margin-left: 7em;
-    margin-top: 10em;
   }
 
   .cardbox-hud {
     display: block;
-    zoom: 0.66;
-    margin-top: 10em;
-    height: 81vh;
-    min-height: unset;
-    max-height: 340px;
-    min-width: 240px;
-    width: 50vw;
-    background-image: url(/twilight/images/Base.svg);
-    background-size: cover;
+    min-width: calc(36vh * 0.7211);
+    min-height: 100%;
     z-index: 2;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(0%, 0%);
     margin-right: 1em;
-    margin-right: 1em;
-    margin-left: 0em;
-    margin-top: 10em;
+    margin-top: 0em;
   }
 }
 
@@ -482,15 +469,11 @@ body {
   }
 
   #display-cards {
-    height: 97%;
-  }
-
-  #cardbox-hud-1 {
-    margin-top: 13em;
+    height: 96%;
   }
 
   .cardbox-hud {
-    margin-left: 10em;
-    min-height: 24em;
+    width: 10em;
+    min-height: 14em;
   }
 }

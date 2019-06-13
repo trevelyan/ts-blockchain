@@ -59,7 +59,6 @@ var is_this_missile_envy_noneventable = 0;
 var original_selected_card = null;
 
 
-
 Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
   switch (menuitem) {
     case "cards":
@@ -124,14 +123,19 @@ Twilight.prototype.handleCardsMenuItem = function handleCardsMenuItem() {
       cards_in_pile++;
       display_message += `<div class="cardbox-hud" id="cardbox-hud-${cards_in_pile}">${twilight_self.returnCardImage(cards[z])}</div>`
     }
-    if (cards_in_pile == 0) {
-      display_message = `There are no cards in ${player_action}`;
-    }
 
     display_message =
     `<div id="display-cards">
       ${display_message}
     </div>`
+
+    if (cards_in_pile == 0) {
+      display_message = `
+      <div style="text-align:center; margin: auto;">
+      There are no cards in ${player_action}
+      </div>
+      `;
+    }
 
     $('.hud_menu_overlay').html(display_message);
   });
@@ -139,10 +143,10 @@ Twilight.prototype.handleCardsMenuItem = function handleCardsMenuItem() {
 
 
 Twilight.prototype.handleLangMenuItem = function handleLangMenuItem(){
-  let user_message = "Select Language: <p></p><ul>";
+  let user_message = `<div id="menu-container">Select Language: <p></p><ul>`;
       user_message += '<li class="card" id="english">English</li>';
       user_message += '<li class="card" id="chinese">简体中文</li>';
-      user_message += '</ul>';
+      user_message += '</ul></div>';
 
   $('.hud_menu_overlay').html(user_message);
 
@@ -12745,62 +12749,6 @@ Twilight.prototype.returnCardImage = function returnCardImage(cardname) {
 Twilight.prototype.showCard = function showCard(cardname) {
 
   let url = this.returnCardImage(cardname);
-  // var c = this.game.deck[0].cards[cardname];
-  // if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
-  // if (c == undefined) { c = this.game.deck[0].removed[cardname]; }
-
-  // var url = `<img class="cardimg" src="/twilight/images/${this.lang}/${c.img}.svg" />`;
-  //     url +='<img class="cardimg" src="/twilight/images/EarlyWar.svg" />';
-
-  // switch (c.player) {
-  //   case "both":
-  //     url += '<img class="cardimg" src="/twilight/images/BothPlayerCard.svg" />';
-  //     if (c.ops) { url += `<img class="cardimg" src="/twilight/images/White${c.ops}.svg"`; }
-  //     if (c.ops) { url += `<img class="cardimg" src="/twilight/images/Black${c.ops}.svg"`; }
-  //     break;
-  //   case "ussr":
-  //     url +='<img class="cardimg" src="/twilight/images/SovietPlayerCard.svg" />';
-  //     if (c.ops) { url += `<img class="cardimg" src="/twilight/images/White${c.ops}.svg"`; }
-  //     break;
-  //   case "us":
-  //     url +='<img class="cardimg" src="/twilight/images/AmericanPlayerCard.svg" />';
-  //     if (c.ops) { url += `<img class="cardimg" src="/twilight/images/Black${c.ops}.svg"`; }
-  //     break;
-  //   default:
-  //     break;
-  // }
-  // if (c.player == "both") {
-  //     url +='<img class="cardimg" src="/twilight/images/BothPlayerCard.svg" />';
-  //     if (c.ops == 1) { url +='<img class="cardimg" src="/twilight/images/White1.svg" />'; }
-  //     if (c.ops == 2) { url +='<img class="cardimg" src="/twilight/images/White2.svg" />'; }
-  //     if (c.ops == 3) { url +='<img class="cardimg" src="/twilight/images/White3.svg" />'; }
-  //     if (c.ops == 4) { url +='<img class="cardimg" src="/twilight/images/White4.svg" />'; }
-  //     if (c.ops == 1) { url +='<img class="cardimg" src="/twilight/images/Black1.svg" />'; }
-  //     if (c.ops == 2) { url +='<img class="cardimg" src="/twilight/images/Black2.svg" />'; }
-  //     if (c.ops == 3) { url +='<img class="cardimg" src="/twilight/images/Black3.svg" />'; }
-  //     if (c.ops == 4) { url +='<img class="cardimg" src="/twilight/images/Black4.svg" />'; }
-  // }
-  // if (c.player == "us") {
-  //     url +='<img class="cardimg" src="/twilight/images/AmericanPlayerCard.svg" />';
-  //     if (c.ops == 1) { url +='<img class="cardimg" src="/twilight/images/Black1.svg" />'; }
-  //     if (c.ops == 2) { url +='<img class="cardimg" src="/twilight/images/Black2.svg" />'; }
-  //     if (c.ops == 3) { url +='<img class="cardimg" src="/twilight/images/Black3.svg" />'; }
-  //     if (c.ops == 4) { url +='<img class="cardimg" src="/twilight/images/Black4.svg" />'; }
-  // }
-  // if (c.player == "ussr") {
-  //     url +='<img class="cardimg" src="/twilight/images/SovietPlayerCard.svg" />';
-  //     if (c.ops == 1) { url +='<img class="cardimg" src="/twilight/images/White1.svg" />'; }
-  //     if (c.ops == 2) { url +='<img class="cardimg" src="/twilight/images/White2.svg" />'; }
-  //     if (c.ops == 3) { url +='<img class="cardimg" src="/twilight/images/White3.svg" />'; }
-  //     if (c.ops == 4) { url +='<img class="cardimg" src="/twilight/images/White4.svg" />'; }
-  // }
-
-  // if (c.scoring == 1) {
-  //     url +='<img class="cardimg" src="/twilight/images/MayNotBeHeld.svg" />';
-  // }
-  // if (c.recurring == 0) {
-  //     url +='<img class="cardimg" src="/twilight/images/RemoveFromPlay.svg" />';
-  // }
 
   //
   // mobile needs recentering
