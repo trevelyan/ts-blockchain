@@ -234,11 +234,11 @@ body {
   display: block;
   zoom: 0.66;
   /* margin-top: 10em; */
-  height: 81vh;
-  min-height: 50vh;
-  max-height: 340px;
-  min-width: 240px;
-  width: 35vw;
+  height: 10em;
+  min-height: 24em;
+  max-height: 30em;
+  min-width: 17em;
+  width: 10em;
   background-image: url(/twilight/images/Base.svg);
   background-size: cover;
   z-index: 2;
@@ -486,11 +486,11 @@ body {
   }
 
   #cardbox-hud-1 {
-    margin-top: 9em;
+    margin-top: 13em;
   }
 
   .cardbox-hud {
-    margin-left: 10.5em;
-    min-height: 53vh;
+    margin-left: 10em;
+    min-height: 24em;
   }
 }
