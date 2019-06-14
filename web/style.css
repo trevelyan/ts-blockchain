@@ -1,3 +1,16 @@
+.removecards li {
+  float: left;
+  min-width: 300px;
+  font-size: 15px;
+  list-style-type: none;
+}
+.game_details_select {
+  max-width: 300px;
+}
+.game_details {
+  max_width:100%;
+}
+
 .zoom_button {
  border: 1px solid #707070;
  background-color: #646464;
