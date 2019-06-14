@@ -45,6 +45,15 @@ function Twilight(app) {
   //
   this.is_testing = 0;
 
+
+  //
+  // adjust board zoom
+  //
+  this.gameboardZoom  = 0.90;
+  this.gameboardMobileZoom = 0.67;
+
+
+
   return this;
 
 }
@@ -175,9 +184,11 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     chat.addPopUpChat();
   }
 
-
-  this.updateStatus("loading game...");
-  this.loadGame(game_id);
+  //
+  // fresh removal
+  //
+  //this.updateStatus("loading game...");
+  //this.loadGame(game_id);
 
   if (this.game.status != "") { this.updateStatus(this.game.status); }
 
@@ -192,7 +203,6 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     this.game.state = this.returnState();
   }
   if (this.game.deck.length == 0) {
-
 
 console.log("\n\n\n\n");
 console.log("---------------------------");
@@ -305,43 +315,8 @@ console.log("\n\n\n\n");
   } 
 
 
-  //
-  // 
-  //
-  // if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
-  //   $('.cardbox').css('z-index','90000');
-  // }
 
-/****** OLD ZOOM BUTTONS 
-  //
-  // pinch-to-zoom
-  //
-  let scale = 1;
 
-  if (this.app.browser.isMobileBrowser(navigator.userAgent) == 1) {
-
-    $('.menu-dropdown').html('<div style="float:left;" class="zoom_button zoomout"><span style="margin-top:7px" class="fa fa-plus-circle"> </span></div><div style="float:left;margin-left:20px;" class="zoom_button zoomin"><span style="margin-top:7px" class="fa fa-minus-circle"> </span></div>');
-    $('.menu-dropdown').css('display','block');
-    $('.menu-dropdown').css('width','140px');
-    $('.menu-dropdown').css('flex-direction','');
-    $('.status').css('background-color','black');
-    $('.status').css('width','100%');
-
-    $('.zoomin').on('click',function() {
-      scale -= 0.2;
-      if (scale < 0.2) { scale = 0.2; }
-      $('.gameboard').css('transform','scale('+scale+')');
-      $('.gameboard').css('transform-origin','0% 0% 0px');
-    });
-    $('.zoomout').on('click',function() {
-      scale += 0.2;
-      if (scale > 2) { scale = 2; }
-      $('.gameboard').css('transform','scale('+scale+')');
-      $('.gameboard').css('transform-origin','0% 0% 0px');
-    });
-
-  }
-********/
 
 
   var element = document.getElementById('gameboard');
@@ -5757,6 +5732,16 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
     deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
   }
 
+  //
+  // remove any cards specified
+  //
+  if (this.game.options != undefined) {
+    for (var key in this.game.options) {
+      if (deck[key] != undefined) { delete deck[key]; }
+    }
+  }
+
+
   return deck;
 
 }
@@ -5819,6 +5804,16 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
     deck['tehran']            = { img : "TNRnTS-108" , name : "Our Man in Tehran", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
   }
 
+  //
+  // remove any cards specified
+  //
+  if (this.game.options != undefined) {
+    for (var key in this.game.options) {
+      if (deck[key] != undefined) { delete deck[key]; }
+    }
+  }
+
+
   return deck;
 
 }
@@ -5854,6 +5849,15 @@ Twilight.prototype.returnLateWarCards = function returnLateWarCards() {
     deck['iraniraq']          = { img : "TNRnTS-102" , name : "Iran-Iraq War", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
     deck['yuri']              = { img : "TNRnTS-109" , name : "Yuri and Samantha", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
     deck['awacs']             = { img : "TNRnTS-110" , name : "AWACS Sale to Soviets", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+  }
+
+  //
+  // remove any cards specified
+  //
+  if (this.game.options != undefined) {
+    for (var key in this.game.options) {
+      if (deck[key] != undefined) { delete deck[key]; }
+    }
   }
 
 
@@ -12825,6 +12829,118 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
             <option value="10">10</option>
           </select>
 
+
+	  <div onclick='$(".remove_cards_box").show();$(this).html(" ");' style="font-size:0.80em;cursor:pointer;">&gt; advanced...</div>
+	  <div id="remove_cards_box" class="remove_cards_box" style="display:none">
+	    <div style="font-size:0.85em;font-weight:bold">remove cards from play: </div>
+	    <ul id="removecards" class="removecards">
+	    <li><input class="remove_card" type="checkbox" name="asia" /> Asia Scoring</li>
+	    <li><input class="remove_card" type="checkbox" name="europe" /> Europe Scoring</li>
+	    <li><input class="remove_card" type="checkbox" name="mideast" /> Middle-East Scoring</li>
+	    <li><input class="remove_card" type="checkbox" name="duckandcover" /> Duck and Cover</li>
+	    <li><input class="remove_card" type="checkbox" name="fiveyearplan" /> Five Year Plan</li>
+	    <li><input class="remove_card" type="checkbox" name="socgov" /> Socialist Governments</li>
+	    <li><input class="remove_card" type="checkbox" name="fidel" /> Fidel</li>
+	    <li><input class="remove_card" type="checkbox" name="vietnamrevolts" /> Vietnam Revolts</li>
+	    <li><input class="remove_card" type="checkbox" name="blockade" /> Blockade</li>
+	    <li><input class="remove_card" type="checkbox" name="koreanwar" /> Korean War</li>
+	    <li><input class="remove_card" type="checkbox" name="romanianab" /> Romanian Abdication</li>
+	    <li><input class="remove_card" type="checkbox" name="arabisraeli" /> Arab Israeli War</li>
+	    <li><input class="remove_card" type="checkbox" name="comecon" /> Comecon</li>
+	    <li><input class="remove_card" type="checkbox" name="nasser" /> Nasser</li>
+	    <li><input class="remove_card" type="checkbox" name="warsawpact" /> Warsaw Pact</li>
+	    <li><input class="remove_card" type="checkbox" name="degualle" /> De Gualle Leads France</li>
+	    <li><input class="remove_card" type="checkbox" name="naziscientist" /> Nazi Scientists Captured</li>
+	    <li><input class="remove_card" type="checkbox" name="truman" /> Truman</li>
+	    <li><input class="remove_card" type="checkbox" name="olympic" /> Olympic Games</li>
+	    <li><input class="remove_card" type="checkbox" name="nato" /> NATO</li>
+	    <li><input class="remove_card" type="checkbox" name="indreds" /> Independent Reds</li>
+	    <li><input class="remove_card" type="checkbox" name="marshall" /> Marshall Plan</li>
+	    <li><input class="remove_card" type="checkbox" name="indopaki" /> Indo-Pakistani War</li>
+	    <li><input class="remove_card" type="checkbox" name="containment" /> Containment</li>
+	    <li><input class="remove_card" type="checkbox" name="cia" /> CIA Created</li>
+	    <li><input class="remove_card" type="checkbox" name="usjapan" /> US/Japan Defense Pact</li>
+	    <li><input class="remove_card" type="checkbox" name="suezcrisis" /> Suez Crisis</li>
+	    <li><input class="remove_card" type="checkbox" name="easteuropean" /> East European Unrest</li>
+	    <li><input class="remove_card" type="checkbox" name="decolonization" /> Decolonization</li>
+	    <li><input class="remove_card" type="checkbox" name="redscare" /> Red Scare</li>
+	    <li><input class="remove_card" type="checkbox" name="unintervention" /> UN Intervention</li>
+	    <li><input class="remove_card" type="checkbox" name="destalinization" /> Destalinization</li>
+	    <li><input class="remove_card" type="checkbox" name="nucleartestban" /> Nuclear Test Ban Treaty</li>
+	    <li><input class="remove_card" type="checkbox" name="formosan" /> Formosan Resolution</li>
+	  </ul>
+	  <ul class="removecards" style="clear:both;margin-top:13px">
+            <li><input class="remove_card" type="checkbox" name="brushwar" /> Brush War</li>
+	    <li><input class="remove_card" type="checkbox" name="centralamerica" /> Central America Scoring</li>
+	    <li><input class="remove_card" type="checkbox" name="seasia" /> Southeast Asia Scoring</li>
+	    <li><input class="remove_card" type="checkbox" name="armsrace" /> Arms Race</li>
+	    <li><input class="remove_card" type="checkbox" name="cubanmissile" /> Cuban Missile Crisis</li>
+	    <li><input class="remove_card" type="checkbox" name="nuclearsubs" /> Nuclear Subs</li>
+	    <li><input class="remove_card" type="checkbox" name="quagmire" /> Quagmire</li>
+	    <li><input class="remove_card" type="checkbox" name="saltnegotiations" /> Salt Negotiations</li>
+	    <li><input class="remove_card" type="checkbox" name="beartrap" /> Bear Trap</li>
+	    <li><input class="remove_card" type="checkbox" name="summit" /> Summit</li>
+	    <li><input class="remove_card" type="checkbox" name="howilearned" /> How I Learned to Stop Worrying</li>
+	    <li><input class="remove_card" type="checkbox" name="junta" /> Junta</li>
+	    <li><input class="remove_card" type="checkbox" name="kitchendebates" /> Kitchen Debates</li>
+	    <li><input class="remove_card" type="checkbox" name="missileenvy" /> Missile Envy</li>
+	    <li><input class="remove_card" type="checkbox" name="wwby" /> We Will Bury You</li>
+	    <li><input class="remove_card" type="checkbox" name="brezhnev" /> Brezhnev Doctrine</li>
+	    <li><input class="remove_card" type="checkbox" name="portuguese" /> Portuguese Empire Crumbles</li>
+	    <li><input class="remove_card" type="checkbox" name="southafrican" /> South African Unrest</li>
+	    <li><input class="remove_card" type="checkbox" name="allende" /> Allende</li>
+	    <li><input class="remove_card" type="checkbox" name="willybrandt" /> Willy Brandt</li>
+	    <li><input class="remove_card" type="checkbox" name="muslimrevolution" /> Muslim Revolution</li>
+	    <li><input class="remove_card" type="checkbox" name="abmtreaty" /> ABM Treaty</li>
+	    <li><input class="remove_card" type="checkbox" name="culturalrev" /> Cultural Revolution</li>
+	    <li><input class="remove_card" type="checkbox" name="flowerpower" /> Flower Power</li>
+	    <li><input class="remove_card" type="checkbox" name="u2" /> U-2 Incident</li>
+	    <li><input class="remove_card" type="checkbox" name="opec" /> OPEC</li>
+	    <li><input class="remove_card" type="checkbox" name="lonegunman" /> Lone Gunman</li>
+	    <li><input class="remove_card" type="checkbox" name="colonial" /> Colonial</li>
+	    <li><input class="remove_card" type="checkbox" name="panamacanal" /> Panama Canal</li>
+	    <li><input class="remove_card" type="checkbox" name="campdavid" /> Camp David Accords</li>
+	    <li><input class="remove_card" type="checkbox" name="puppet" /> Puppet Governments</li>
+	    <li><input class="remove_card" type="checkbox" name="grainsales" /> Grain Sales to Soviets</li>
+	    <li><input class="remove_card" type="checkbox" name="johnpaul" /> John Paul</li>
+	    <li><input class="remove_card" type="checkbox" name="deathsquads" /> Death Squads</li>
+	    <li><input class="remove_card" type="checkbox" name="oas" /> OAS Founded</li>
+	    <li><input class="remove_card" type="checkbox" name="nixon" /> Nixon Plays the China Card</li>
+	    <li><input class="remove_card" type="checkbox" name="sadat" /> Sadat Expels Soviets</li>
+	    <li><input class="remove_card" type="checkbox" name="shuttle" /> Shuttle Diplomacy</li>
+	    <li><input class="remove_card" type="checkbox" name="voiceofamerica" /> Voice of America</li>
+	    <li><input class="remove_card" type="checkbox" name="liberation" /> Liberation Theology</li>
+	    <li><input class="remove_card" type="checkbox" name="ussuri" /> Ussuri River Skirmish</li>
+	    <li><input class="remove_card" type="checkbox" name="asknot" /> Ask Not What Your Country Can Do For You</li>
+	    <li><input class="remove_card" type="checkbox" name="alliance" /> Alliance for Progress</li>
+	    <li><input class="remove_card" type="checkbox" name="africa" /> Africa Scoring</li>
+	    <li><input class="remove_card" type="checkbox" name="onesmallstep" /> One Small Step</li>
+	    <li><input class="remove_card" type="checkbox" name="southamerica" /> South America</li>
+	  </ul>
+	  <ul class="removecards" style="clear:both;margin-top:13px">
+	    <li><input class="remove_card" type="checkbox" name="iranianhostage" /> Iranian Hostage Crisis</li>
+	    <li><input class="remove_card" type="checkbox" name="ironlady" /> The Iron Lady</li>
+	    <li><input class="remove_card" type="checkbox" name="reagan" /> Reagan Bombs Libya</li>
+	    <li><input class="remove_card" type="checkbox" name="starwars" /> Star Wars</li>
+	    <li><input class="remove_card" type="checkbox" name="northseaoil" /> North Sea Oil</li>
+	    <li><input class="remove_card" type="checkbox" name="reformer" /> The Reformer</li>
+	    <li><input class="remove_card" type="checkbox" name="marine" /> Marine Barracks Bombing</li>
+	    <li><input class="remove_card" type="checkbox" name="KAL007" /> Soviets Shoot Down KAL-007</li>
+	    <li><input class="remove_card" type="checkbox" name="glasnost" /> Glasnost</li>
+	    <li><input class="remove_card" type="checkbox" name="ortega" /> Ortega Elected in Nicaragua</li>
+	    <li><input class="remove_card" type="checkbox" name="terrorism" /> Terrorism</li>
+	    <li><input class="remove_card" type="checkbox" name="ironcontra" /> Iran Contra Scandal</li>
+	    <li><input class="remove_card" type="checkbox" name="chernobyl" /> Chernobyl</li>
+	    <li><input class="remove_card" type="checkbox" name="debtcrisis" /> Latin American Debt Crisis</li>
+	    <li><input class="remove_card" type="checkbox" name="teardown" /> Tear Down this Wall</li>
+	    <li><input class="remove_card" type="checkbox" name="evilempire" /> An Evil Empire</li>
+	    <li><input class="remove_card" type="checkbox" name="aldrichames" /> Aldrich Ames Remix</li>
+	    <li><input class="remove_card" type="checkbox" name="pershing" /> Pershing II Deployed</li>
+	    <li><input class="remove_card" type="checkbox" name="wargames" /> Wargames</li>
+	    <li><input class="remove_card" type="checkbox" name="solidarity" /> Solidarity</li>
+	  </ul>
+
+	  </div>
         </form>
 
 	`;
