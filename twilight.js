@@ -81,7 +81,7 @@ Twilight.prototype.handleCardsMenuItem = function handleCardsMenuItem() {
   let html =
   `
     <div id="menu-container">
-      <div>
+      <div style="margin-bottom: 1em">
         Select your deck:
       </div>
       <ul>
@@ -125,7 +125,7 @@ Twilight.prototype.handleCardsMenuItem = function handleCardsMenuItem() {
     }
 
     display_message =
-    `<div id="display-cards">
+    `<div class="display-cards">
       ${display_message}
     </div>`
 
@@ -173,7 +173,7 @@ Twilight.prototype.handleLogMenuItem = function handleLogMenuItem() {
   //
   // we explicitly add this in the mobile version
   //
-  $('.hud_menu_overlay').html($('.log').html());
+  $('.hud_menu_overlay').html(`<div style="padding: 0.5em">${$('.log').html()}</div>`);
   twilight_self.addLogCardEvents();
 }
 
@@ -1781,25 +1781,13 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           if (this.game.player == mv[1]) {
             this.playerPlaceInitialInfluence("ussr");
           } else {
-            let x = "USSR is making its initial placement of influence:<p></p>[cards: ";
-                for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-                    if (i > 0) { x += ", "; }
-                    x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-                }
-                x += ']';
-            this.updateStatus(x);
+            this.showStatusMessageAndListCards('USSR is making its initial placement of influence')
           }
         } else {
           if (this.game.player == mv[1]) {
             this.playerPlaceInitialInfluence("us");
           } else {
-            let x = "US is making its initial placement of influence:<p></p>[cards: ";
-                for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-                    if (i > 0) { x += ", "; }
-                    x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-                }
-                x += ']';
-            this.updateStatus(x);
+            this.showStatusMessageAndListCards('US is making its initial placement of influence');
           }
         }
 
@@ -1814,25 +1802,13 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           if (this.game.player == mv[1]) {
             this.playerPlaceBonusInfluence("ussr", mv[2]);
           } else {
-            let x = "USSR is making its bonus placement of "+mv[2]+" influence:<p></p>[cards: ";
-                for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-                    if (i > 0) { x += ", "; }
-                    x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-                }
-                x += ']';
-            this.updateStatus(x);
+            this.showStatusMessageAndListCards(`USSR is making its bonus placement of ${mv[2]} influence`);
           }
         } else {
           if (this.game.player == mv[1]) {
             this.playerPlaceBonusInfluence("us", mv[2]);
           } else {
-            let x = "US is making its bonus placement of "+mv[2]+" influence:<p></p>[cards: ";
-                for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-                    if (i > 0) { x += ", "; }
-                    x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-                }
-                x += ']';
-            this.updateStatus(x);
+            this.showStatusMessageAndListCards(`US is making its bonus placement of ${mv[2]} influence`);
           }
         }
 
@@ -2414,13 +2390,8 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
           this.playerPickHeadlineCard();
 
         } else {
-          let x = "Waiting for USSR to pick headline card:<p></p>[cards: ";
-              for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-                  if (i > 0) { x += ", "; }
-                  x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-              }
-                x += ']';
-          this.updateStatus(x);
+          // TODO
+          this.showStatusMessageAndListCards(`Waiting for USSR to pick headline card`);
         }
         return 0;
       }
@@ -2446,13 +2417,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
           if (this.game.player == 1) { 
             this.game.state.headline1 = 1;
           }
-          let x = "Waiting for US to pick headline card:<p></p>[cards: ";
-              for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-                  if (i > 0) { x += ", "; }
-                  x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-              }
-                x += ']';
-          this.updateStatus(x);
+          this.showStatusMessageAndListCards(`Waiting for US to pick headline card`);
         }
         return 0;
       }
@@ -3073,7 +3038,7 @@ console.log("SCORING CARDS: " + scoring_cards_available);
         this.playerTurn();
       }
     } else {
-      this.updateStatus("Waiting for USSR to move");
+      this.showStatusMessageAndListCards(`Waiting for USSR to move`);
       if (this.game.state.turn_in_round == 0) {
         this.game.state.turn_in_round++;
         this.updateActionRound();
@@ -3116,7 +3081,8 @@ console.log("SCORING CARDS: " + scoring_cards_available);
         this.playerTurn();
       }
     } else {
-      this.updateStatus("Waiting for US to move");
+      // this.updateStatus("Waiting for US to move");
+      this.showStatusMessageAndListCards(`Waiting for US to move`);
     }
     return;
   }
@@ -4192,15 +4158,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "You are the USSR. Place six additional influence in Eastern Europe.<p></p>[cards: ";
-    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (i > 0) { x += ", "; }
-console.log(this.game.deck[0].hand[i]);
-      x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-    }
-    x += ']';
-    this.updateStatus(x);
-    this.addShowCardEvents();
+    this.showStatusMessageAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
 
 
     var placeable = [];
@@ -4249,15 +4207,7 @@ console.log(this.game.deck[0].hand[i]);
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "You are the US. Place seven additional influence in Western Europe.<p></p>[cards: ";
-    for (i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (i > 0) { x += ", "; }
-      x += '<div class="inline showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-    }
-    x += ']';
-    this.updateStatus(x);
-
-    this.addShowCardEvents();
+    this.showStatusMessageAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
 
     var placeable = [];
 
@@ -4315,14 +4265,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "You are the USSR. Place "+bonus+" additional influence in countries with existing Soviet influence.<p></p>[cards: ";
-    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (i > 0) { x += ", "; }
-      x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-    }
-    x += ']';
-    this.updateStatus(x);
-    this.addShowCardEvents();
+    this.showStatusMessageAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
 
     let ops_to_place = bonus;
 
@@ -4357,15 +4300,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
     twilight_self.addMove("RESOLVE");
 
-    let x = "You are the US. Place "+bonus+" additional influence in countries with existing US influence.<p></p>[cards: ";
-    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (i > 0) { x += ", "; }
-      x += '<div class="showcard inline" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name.toLowerCase()+'</div>';
-    }
-    x += ']';
-    this.updateStatus(x);
-
-    this.addShowCardEvents();
+    this.showStatusMessageAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
 
     let ops_to_place = bonus;
 
@@ -11699,7 +11634,27 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
 
 
 
+Twilight.prototype.showStatusMessageAndListCards = function showStatusMessageAndListCards(message) {
+  let hand = this.game.deck[0].hand;
 
+  let html = "";
+  for (var z in hand) {
+    html += `<div class="cardbox-hud cardbox-hud-status">${this.returnCardImage(hand[z])}</div>`
+  }
+
+  html = `
+  <div class="cardbox-status-container">
+    <div>
+      ${message}
+    </div>
+    <div class="display-cards display-cards-status">
+      ${html}
+    </div>
+  </div>`;
+
+  this.updateStatus(html);
+  this.addShowCardEvents();
+}
 
 
 
