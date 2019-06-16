@@ -1664,7 +1664,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             let lmv = this.game.queue[le].split("\t");
             if (lmv[0] == "event" && lmv[2] == mv[1]) {
               this.game.state.events.unintervention = 0;
-              }
+            }
 
           }
           //
@@ -1678,23 +1678,46 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             let rmvd = 0;
 
             if (lmv[0] == "play" && mv[1] == "play") {
-                this.game.queue.splice(le, 2);
+              this.game.queue.splice(le, 2);
               rmvd = 1;
             }
             if (lmv[0] == "event" && lmv[2] == mv[1]) {
-                this.game.queue.splice(le, 2);
+              this.game.queue.splice(le, 2);
               rmvd = 1;
             }
             if (lmv[0] == "discard" && lmv[2] == mv[1]) {
-                this.game.queue.splice(qe, 1);
+              this.game.queue.splice(qe, 1);
               rmvd = 1;
             }
             if (lmv[0] === mv[1]) {	// "discard teardownthiswall"
-                this.game.queue.splice(le, 2);
+              this.game.queue.splice(le, 2);
               rmvd = 1;
             }
             if (rmvd == 0) {
-                this.game.queue.splice(qe, 1);
+
+	      //
+	      // remove the event
+	      //
+              this.game.queue.splice(qe, 1);
+
+	      //
+	      // go back through the queue and remove any event tht matches this one
+	      //
+	      for (let z = le, zz = 1; z >= 0 && zz == 1; z--) {
+                let tmplmv = this.game.queue[z].split("\t");
+		if (tmplmv.length > 0) {
+		  if (tmplmv[0] === "event") {
+		    if (tmplmv.length > 2) {
+		      if (tmplmv[2] === mv[1]) {
+console.log("resolving earlier: " + this.game.queue[z]);
+		        this.game.queue.splice(z);
+	                zz = 0;
+		      }
+		    }
+	          }
+	        }
+	      }
+
             }
           }
         }
@@ -1729,9 +1752,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["redscare","quagmire", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+            this.game.deck[0].hand = ["handshake","quagmire", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
           } else {
-            this.game.deck[0].hand = ["decolonization","cia","reagan","onesmallstep","summit","lonegunman","oas","nasser","sadat"];
+            this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","summit","lonegunman","oas","nasser","sadat"];
           }
         }
 
@@ -5829,7 +5852,14 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
   //
   if (this.game.options != undefined) {
     for (var key in this.game.options) {
+
       if (deck[key] != undefined) { delete deck[key]; }
+
+      //
+      // optional midwar cards
+      //
+      if (key === "handshake") { deck['handshake'] = { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 0 , ops : 1 }; }
+
     }
   }
 
@@ -10733,6 +10763,39 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 
 
+
+
+
+
+
+
+
+
+  //////////////////////////////
+  // OPTIONQL COMMUNITY CARDS //
+  //////////////////////////////
+
+
+  //
+  // Handshake in Space
+  //
+  if (card == "handshake") {
+    if (player == "us") {
+      this.updateLog("USSR advances in the Space Race...");
+      this.game.state.space_race_ussr += 1;
+      this.advanceSpaceRace();
+    } else {
+      this.updateLog("US advances in the Space Race...");
+      this.game.state.space_race_us += 1;
+      this.updateSpaceRace();
+    }
+    return 1;
+  }
+  
+
+
+
+
   //
   // return 0 so other cards do not trigger infinite loop 
   //
@@ -12718,26 +12781,38 @@ Twilight.prototype.returnCardImage = function returnCardImage(cardname) {
   if (c == undefined) { c = this.game.deck[0].removed[cardname]; }
 
   var html = `<img class="cardimg" src="/twilight/images/${this.lang}/${c.img}.svg" />`;
+
+  //
+  // cards can be generated with http://www.invadethree.space/tscardgen/
+  // as long as they have the string "png" included in the name they will
+  // be treated as fully formed (i.e. not SVG files). The convention is to 
+  // name these cards starting at 201 in order to avoid conflict with other
+  // cards that may be released officially.
+  //
+  if (c.img.indexOf("png") > -1) {
+      html = `<img class="cardimg" src="/twilight/images/${this.lang}/${c.img}.png" />`;
+  } else {
       html +='<img class="cardimg" src="/twilight/images/EarlyWar.svg" />';
 
-  switch (c.player) {
-    case "both":
-      html += '<img class="cardimg" src="/twilight/images/BothPlayerCard.svg" />';
-      if (c.ops) {
-        html += `<img class="cardimg" src="/twilight/images/White${c.ops}.svg" />`;
-        html += `<img class="cardimg" src="/twilight/images/Black${c.ops}.svg" />`;
-      }
-      break;
-    case "us":
-      html +='<img class="cardimg" src="/twilight/images/AmericanPlayerCard.svg" />';
-      if (c.ops) { html += `<img class="cardimg" src="/twilight/images/Black${c.ops}.svg" />`; }
-      break;
-    case "ussr":
-      html +='<img class="cardimg" src="/twilight/images/SovietPlayerCard.svg" />';
-      if (c.ops) { html += `<img class="cardimg" src="/twilight/images/White${c.ops}.svg" />`; }
-      break;
-    default:
-      break;
+    switch (c.player) {
+      case "both":
+        html += '<img class="cardimg" src="/twilight/images/BothPlayerCard.svg" />';
+        if (c.ops) {
+          html += `<img class="cardimg" src="/twilight/images/White${c.ops}.svg" />`;
+          html += `<img class="cardimg" src="/twilight/images/Black${c.ops}.svg" />`;
+        }
+        break;
+      case "us":
+        html +='<img class="cardimg" src="/twilight/images/AmericanPlayerCard.svg" />';
+        if (c.ops) { html += `<img class="cardimg" src="/twilight/images/Black${c.ops}.svg" />`; }
+        break;
+      case "ussr":
+        html +='<img class="cardimg" src="/twilight/images/SovietPlayerCard.svg" />';
+        if (c.ops) { html += `<img class="cardimg" src="/twilight/images/White${c.ops}.svg" />`; }
+        break;
+      default:
+        break;
+    }
   }
 
   if (c.scoring == 1) {
@@ -12963,6 +13038,9 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 	    <li><input class="remove_card" type="checkbox" name="solidarity" /> Solidarity</li>
 	  </ul>
 
+	  <div style="font-size:0.85em;font-weight:bold;clear:both;margin-top:10px;">add cards to game: </div>
+	  <ul id="removecards" class="removecards">
+	    <li><input class="remove_card" type="checkbox" name="handshake" /> Handshake in Space (Mid-War)</li>
 	  </div>
         </form>
 
