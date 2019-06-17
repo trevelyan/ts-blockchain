@@ -294,12 +294,13 @@ body {
   width: 45%;
 } */
 .cardbox-exit {
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  font-size: 4em;
-  left: 87.9%;
-  top: -1.8%;
+  /* position: absolute; */
+  text-align: center;
+  /* width: 10px;
+  height: 10px; */
+  font-size: 2.9em;
+  /* left: 15%;
+  top: -20%; */
   color: white;
   z-index: 9999999999;
 }
@@ -307,18 +308,21 @@ body {
 #cardbox-exit-background {
   position: absolute;
   left: 85%;
-  width: 45px;
-  height: 45px;
+  width: 5vh;
+  height: 5vh;
   border: 3px black solid;
   border-radius: 100px;
   top: -1%;
   background: #eb2d2d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .cardbox_menu_btn {
   text-align: center;
-  width: 82%;
-  font-size: 3em;
+  width: 72%;
+  font-size: 2em;
   font-weight: bold;
   background-color: #eb2d2d;
   border: 2px solid #111311;
@@ -437,10 +441,12 @@ body {
   .cardbox {
     position: fixed;
     z-index: 90000;
-    top: 25%;
-    left: 52%;
+    top: 21vh;
+    left: 53vw;
     display: block;
-    zoom: 0.66;
+    /* zoom: 0.66; */
+    height: 40vh;
+    width: calc(40vh * 0.7211);
   }
 
   .display-cards {
@@ -516,8 +522,8 @@ body {
     position: fixed;
     height: 95vh;
     width: calc(95vh * 0.7211);
-    left: calc(50vh * 0.7211);
-    transform: translate(0%, -67%);
+    left: 33vw;
+    transform: translate(0%, -30%);
   }
 
   .display-cards {
@@ -538,5 +544,20 @@ body {
 
   .cardbox-exit {
     left: 88.9%;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 850px) {
+  .cardbox {
+    position: fixed;
+    height: 95vh;
+    width: calc(95vh * 0.7211);
+    left: calc(45vw - 17.8em);
+    transform: translate(0%, -67%);
+  }
+
+  #cardbox-exit-background {
+    width: 5vw;
+    height: 5vw;
   }
 }
