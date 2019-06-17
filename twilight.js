@@ -12862,9 +12862,10 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
           </select>
 
           <label for="deck">Deck:</label>
-          <select name="deck">
+          <select name="deck" onchange='if ($(this).val() == "saito") { $(".saito_edition").prop("checked",true); } else { $(".saito_edition").prop("checked", false); } '>
             <option value="original">original</option>
             <option value="optional" selected>optional</option>
+            <option value="saito">saito edition</option>
           </select>
 
           <label for="usbonus">US bonus: </label>
@@ -12932,7 +12933,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 	    <li><input class="remove_card" type="checkbox" name="quagmire" /> Quagmire</li>
 	    <li><input class="remove_card" type="checkbox" name="saltnegotiations" /> Salt Negotiations</li>
 	    <li><input class="remove_card" type="checkbox" name="beartrap" /> Bear Trap</li>
-	    <li><input class="remove_card" type="checkbox" name="summit" /> Summit</li>
+	    <li><input class="remove_card saito_edition" type="checkbox" name="summit" /> Summit</li>
 	    <li><input class="remove_card" type="checkbox" name="howilearned" /> How I Learned to Stop Worrying</li>
 	    <li><input class="remove_card" type="checkbox" name="junta" /> Junta</li>
 	    <li><input class="remove_card" type="checkbox" name="kitchendebates" /> Kitchen Debates</li>
@@ -12995,7 +12996,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
 	  <div style="font-size:0.85em;font-weight:bold;clear:both;margin-top:10px;">add cards to game: </div>
 	  <ul id="removecards" class="removecards">
-	    <li><input class="remove_card" type="checkbox" name="handshake" /> Handshake in Space (Mid-War)</li>
+	    <li><input class="remove_card saito_edition" type="checkbox" name="handshake" /> Handshake in Space (Mid-War)</li>
 	  </div>
         </form>
 
