@@ -254,19 +254,6 @@ body {
 }
 
 .cardbox-hud {
-  /* display: block;
-
-  width: 13em;
-  min-height: 18em;
-
-  margin-top: 1em;
-
-  background-image: url(/twilight/images/Base.svg);
-  background-size: cover;
-
-  z-index: 2;
-  transform: translate(0%, 0%); */
-
   display: block;
   width: calc(8.7em * 0.7211);
   height: 8.7em;
@@ -277,7 +264,6 @@ body {
   transform: translate(0%, 0%);
 
   justify-self: center;
-  align-self: center;
 }
 
 .cardbox-hud-status {

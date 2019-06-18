@@ -11739,6 +11739,9 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
       twilight_self.addShowCardEvents();
     } catch (err) {}
 
+    $('#hud_menu_overlay').hide()
+    $('#status').show();
+
 
     try {
       if ($('#game_log').hasClass("loading") == true) {
