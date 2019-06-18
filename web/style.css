@@ -268,8 +268,8 @@ body {
   transform: translate(0%, 0%); */
 
   display: block;
-  width: calc(9em * 0.7211);
-  height: 9em;
+  width: calc(8.7em * 0.7211);
+  height: 8.7em;
 
   background-image: url(/twilight/images/Base.svg);
   background-size: cover;
