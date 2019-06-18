@@ -123,12 +123,12 @@ body {
 }
 
 .display-cards {
-  display:flex;
-  flex-direction:column;
-  align-items: center;
-  overflow-y: scroll;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  overflow-x: scroll;
   height: 100%;
   width: 100%;
+  padding: 0.25em;
 }
 
 .display-cards-status {
@@ -235,6 +235,7 @@ body {
  display:none;
  opacity: 0.4;
 }
+
 .cardbox {
   position: absolute;
   left: 413;
@@ -251,19 +252,18 @@ body {
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
+
 .cardbox-hud {
   display: block;
-
-  width: 13em;
-  min-height: 18em;
-
-  margin-top: 1em;
+  width: calc(8.7em * 0.7211);
+  height: 8.7em;
 
   background-image: url(/twilight/images/Base.svg);
   background-size: cover;
-
   z-index: 2;
   transform: translate(0%, 0%);
+
+  justify-self: center;
 }
 
 .cardbox-hud-status {
@@ -286,20 +286,10 @@ body {
   z-index: 999999;
   transform: translate(-50%, -50%);
 }
-/* .cardbox_menu_playcard {
-  position: fixed;
-  left: 20%;
-  top: 49%;
-  z-index: 900009;
-  width: 45%;
-} */
+
 .cardbox-exit {
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  font-size: 4em;
-  left: 87.9%;
-  top: -1.8%;
+  text-align: center;
+  font-size: 2.9em;
   color: white;
   z-index: 9999999999;
 }
@@ -307,18 +297,21 @@ body {
 #cardbox-exit-background {
   position: absolute;
   left: 85%;
-  width: 45px;
-  height: 45px;
+  width: 5vh;
+  height: 5vh;
   border: 3px black solid;
   border-radius: 100px;
   top: -1%;
   background: #eb2d2d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .cardbox_menu_btn {
   text-align: center;
-  width: 82%;
-  font-size: 3em;
+  width: 72%;
+  font-size: 2em;
   font-weight: bold;
   background-color: #eb2d2d;
   border: 2px solid #111311;
@@ -437,16 +430,19 @@ body {
   .cardbox {
     position: fixed;
     z-index: 90000;
-    top: 25%;
-    left: 52%;
+    top: 21vh;
+    left: 53vw;
     display: block;
-    zoom: 0.66;
+    /* zoom: 0.66; */
+    height: 40vh;
+    width: calc(40vh * 0.7211);
   }
 
   .display-cards {
-    flex-direction:row;
+    display: flex;
+    flex-direction: row;
     padding: 0.5em;
-    /* height: 74%; */
+    height: 74%;
     height: unset;
     width: unset;
   }
@@ -464,7 +460,7 @@ body {
     z-index: 2;
     width: calc(37vh * 0.7211);
     transform: translate(0%, 0%);
-    margin-right: 1em;
+    margin-right: 0.5em;
     margin-top: 0em;
   }
 
@@ -516,11 +512,17 @@ body {
     position: fixed;
     height: 95vh;
     width: calc(95vh * 0.7211);
-    left: calc(50vh * 0.7211);
-    transform: translate(0%, -67%);
+    left: 33vw;
+    transform: translate(0%, -30%);
   }
 
   .display-cards {
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    overflow-y: scroll;
+    height: 100%;
+    width: 100%;
     height: 90%;
     padding-top: 1em;
   }
@@ -538,5 +540,20 @@ body {
 
   .cardbox-exit {
     left: 88.9%;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 850px) {
+  .cardbox {
+    position: fixed;
+    height: 95vh;
+    width: calc(95vh * 0.7211);
+    left: calc(45vw - 17.8em);
+    transform: translate(0%, -67%);
+  }
+
+  #cardbox-exit-background {
+    width: 5vw;
+    height: 5vw;
   }
 }

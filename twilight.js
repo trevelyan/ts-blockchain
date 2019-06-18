@@ -302,13 +302,13 @@ console.log("\n\n\n\n");
   //
   // move cardbox left if conflicts with HUD
   //
-  if (this.app.BROWSER == 1) {
-    if (window != undefined) {
-      if (window.innerHeight <= 975 && $(window).width() > 700) {
-        $('.cardbox').css('left','188px');
-      }
-    }
-  }
+  // if (this.app.BROWSER == 1) {
+  //   if (window != undefined) {
+  //     if (window.innerHeight <= 975 && $(window).width() > 700) {
+  //       $('.cardbox').css('left','188px');
+  //     }
+  //   }
+  // }
 
 
 
@@ -11744,6 +11744,9 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
       twilight_self.addShowCardEvents();
     } catch (err) {}
 
+    $('#hud_menu_overlay').hide()
+    $('#status').show();
+
 
     try {
       if ($('#game_log').hasClass("loading") == true) {
@@ -12794,7 +12797,10 @@ Twilight.prototype.showCard = function showCard(cardname) {
   //
   if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
     // add additional html
-    url += `<div class="cardbox-exit" id="cardbox-exit">×</div><div id="cardbox-exit-background"></div>
+    url += `
+    <div id="cardbox-exit-background">
+    <div class="cardbox-exit" id="cardbox-exit">×</div>
+    </div>
     <div class="cardbox_menu_playcard cardbox_menu_btn" id="cardbox_menu_playcard">PLAY</div>`
     $('.cardbox-exit').show();
   }
