@@ -20,7 +20,10 @@ function Twilight(app) {
   this.emailAppName    = "Twilight Struggle";
   this.useHUD          = 1;
   this.addHUDMenu      = ['Cards','Lang'];
-  this.lang            = "en";
+
+  //
+  // lang / interface set is game engine
+  //
 
   //
   // this sets the ratio used for determining
@@ -168,10 +171,12 @@ Twilight.prototype.handleLangMenuItem = function handleLangMenuItem(){
     if (action2 === "english") {
       alert("Card settings changed to English");
       twilight_self.lang = "en";
+      this.saveGamePreference("lang", "en");
     }
     if (action2 === "chinese") {
       alert("卡牌语言改成简体中文");
       twilight_self.lang = "zh";
+      this.saveGamePreference("lang", "zh");
     }
 
   });
