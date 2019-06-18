@@ -36,7 +36,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 1;
+  this.is_testing = 0;
 
 
   //
@@ -3522,6 +3522,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
         } else {
           user_message = "No cards playable due to Quagmire: ";
         }
+	playable_cards = [];
         playable_cards.push("skip turn");
       }
     }
