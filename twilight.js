@@ -20,7 +20,6 @@ function Twilight(app) {
   this.emailAppName    = "Twilight Struggle";
   this.useHUD          = 1;
   this.addHUDMenu      = ['Cards','Lang'];
-  this.lang            = "en";
 
   //
   // this sets the ratio used for determining
@@ -39,6 +38,11 @@ function Twilight(app) {
   //
   this.is_testing = 0;
 
+
+  //
+  // default to graphics
+  //
+  this.interface = 1;
 
   //
   // adjust board zoom
@@ -152,6 +156,9 @@ Twilight.prototype.handleCardsMenuItem = function handleCardsMenuItem() {
 
 
 Twilight.prototype.handleLangMenuItem = function handleLangMenuItem(){
+
+  let twilight_self = this;
+
   let user_message = `<div id="menu-container">Select Language: <p></p><ul>`;
       user_message += '<li class="card" id="english">English</li>';
       user_message += '<li class="card" id="chinese">简体中文</li>';
@@ -168,10 +175,12 @@ Twilight.prototype.handleLangMenuItem = function handleLangMenuItem(){
     if (action2 === "english") {
       alert("Card settings changed to English");
       twilight_self.lang = "en";
+      twilight_self.saveGamePreference("lang", "en");
     }
     if (action2 === "chinese") {
       alert("卡牌语言改成简体中文");
       twilight_self.lang = "zh";
+      twilight_self.saveGamePreference("lang", "zh");
     }
 
   });
@@ -203,6 +212,18 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
     const chat = this.app.modules.returnModule("Chat");
     chat.addPopUpChat();
   }
+
+  //
+  // check user preferences to update interface, if text
+  //
+  if (this.app.options != undefined) {
+    if (this.app.options.gamepref != undefined) {
+      if (this.app.options.gamepref.interface == 0) {
+	this.interface = 0;
+      }
+    }
+  }
+
 
   //
   // fresh removal
@@ -1752,7 +1773,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["handshake","quagmire", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+            this.game.deck[0].hand = ["cubanmissile","quagmire", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
           } else {
             this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","summit","lonegunman","oas","nasser","sadat"];
           }
@@ -1779,13 +1800,13 @@ console.log("resolving earlier: " + this.game.queue[z]);
           if (this.game.player == mv[1]) {
             this.playerPlaceInitialInfluence("ussr");
           } else {
-            this.showStatusMessageAndListCards('USSR is making its initial placement of influence')
+            this.updateStatusAndListCards('USSR is making its initial placement of influence:');
           }
         } else {
           if (this.game.player == mv[1]) {
             this.playerPlaceInitialInfluence("us");
           } else {
-            this.showStatusMessageAndListCards('US is making its initial placement of influence');
+            this.updateStatusAndListCards('US is making its initial placement of influence:');
           }
         }
 
@@ -1800,13 +1821,13 @@ console.log("resolving earlier: " + this.game.queue[z]);
           if (this.game.player == mv[1]) {
             this.playerPlaceBonusInfluence("ussr", mv[2]);
           } else {
-            this.showStatusMessageAndListCards(`USSR is making its bonus placement of ${mv[2]} influence`);
+            this.updateStatusAndListCards(`USSR is making its bonus placement of ${mv[2]} influence`);
           }
         } else {
           if (this.game.player == mv[1]) {
             this.playerPlaceBonusInfluence("us", mv[2]);
           } else {
-            this.showStatusMessageAndListCards(`US is making its bonus placement of ${mv[2]} influence`);
+            this.updateStatusAndListCards(`US is making its bonus placement of ${mv[2]} influence`);
           }
         }
 
@@ -2389,7 +2410,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 
         } else {
           // TODO
-          this.showStatusMessageAndListCards(`Waiting for USSR to pick headline card`);
+          this.updateStatusAndListCards(`Waiting for USSR to pick headline card`);
         }
         return 0;
       }
@@ -2415,7 +2436,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
           if (this.game.player == 1) { 
             this.game.state.headline1 = 1;
           }
-          this.showStatusMessageAndListCards(`Waiting for US to pick headline card`);
+          this.updateStatusAndListCards(`Waiting for US to pick headline card`);
         }
         return 0;
       }
@@ -2997,7 +3018,9 @@ Twilight.prototype.playMove = function playMove(msg) {
   //
   let scoring_cards_available = 0;
   for (i = 0; i < this.game.deck[0].hand.length; i++) {
-    if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
+    if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
+      if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
+    }
   }
 
 console.log("MOVES REMAINING: " + moves_remaining);
@@ -3036,7 +3059,7 @@ console.log("SCORING CARDS: " + scoring_cards_available);
         this.playerTurn();
       }
     } else {
-      this.showStatusMessageAndListCards(`Waiting for USSR to move`);
+      this.updateStatusAndListCards(`Waiting for USSR to move`);
       if (this.game.state.turn_in_round == 0) {
         this.game.state.turn_in_round++;
         this.updateActionRound();
@@ -3080,7 +3103,7 @@ console.log("SCORING CARDS: " + scoring_cards_available);
       }
     } else {
       // this.updateStatus("Waiting for US to move");
-      this.showStatusMessageAndListCards(`Waiting for US to move`);
+      this.updateStatusAndListCards(`Waiting for US to move`);
     }
     return;
   }
@@ -3302,15 +3325,12 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
   if (this.game.player == 1) { player = "ussr"; }
 
-  let x = player.toUpperCase() + " pick your headline card: <p></p><ul>";
-  for (i = 0; i < this.game.deck[0].hand.length; i++) {
-    x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
-  }
-  x += '</ul>';
+  let x = player.toUpperCase() + " pick your headline card: <br />" + this.returnCardList(this.game.deck[0].hand);
 
-  this.updateStatus(x);
 
   let twilight_self = this;  
+  this.updateStatus(x);
+
 
   $('.card').off();
   twilight_self.addShowCardEvents();
@@ -3389,6 +3409,8 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
   let player = "ussr";
   let opponent = "us";
+  let playable_cards = [];
+
   if (this.game.player == 2) { player = "us"; opponent = "ussr"; }
 
   is_this_missile_envy_noneventable = this.game.state.events.missileenvy;
@@ -3396,20 +3418,20 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   let user_message = "";
   if (selected_card == null) {
 
-    user_message = player.toUpperCase() + " pick a card: <p></p><ul>";
+    user_message = player.toUpperCase() + " pick a card: ";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       //
       // when UN Intervention is eventing, we can only select opponent cards
       //
       if (this.game.state.events.unintervention == 1) {
         if (this.game.player == 1 && this.game.deck[0].cards[this.game.deck[0].hand[i]].player === "us") {
-          user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+	  playable_cards.push(this.game.deck[0].hand[i]);
         } 
         if (this.game.player == 2 && this.game.deck[0].cards[this.game.deck[0].hand[i]].player === "ussr") {
-          user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+	  playable_cards.push(this.game.deck[0].hand[i]);
         } 
       } else {
-        user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+	playable_cards.push(this.game.deck[0].hand[i]);
       }
     };
   } else {
@@ -3419,11 +3441,11 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       for (i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
           selected_card = this.game.deck[0].hand[i];
-          user_message += '<li class="card showcard" id="'+selected_card+'">'+this.game.deck[0].cards[selected_card].name+'</li>';
+          playable_cards.push(this.game.deck[0].hand[i]);
         }
       }
     } else {
-      user_message = 'Click to play: <p></p><ul><li class="card showcard" id="'+selected_card+'">'+this.game.deck[0].cards[selected_card].name+'</li>';
+      playable_cards.push(selected_card);
     }
   }
 
@@ -3436,11 +3458,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     if (this.game.player == 2 && this.countries['turkey'].us >= 2) { can_remove = 1; }
     if (this.game.player == 2 && this.countries['westgermany'].us >= 2) { can_remove = 1; }
     if (can_remove == 1) {
-      user_message += '<li class="card" id="cancel_cmc">cancel cuban missile crisis</li>';
+      playable_cards.push("cancel cuban missile crisis");
     }
   }
-  user_message += '</ul>';
-
 
   //
   // Bear Trap and Quagmire
@@ -3471,7 +3491,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops) >= 2 && this.game.deck[0].hand[i] != "china") {
-        user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+        user_message += this.returnCardItem(this.game.deck[0].hand[i]);
         cards_available++;
       }
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
@@ -3487,31 +3507,36 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     } else {
       if (scoring_cards_available > 0) {
         if (this.game.state.events.beartrap == 1) {
-          user_message = "Bear Trap restricts you to Scoring Cards: <p></p><ul>";
+          user_message = "Bear Trap restricts you to Scoring Cards: ";
         } else {
-          user_message = "Quagmire restricts you to Scoring Cards: <p></p><ul>";
+          user_message = "Quagmire restricts you to Scoring Cards: ";
         }
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
-            user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
+            playable_cards(this.game.deck[0].hand[i]);
           }
         }
-        user_message += '</ul>';
-        this.updateStatus(user_message);
       } else {
         if (this.game.state.events.beartrap == 1) {
-          user_message = "No cards playable due to Bear Trap:<p></p><ul>";
+          user_message = "No cards playable due to Bear Trap: ";
         } else {
-          user_message = "No cards playable due to Quagmire:<p></p><ul>";
+          user_message = "No cards playable due to Quagmire: ";
         }
-        user_message += '<li class="card showcard" id="skipturn">skip turn</li>';
-        user_message += '</ul>';
-        this.updateStatus(user_message);
+	playable_cards = [];
+        playable_cards.push("skip turn");
       }
     }
   }
 
-  this.updateStatus(user_message);
+
+  //
+  // display the cards
+  //
+  if (playable_cards.length > 0) {
+    this.updateStatusAndListCards(user_message, playable_cards);
+  } else {
+    this.updateStatusAndListCards(user_message, this.game.deck[0].hand);
+  }
 
 
   let twilight_self = this;  
@@ -3564,14 +3589,13 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
     //
     // Skip Turn
     // 
-    if (card == "skipturn") {
+    if (card === "skipturn") {
       twilight_self.hideCard(card);
       twilight_self.addMove("resolve\tplay");
       twilight_self.addMove("notify\t"+player+" has no cards playable.");
       twilight_self.endTurn();
       return 0;
     }
-
 
 
     //
@@ -3583,7 +3607,9 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
     let moves_remaining = rounds_in_turn - twilight_self.game.state.turn_in_round;
 
     for (i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
-      if (twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
+      if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
+        if (twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
+      }
     }
 
     if (scoring_cards_available > 0 && scoring_cards_available > moves_remaining && twilight_self.game.deck[0].cards[card].scoring == 0) {
@@ -3614,7 +3640,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
     //
     // Cuban Missile Crisis
     //
-    if (card == "cancel_cmc") {
+    if (card == "cancelcubanmissilecrisis") {
       if (twilight_self.game.player == 1) {
         twilight_self.removeInfluence("cuba", 2, "ussr");
         twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
@@ -4156,7 +4182,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
     twilight_self.addMove("RESOLVE");
 
-    this.showStatusMessageAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
+    this.updateStatusAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
 
 
     var placeable = [];
@@ -4205,7 +4231,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
     twilight_self.addMove("RESOLVE");
 
-    this.showStatusMessageAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
+    this.updateStatusAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
 
     var placeable = [];
 
@@ -4263,7 +4289,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
     twilight_self.addMove("RESOLVE");
 
-    this.showStatusMessageAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
+    this.updateStatusAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
 
     let ops_to_place = bonus;
 
@@ -4298,7 +4324,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
     twilight_self.addMove("RESOLVE");
 
-    this.showStatusMessageAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
+    this.updateStatusAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
 
     let ops_to_place = bonus;
 
@@ -11701,25 +11727,65 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
 
 
 
-Twilight.prototype.showStatusMessageAndListCards = function showStatusMessageAndListCards(message) {
+Twilight.prototype.returnCardItem = function returnCardItem(card) {
+
+  if (this.interface == 1) {
+    if (this.game.deck[0].cards[card] == undefined) {
+      return `<div id="${card.replace(/ /g,'')}" class="card cardbox-hud cardbox-hud-status">${this.returnCardImage(card)}</div>`;
+    }
+    return `<div id="${card.replace(/ /g,'')}" class="card showcard cardbox-hud cardbox-hud-status">${this.returnCardImage(card)}</div>`;
+  } else {
+    if (this.game.deck[0].cards[card] == undefined) {
+      return '<li class="card" id="'+card+'">'+this.game.deck[0].cards[card].name+'</li>';
+    }
+    return '<li class="card" id="'+card+'">'+this.game.deck[0].cards[card].name+'</li>';
+  }
+
+}
+
+
+Twilight.prototype.returnCardList = function returnCardList(cardarray=[]) {
+
   let hand = this.game.deck[0].hand;
 
   let html = "";
-  for (var z in hand) {
-    html += `<div class="cardbox-hud cardbox-hud-status">${this.returnCardImage(hand[z])}</div>`
+
+
+  if (this.interface == 1) {
+    for (i = 0; i < cardarray.length; i++) {
+      html += this.returnCardItem(cardarray[i]);
+    }
+    html = `
+      <div class="cardbox-status-container">
+        <div class="display-cards display-cards-status">
+          ${html}
+        </div>
+      </div>`;
+
+  } else {
+
+    html = "<ul>";
+    for (i = 0; i < cardarray.length; i++) {
+      html += this.returnCardItem(cardarray[i]);
+    }
+    html += '</ul>';
+
   }
 
-  html = `
-  <div class="cardbox-status-container">
-    <div>
-      ${message}
-    </div>
-    <div class="display-cards display-cards-status">
-      ${html}
-    </div>
-  </div>`;
+  return html;
 
-  this.updateStatus(html);
+}
+Twilight.prototype.updateStatusAndListCards = function updateStatusAndListCards(message, cards=null) {
+
+  let x = "";
+
+  if (cards == null) {
+    x = message + "<br />" + this.returnCardList(this.game.deck[0].hand);
+  } else {
+    x = message + "<br />" + this.returnCardList(cards);
+  }
+
+  this.updateStatus(x);
   this.addShowCardEvents();
 }
 
@@ -12734,9 +12800,18 @@ Twilight.prototype.mobileCardSelect = function mobileCardSelect(card, player, my
 }
 
 Twilight.prototype.returnCardImage = function returnCardImage(cardname) {
+
   var c = this.game.deck[0].cards[cardname];
   if (c == undefined) { c = this.game.deck[0].discards[cardname]; }
   if (c == undefined) { c = this.game.deck[0].removed[cardname]; }
+  if (c == undefined) {
+
+    //
+    // this is not a card, it is something like "skip turn" or cancel
+    //
+    return '<div class="noncard">'+cardname+'</div>';
+
+  }
 
   var html = `<img class="cardimg" src="/twilight/images/${this.lang}/${c.img}.svg" />`;
 
