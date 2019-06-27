@@ -8796,7 +8796,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       for (var i in this.countries) {
 
         let countryname  = i;
-          ops_purged[countryname] = 0;
+        ops_purged[countryname] = 0;
         let divname      = '#'+i;
 
         if (this.countries[i].region != "europe") {
@@ -10982,10 +10982,10 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     // neighbouring countries
     //
-    if (this.isControlled("us", "finland") == 1) { vp_ussr++; }
-    if (this.isControlled("us", "romania") == 1) { vp_ussr++; }
-    if (this.isControlled("us", "poland") == 1) { vp_ussr++; }
-    if (this.isControlled("ussr", "canada") == 1) { vp_us++; }
+    if (this.isControlled("us", "finland") == 1) { vp_us++; }
+    if (this.isControlled("us", "romania") == 1) { vp_us++; }
+    if (this.isControlled("us", "poland") == 1) { vp_us++; }
+    if (this.isControlled("ussr", "canada") == 1) { vp_ussr++; }
 
   }
 
