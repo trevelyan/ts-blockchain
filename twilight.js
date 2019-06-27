@@ -3328,7 +3328,13 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
   if (this.game.player == 1) { player = "ussr"; }
 
-  let x = player.toUpperCase() + " pick your headline card: <br />" + this.returnCardList(this.game.deck[0].hand);
+  let x = `
+  <div class="cardbox-status-container">
+    <div>${player.toUpperCase()} pick your headline card</div>
+    ${this.returnCardList(this.game.deck[0].hand)}
+  </div>
+  `
+  //player.toUpperCase() + " pick your headline card: <br />" + this.returnCardList(this.game.deck[0].hand);
 
 
   let twilight_self = this;  
