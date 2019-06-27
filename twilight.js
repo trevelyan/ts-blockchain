@@ -8808,7 +8808,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
             let c = $(this).attr('id');
 
-            if (twilight_self.countries[c].place != 1) {
+            if (twilight_self.countries[c].place != 1 || twilight_self.countries[c].ussr == 0) {
               alert("Invalid Country");
             } else {
               ops_purged[c]++;
@@ -8825,6 +8825,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               });
             }
           });
+
         }
       }
     }
