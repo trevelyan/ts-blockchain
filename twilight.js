@@ -15,6 +15,9 @@ function Twilight(app) {
   this.app             = app;
 
   this.name            = "Twilight";
+  this.description     = `Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War. 
+  One player plays the United States (US), and the other plays the Soviet Union (USSR).`
+
   this.browser_active  = 0;
   this.handlesEmail    = 1;
   this.emailAppName    = "Twilight Struggle";
@@ -3325,7 +3328,13 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
   if (this.game.player == 1) { player = "ussr"; }
 
-  let x = player.toUpperCase() + " pick your headline card: <br />" + this.returnCardList(this.game.deck[0].hand);
+  let x = `
+  <div class="cardbox-status-container">
+    <div>${player.toUpperCase()} pick your headline card</div>
+    ${this.returnCardList(this.game.deck[0].hand)}
+  </div>
+  `
+  //player.toUpperCase() + " pick your headline card: <br />" + this.returnCardList(this.game.deck[0].hand);
 
 
   let twilight_self = this;  
@@ -11757,12 +11766,9 @@ Twilight.prototype.returnCardList = function returnCardList(cardarray=[]) {
       html += this.returnCardItem(cardarray[i]);
     }
     html = `
-      <div class="cardbox-status-container">
-        <div class="display-cards display-cards-status">
-          ${html}
-        </div>
+      <div class="display-cards display-cards-status">
+        ${html}
       </div>`;
-
   } else {
 
     html = "<ul>";
@@ -11778,15 +11784,18 @@ Twilight.prototype.returnCardList = function returnCardList(cardarray=[]) {
 }
 Twilight.prototype.updateStatusAndListCards = function updateStatusAndListCards(message, cards=null) {
 
-  let x = "";
-
   if (cards == null) {
-    x = message + "<br />" + this.returnCardList(this.game.deck[0].hand);
-  } else {
-    x = message + "<br />" + this.returnCardList(cards);
+    cards = this.game.deck[0].hand;
   }
 
-  this.updateStatus(x);
+  html = `
+    <div class="cardbox-status-container">
+      <div>${message}</div>
+      ${this.returnCardList(cards)}
+    </div>
+  `
+
+  this.updateStatus(html);
   this.addShowCardEvents();
 }
 
