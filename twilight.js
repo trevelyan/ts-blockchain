@@ -4333,7 +4333,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
     twilight_self.addMove("RESOLVE");
 
-    this.updateStatusAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
+    this.updateStatusAndListCards(`You are the US. Place ${bonus} additional influence in countries with existing American influence.`);
 
     let ops_to_place = bonus;
 
