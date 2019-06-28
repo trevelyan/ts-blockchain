@@ -3204,7 +3204,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
       if (action2 == "realign") {
 
-        twilight_self.updateStatus("Realign with " + ops + " OPS, or:<p></p><ul><li class=\"card\" id=\"cancelrealign\">stop realigning</li></ul>");
+        twilight_self.updateStatus("Realign with " + ops + " OPS, or:<p></p><ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>");
 
         $('.card').off();
         $('.card').on('click', function() {
