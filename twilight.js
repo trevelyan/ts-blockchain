@@ -3448,10 +3448,12 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     if (selected_card === "scoringcard") {
       user_message = 'Scoring card must be played: <p></p><ul>';
       for (i = 0; i < this.game.deck[0].hand.length; i++) {
-        if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
-          selected_card = this.game.deck[0].hand[i];
-          playable_cards.push(this.game.deck[0].hand[i]);
-        }
+	if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
+          if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+            selected_card = this.game.deck[0].hand[i];
+            playable_cards.push(this.game.deck[0].hand[i]);
+          }
+	}
       }
     } else {
       playable_cards.push(selected_card);
@@ -3503,7 +3505,9 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
         user_message += this.returnCardItem(this.game.deck[0].hand[i]);
         cards_available++;
       }
-      if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
+      if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
+        if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
+      }
     }
     user_message += '</ul>';
 
@@ -3521,9 +3525,11 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
           user_message = "Quagmire restricts you to Scoring Cards: ";
         }
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
-          if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
-            playable_cards(this.game.deck[0].hand[i]);
-          }
+	  if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
+            if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+              playable_cards(this.game.deck[0].hand[i]);
+            }
+	  }
         }
       } else {
         if (this.game.state.events.beartrap == 1) {
@@ -6060,11 +6066,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       let scoring_cards = "";
       let scoring_alert  = "cambridge\t";
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
-        if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
-          if (scoring_cards.length > 0) { scoring_cards += ", "; scoring_alert += "\t"; }
-          scoring_cards += this.game.deck[0].hand[i];
-          scoring_alert += this.game.deck[0].hand[i];
-        }
+	if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
+          if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+            if (scoring_cards.length > 0) { scoring_cards += ", "; scoring_alert += "\t"; }
+            scoring_cards += this.game.deck[0].hand[i];
+            scoring_alert += this.game.deck[0].hand[i];
+          }
+	}
       }
 
       if (scoring_cards.length == 0) {
