@@ -627,7 +627,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       }
       if (mv[0] === "turn") {
 
-          this.game.state.turn_in_round++;
+        this.game.state.turn_in_round++;
         this.game.state.events.china_card_eligible = 0;
         this.game.queue.splice(qe, 1);
         this.updateActionRound();
