@@ -793,6 +793,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         //
         twilight_self.playCoup("ussr", mv[2], couppower, function() {
           if (twilight_self.countries[mv[2]].us < original_us) {
+
             let valid_targets = 0;
             for (var i in twilight_self.countries) {
               let countryname = i;
@@ -804,7 +805,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             }
 
             if (valid_targets == 0) {
-                    twilight_self.updateLog("No valid targets for Che");
+              twilight_self.updateLog("No valid targets for Che");
               twilight_self.game.queue.splice(qe, 1);
               shd_continue = 1;
                 } else {
@@ -817,8 +818,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
                 let user_message = "Che takes effect. Pick first target for coup:<p></p><ul>";
                     user_message += '<li class="card" id="skipche">or skip coup</li>';
-                             user_message += '</ul>';
-                      twilight_self.updateStatus(user_message);
+                    user_message += '</ul>';
+                twilight_self.updateStatus(user_message);
 
                 $('.card').off();
                 $('.card').on('click', function() {
@@ -831,7 +832,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
                 });
 
 
-                      for (var i in twilight_self.countries) {
+                for (var i in twilight_self.countries) {
                   let countryname  = i;
                   let divname      = '#'+i;
                   if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && countryname !== target1) {
@@ -1087,6 +1088,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
         }
       }
+
+console.log("halfway...");
+
       //
       // limit [restriction] [region]
       //
@@ -1342,6 +1346,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
       }
       //
+console.log("halfway... 2");
       // cambridge five
       //
       if (mv[0] === "cambridge") {
@@ -1379,6 +1384,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.game.queue.splice(qe, 1);
         shd_continue = 0;
       }
+console.log("halfway ... 2 - 3");
       //
       // tear down this wall
       //
@@ -1430,6 +1436,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         shd_continue = 0;
 
       }
+console.log("halfway ... 2 - 4");
       if (mv[0] === "deal") {
         if (this.game.player == mv[1]) {
 
@@ -1468,6 +1475,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.updateStatus(player.toUpperCase() + " is fetching new cards");
         return 0;
       }
+console.log("halfway ... 2 - 5 1");
       if (mv[0] === "ops") {
         if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
         this.updateLog(mv[1].toUpperCase() + " plays <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> for " + mv[3] + " OPS"); 
@@ -1479,6 +1487,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.game.queue.splice(qe, 1);
         shd_continue = 0;
       }
+console.log("halfway ... 2 - 5 2");
       if (mv[0] === "milops") {
         this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " milops");
         if (mv[1] === "us") {
@@ -1489,6 +1498,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.updateMilitaryOperations();
         this.game.queue.splice(qe, 1);
       }
+console.log("halfway ... 2 - 5");
       if (mv[0] === "vp") {
         if (mv.length > 3) {
           if (parseInt(mv[3]) == 1) {
@@ -1510,16 +1520,29 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         }
         this.game.queue.splice(qe, 1);
       }
+console.log("halfway ... 2 - 5 3");
       if (mv[0] === "coup") {
+console.log("a 1");
         this.updateLog(mv[1].toUpperCase() + " coups " + this.countries[mv[2]].name + " with " + mv[3] + " OPS"); 
+console.log("a 2");
         if (this.game.state.limit_milops != 1) {
+console.log("a 3");
           if (mv[1] == "us") { this.game.state.milops_us += parseInt(mv[3]); }
+console.log("a 4");
           if (mv[1] == "ussr") { this.game.state.milops_ussr += parseInt(mv[3]); }
+console.log("a 5");
           this.updateMilitaryOperations();
+console.log("a 6");
          }
+console.log("a 7");
         this.playCoup(mv[1], mv[2], mv[3]);
+console.log("a 8");
         this.game.queue.splice(qe, 1);
+console.log("a 9");
       }
+
+console.log("halfway 3 -- done coup");
+
       if (mv[0] === "realign") {
         this.updateLog(mv[1].toUpperCase() + " realigns " + this.countries[mv[2]].name + " with 1 OPS"); 
         if (mv[1] != player) { this.playRealign(mv[2]); }
@@ -1967,9 +1990,6 @@ console.log("resolving earlier: " + this.game.queue[z]);
         }
 
 
-
-
-
         //
         // Eagle Has Landed
         //
@@ -2366,6 +2386,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
         return 0;
       }
 
+console.log("end of queue: " + shd_continue);
 
       //
       // avoid infinite loops
@@ -2889,10 +2910,12 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       // show headline card information to both players
       if (this.game.player == 1) {
         this.updateStatus("US headlines <span class=\"showcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. USSR headlines <span class=\"showcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
-        this.updateLog("US headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. USSR headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+        this.updateLog("US headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>.");
+	this.updateLog("USSR headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
       } else {
         this.updateStatus("USSR headlines <span class=\"showcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. US headlines <span class=\"showcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
-        this.updateLog("USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. US headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+        this.updateLog("USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>.");
+	this.updateLog("US headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
       }
 
       this.game.state.headline4 = 1;
@@ -4922,7 +4945,11 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
 
 Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycallback=null) {
 
+console.log("PRE COUP HANG?");
+
   let roll    = this.rollDice(6);
+
+console.log("COUP HANG 1");
 
   //
   // Yuri and Samantha
@@ -4941,6 +4968,7 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
     roll--; 
   }
 
+console.log("COUP HANG 2");
 
   //
   // Latin American Death Squads
@@ -4981,6 +5009,8 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
   let control = this.countries[countryname].control;
   let winning = parseInt(roll) + parseInt(ops) - parseInt(control * 2);
 
+console.log("COUP HANG 3");
+
   //
   // Cuban Missile Crisis
   //
@@ -5002,15 +5032,27 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
     }
   }
 
+console.log("COUP HANG 4: " + winning);
+
   if (winning > 0) {
 
     if (this.browser_active == 1) {
-      alert("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
+console.log("COUP HANG 4 - 2 -- 1");
+console.log("COUP HANG 4 - 2 -- 1: " + player);
+console.log("COUP HANG 4 - 2 -- 1: " + roll);
+console.log("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
+      //alert("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
     }
+
+console.log("COUP HANG 4 - 2 -- 2");
 
     this.updateLog(player.toUpperCase() + " rolls " + roll);
 
+console.log("COUP HANG 4 - 2 -- 3");
+
     while (winning > 0) {
+
+console.log("COUP PROCESS WINNING: " + winning + " PLAYER " + player);
 
       if (player == "us") {
 
@@ -5021,6 +5063,8 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
         }
       }
 
+console.log("COUP PROCESS WINNING: " + winning + " PLAYER " + player + " 2");
+
       if (player == "ussr") {
         if (this.countries[countryname].us > 0) {
           this.removeInfluence(countryname, 1, "us");
@@ -5028,16 +5072,26 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
           this.placeInfluence(countryname, 1, "ussr");
         }
       }
+
+console.log("COUP PROCESS WINNING: " + winning + " PLAYER " + player + " 3");
+
       winning--;
 
     }
   } else {
+
+console.log("COUP HANG 4 - 3");
+
     if (this.browser_active == 1) {
+console.log("COUP HANG 4 - 4");
       this.updateLog(player.toUpperCase() + " rolls " + roll + " (no change)");
-      alert("COUP FAILED: " + player.toUpperCase() + " rolls " + roll);
+console.log("COUP HANG 4 - 5");
+      //alert("COUP FAILED: " + player.toUpperCase() + " rolls " + roll);
     }
   }
 
+
+console.log("COUP HANG 6");
 
   //
   // update country
@@ -5045,9 +5099,11 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
   this.showInfluence(countryname, player);
 
   if (mycallback != null) {
+console.log("COUP HANG 7");
     mycallback();
   }
 
+console.log("COUP HANG 8");
   return;
 }
 Twilight.prototype.playRealign = function playRealign(country) {
