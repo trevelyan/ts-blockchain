@@ -137,7 +137,9 @@ Twilight.prototype.handleCardsMenuItem = function handleCardsMenuItem() {
 
     for (var z in cards) {
       cards_in_pile++;
-      display_message += `<div class="cardbox-hud" id="cardbox-hud-${cards_in_pile}">${twilight_self.returnCardImage(cards[z])}</div>`
+      if (cards[z] != undefined) {
+        display_message += `<div class="cardbox-hud" id="cardbox-hud-${cards_in_pile}">${twilight_self.returnCardImage(cards[z])}</div>`
+      }
     }
 
     display_message =
@@ -837,7 +839,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
                 for (var i in twilight_self.countries) {
                   let countryname  = i;
                   let divname      = '#'+i;
-                  if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && countryname !== target1) {
+                  if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && countryname !== target1 && twilight_self.countries[countryname].us > 0) {
                     $(divname).off();
                     $(divname).on('click', function() {
                       let c = $(this).attr('id');
@@ -10877,6 +10879,18 @@ Twilight.prototype.isControlled = function isControlled(player, country) {
   return 0;
 
 }
+Twilight.prototype.returnOpsOfCard = function returnOpsOfCard(card="", deck=0) {
+  if (this.game.deck[deck].cards[card] != undefined) {
+    return this.game.deck[deck].cards[card].ops;
+  }
+  if (this.game.deck[deck].discards[card] != undefined) {
+    return this.game.deck[deck].discards[card].ops;
+  }
+  if (this.game.deck[deck].removed[card] != undefined) {
+    return this.game.deck[deck].removed[card].ops;
+  }
+  return 1;
+}
 Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonuses(card="") {
 
   let regions = [];
@@ -10890,7 +10904,11 @@ Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonu
     // Vietnam Revolts does not give bonus to 1 OP card in SEA if USSR Red Purged
     // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
     let pushme = 1;
-    if (card != "") { if (this.game.deck[0].cards[card].ops == 1 && this.game.state.events.redscare_player1 == 1) { pushme = 0; } }
+    if (card != "") { 
+      if (this.game.state.events.redscare_player1 == 1) {
+        if (this.returnOpsOfCard(card) == 1) { pushme = 0; } 
+      }
+    }
     if (pushme == 1) {
       regions.push("seasia");
     }
@@ -10916,7 +10934,7 @@ Twilight.prototype.isRegionBonus = function isRegionBonus(card="") {
     //
     // Vietnam Revolts does not give bonus to 1 OP card in SEA if USSR Red Purged
     // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
-    if (card != "") { if (this.game.deck[0].cards[card].ops == 1 && this.game.state.events.redscare_player1 == 1) { return 0; } }
+    if (card != "") { if (this.returnOpsOfCard(card) == 1 && this.game.state.events.redscare_player1 == 1) { return 0; } }
 
     this.updateStatus("Extra 1 OP Available for Southeast Asia");
     this.game.state.events.region_bonus = "seasia";
