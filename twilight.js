@@ -5060,7 +5060,7 @@ console.log("COUP HANG 4 - 2 -- 1");
 console.log("COUP HANG 4 - 2 -- 1: " + player);
 console.log("COUP HANG 4 - 2 -- 1: " + roll);
 console.log("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
-      //twilight_self.displayModal("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
+    this.displayModal(`COUP SUCCEEDED: ${player.toUpperCase()} rolls ${roll}`);
     }
 
 console.log("COUP HANG 4 - 2 -- 2");
@@ -8558,11 +8558,15 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
           $(divname).off();
           $(divname).on('click', function() {
 
+            if (twilight_self.game.state.events.junta_influence_played == 1) { return; }
+
             let c = $(this).attr('id');
 
             twilight_self.placeInfluence(c, 2, player, function() {
 
-                    let confirmoptional = 'Do you wish to launch a free coup or conduct realignment rolls in Central or South America with the Junta card?<p></p><ul><li class="card" id="conduct">coup or realign</li><li class="card" id="skip">skip</li></ul>';
+              twilight_self.game.state.events.junta_influence_played = 1;
+
+              let confirmoptional = 'Do you wish to launch a free coup or conduct realignment rolls in Central or South America with the Junta card?<p></p><ul><li class="card" id="conduct">coup or realign</li><li class="card" id="skip">skip</li></ul>';
               twilight_self.updateStatus(confirmoptional);
 
               $('.card').off();
@@ -8571,7 +8575,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
                 let action2 = $(this).attr("id");
 
                 if (action2 == "conduct") {
-                         twilight_self.addMove("resolve\tjunta");
+                  twilight_self.addMove("resolve\tjunta");
                   twilight_self.addMove("unlimit\tplacement");
                   twilight_self.addMove("unlimit\tmilops");
                   twilight_self.addMove("unlimit\tregion");
@@ -8588,7 +8592,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
                 }
 
                 if (action2 == "skip") {
-                         twilight_self.addMove("resolve\tjunta");
+                  twilight_self.addMove("resolve\tjunta");
                   twilight_self.addMove("place\t"+player+"\t"+player+"\t"+c+"\t2");
                   twilight_self.playerFinishedPlacingInfluence();
                   twilight_self.endTurn();
