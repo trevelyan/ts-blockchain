@@ -10854,6 +10854,18 @@ Twilight.prototype.isControlled = function isControlled(player, country) {
   return 0;
 
 }
+Twilight.prototype.returnOpsOfCard = function returnOpsOfCard(card="", deck=0) {
+  if (this.game.deck[deck].cards[card] != undefined) {
+    return this.game.deck[deck].cards[card].ops;
+  }
+  if (this.game.deck[deck].discards[card] != undefined) {
+    return this.game.deck[deck].discards[card].ops;
+  }
+  if (this.game.deck[deck].removed[card] != undefined) {
+    return this.game.deck[deck].removed[card].ops;
+  }
+  return 1;
+}
 Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonuses(card="") {
 
   let regions = [];
@@ -10867,7 +10879,11 @@ Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonu
     // Vietnam Revolts does not give bonus to 1 OP card in SEA if USSR Red Purged
     // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
     let pushme = 1;
-    if (card != "") { if (this.game.deck[0].cards[card].ops == 1 && this.game.state.events.redscare_player1 == 1) { pushme = 0; } }
+    if (card != "") { 
+      if (this.game.state.events.redscare_player1 == 1) {
+        if (this.returnOpsOfCard(card) == 1) { pushme = 0; } 
+      }
+    }
     if (pushme == 1) {
       regions.push("seasia");
     }
@@ -10893,7 +10909,7 @@ Twilight.prototype.isRegionBonus = function isRegionBonus(card="") {
     //
     // Vietnam Revolts does not give bonus to 1 OP card in SEA if USSR Red Purged
     // https://boardgamegeek.com/thread/1136951/red-scarepurge-and-vietnam-revolts
-    if (card != "") { if (this.game.deck[0].cards[card].ops == 1 && this.game.state.events.redscare_player1 == 1) { return 0; } }
+    if (card != "") { if (this.returnOpsOfCard(card) == 1 && this.game.state.events.redscare_player1 == 1) { return 0; } }
 
     this.updateStatus("Extra 1 OP Available for Southeast Asia");
     this.game.state.events.region_bonus = "seasia"; 
