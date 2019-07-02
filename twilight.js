@@ -137,7 +137,9 @@ Twilight.prototype.handleCardsMenuItem = function handleCardsMenuItem() {
 
     for (var z in cards) {
       cards_in_pile++;
-      display_message += `<div class="cardbox-hud" id="cardbox-hud-${cards_in_pile}">${twilight_self.returnCardImage(cards[z])}</div>`
+      if (cards[z] != undefined) {
+        display_message += `<div class="cardbox-hud" id="cardbox-hud-${cards_in_pile}">${twilight_self.returnCardImage(cards[z])}</div>`
+      }
     }
 
     display_message =
