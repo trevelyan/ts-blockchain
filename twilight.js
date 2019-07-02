@@ -837,7 +837,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
                 for (var i in twilight_self.countries) {
                   let countryname  = i;
                   let divname      = '#'+i;
-                  if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && countryname !== target1) {
+                  if ( twilight_self.countries[countryname].bg == 0 && (twilight_self.countries[countryname].region == "africa" || twilight_self.countries[countryname].region == "camerica" || twilight_self.countries[countryname].region == "samerica") && countryname !== target1 && twilight_self.countries[countryname].us > 0) {
                     $(divname).off();
                     $(divname).on('click', function() {
                       let c = $(this).attr('id');
