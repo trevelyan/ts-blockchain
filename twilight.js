@@ -2684,8 +2684,8 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
           let card = $(this).attr("id");
 
           // cannot pick china card or UN intervention
-          if (card == "china") { this.displayModal("Invalid Headline", "You cannot headline China"); return; }
-          if (card == "unintervention") { this.displayModal("Invalid Headline", "You cannot headline UN Intervention"); return; }
+          if (card == "china") { twilight_self.displayModal("Invalid Headline", "You cannot headline China"); return; }
+          if (card == "unintervention") { twilight_self.displayModal("Invalid Headline", "You cannot headline UN Intervention"); return; }
 
           twilight_self.game.state.headline_card = card;
           twilight_self.game.state.headline_xor = "MAN_IN_EARTH_ORBIT";
@@ -5269,7 +5269,7 @@ Twilight.prototype.endGame = function endGame(winner, method) {
   if (winner == "ussr") { this.game.winner = 1; }
 
   if (this.browser_active == 1) {
-    twilight_self.displayModal("The Game is Over - " + winner.toUpperCase() + " wins by " + method);
+    this.displayModal("The Game is Over - " + winner.toUpperCase() + " wins by " + method);
     this.updateStatus("Game Over: " + winner.toUpperCase() + " wins by " + method);
   }
 }

@@ -93,9 +93,25 @@ body {
 
 /* Modal Footer */
 .modal_footer {
-  display: none;
+  display: grid;
+  justify-content: center;
+  align-items: center;
   padding: 2px 16px;
   color: white;
+}
+
+/* Button for closing the modal */
+.modal_ok_button {
+  float: right;
+  padding: 12px;
+  border-radius: 7px;
+  margin: 10px;
+  font-size: 1em;
+  color: white;
+  border: unset;
+  color:white;
+  width: 125px;
+  background-color: rgb(0, 190, 10);
 }
 
 /* Modal Content */
