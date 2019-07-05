@@ -8534,13 +8534,14 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
           $(divname).off();
           $(divname).on('click', function() {
 
-            if (twilight_self.game.state.events.junta_influence_played == 1) { return; }
-
             let c = $(this).attr('id');
 
             twilight_self.placeInfluence(c, 2, player, function() {
 
-              twilight_self.game.state.events.junta_influence_played = 1;
+	      //
+	      // disable event
+	      //
+	      $('.country').off();
 
               let confirmoptional = 'Do you wish to launch a free coup or conduct realignment rolls in Central or South America with the Junta card?<p></p><ul><li class="card" id="conduct">coup or realign</li><li class="card" id="skip">skip</li></ul>';
               twilight_self.updateStatus(confirmoptional);
@@ -13034,8 +13035,8 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
           <label for="deck">Deck:</label>
           <select name="deck" onchange='if ($(this).val() == "saito") { $(".saito_edition").prop("checked",true); } else { $(".saito_edition").prop("checked", false); } '>
             <option value="original">original</option>
-            <option value="optional" selected>optional</option>
-            <option value="saito">saito edition</option>
+            <option value="optional">optional</option>
+            <option value="saito" selected>saito edition</option>
           </select>
 
           <label for="usbonus">US bonus: </label>
