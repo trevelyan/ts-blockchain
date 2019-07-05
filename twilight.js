@@ -1091,8 +1091,6 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         }
       }
 
-console.log("halfway...");
-
       //
       // limit [restriction] [region]
       //
@@ -1348,7 +1346,6 @@ console.log("halfway...");
 
       }
       //
-console.log("halfway... 2");
       // cambridge five
       //
       if (mv[0] === "cambridge") {
@@ -1386,7 +1383,6 @@ console.log("halfway... 2");
         this.game.queue.splice(qe, 1);
         shd_continue = 0;
       }
-console.log("halfway ... 2 - 3");
       //
       // tear down this wall
       //
@@ -1438,7 +1434,6 @@ console.log("halfway ... 2 - 3");
         shd_continue = 0;
 
       }
-console.log("halfway ... 2 - 4");
       if (mv[0] === "deal") {
         if (this.game.player == mv[1]) {
 
@@ -1477,7 +1472,6 @@ console.log("halfway ... 2 - 4");
         this.updateStatus(player.toUpperCase() + " is fetching new cards");
         return 0;
       }
-console.log("halfway ... 2 - 5 1");
       if (mv[0] === "ops") {
         if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
         this.updateLog(mv[1].toUpperCase() + " plays <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> for " + mv[3] + " OPS"); 
@@ -1489,7 +1483,6 @@ console.log("halfway ... 2 - 5 1");
         this.game.queue.splice(qe, 1);
         shd_continue = 0;
       }
-console.log("halfway ... 2 - 5 2");
       if (mv[0] === "milops") {
         this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " milops");
         if (mv[1] === "us") {
@@ -1500,7 +1493,6 @@ console.log("halfway ... 2 - 5 2");
         this.updateMilitaryOperations();
         this.game.queue.splice(qe, 1);
       }
-console.log("halfway ... 2 - 5");
       if (mv[0] === "vp") {
         if (mv.length > 3) {
           if (parseInt(mv[3]) == 1) {
@@ -1522,28 +1514,17 @@ console.log("halfway ... 2 - 5");
         }
         this.game.queue.splice(qe, 1);
       }
-console.log("halfway ... 2 - 5 3");
       if (mv[0] === "coup") {
-console.log("a 1");
         this.updateLog(mv[1].toUpperCase() + " coups " + this.countries[mv[2]].name + " with " + mv[3] + " OPS"); 
-console.log("a 2");
         if (this.game.state.limit_milops != 1) {
-console.log("a 3");
           if (mv[1] == "us") { this.game.state.milops_us += parseInt(mv[3]); }
-console.log("a 4");
           if (mv[1] == "ussr") { this.game.state.milops_ussr += parseInt(mv[3]); }
-console.log("a 5");
           this.updateMilitaryOperations();
-console.log("a 6");
          }
-console.log("a 7");
         this.playCoup(mv[1], mv[2], mv[3]);
-console.log("a 8");
         this.game.queue.splice(qe, 1);
-console.log("a 9");
       }
 
-console.log("halfway 3 -- done coup");
 
       if (mv[0] === "realign") {
         this.updateLog(mv[1].toUpperCase() + " realigns " + this.countries[mv[2]].name + " with 1 OPS"); 
@@ -1758,7 +1739,6 @@ console.log("halfway 3 -- done coup");
 		  if (tmplmv[0] === "event") {
 		    if (tmplmv.length > 2) {
 		      if (tmplmv[2] === mv[1]) {
-console.log("resolving earlier: " + this.game.queue[z]);
 		        this.game.queue.splice(z);
 	                zz = 0;
 		      }
@@ -2388,7 +2368,6 @@ console.log("resolving earlier: " + this.game.queue[z]);
         return 0;
       }
 
-console.log("end of queue: " + shd_continue);
 
       //
       // avoid infinite loops
@@ -2921,8 +2900,6 @@ alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be t
       }
 
       this.game.state.headline4 = 1;
-
-console.log("HERE: " + player_to_go + " --- " + this.game.player);
 
       if (player_to_go == this.game.player) {
         this.addMove("discard\t"+card_player+"\t"+my_card);
@@ -10820,7 +10797,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (player == "us") {
       this.updateLog("USSR advances in the Space Race...");
       this.game.state.space_race_ussr += 1;
-      this.advanceSpaceRace();
+      this.updateSpaceRace();
     } else {
       this.updateLog("US advances in the Space Race...");
       this.game.state.space_race_us += 1;
