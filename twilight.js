@@ -3503,14 +3503,13 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
 
     if (this.game.state.events.beartrap == 1) {
-      user_message = "Select a card for Bear Trap: <p></p><ul>";
+      user_message = "Select a card for Bear Trap: ";
     } else {
-      user_message = "Select a card for Quagmire: <p></p><ul>";
+      user_message = "Select a card for Quagmire: ";
     }
 
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops) >= 2 && this.game.deck[0].hand[i] != "china") {
-        user_message += this.returnCardItem(this.game.deck[0].hand[i]);
         cards_available++;
       }
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
@@ -3550,7 +3549,6 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       }
     }
   }
-
 
   //
   // display the cards
