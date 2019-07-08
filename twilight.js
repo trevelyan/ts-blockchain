@@ -2929,7 +2929,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
         // if no reload, we hit 0 and stop, waiting for opponent
         // to move.
         //
-	this.saveGame(this.game.id);
+	//this.saveGame(this.game.id);
 console.log("we are going to end and wait here...");
 
       }
@@ -3005,7 +3005,7 @@ console.log("Hitting THIS");
       // if no reload, we hit 0 and stop, waiting for opponent
       // to move.
       //
-      this.saveGame(this.game.id);
+      //this.saveGame(this.game.id);
     }
 
 
