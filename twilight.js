@@ -3132,7 +3132,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
   //
   // modify ops
   //
-  ops = this.modifyOps(ops);
+  ops = this.modifyOps(ops, card);
 
   let me = "ussr";
   let twilight_self = this;
@@ -3509,7 +3509,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     }
 
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops) >= 2 && this.game.deck[0].hand[i] != "china") {
+      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
         cards_available++;
       }
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
@@ -3733,7 +3733,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       twilight_self.updateStatus('Playing '+twilight_self.game.deck[0].cards[card].name+':<p></p><ul><li class="card" id="event">score region</li></ul>');
     } else {
 
-      let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops);
+      let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card);
 
 
       //
@@ -7050,7 +7050,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
-          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops);
+          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]);
           if (avops >= 3) { available = 1; }
         }
       }
@@ -7074,7 +7074,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         if (action == "discard") {
           let choicehtml = "Choose a card to discard:<p></p><ul>";
           for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
-            if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
+            if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops, twilight_self.game.deck[0].hand[i]) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
               choicehtml += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
             }
           }
@@ -8048,8 +8048,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let valid_targets = 0;
     let couppower = 3;
 
-    if (player == "us") { couppower = this.modifyOps(3,2); }
-    if (player == "ussr") { couppower = this.modifyOps(3,1); }
+    if (player == "us") { couppower = this.modifyOps(3,"che",2); }
+    if (player == "ussr") { couppower = this.modifyOps(3,"che",1); }
 
     for (var i in this.countries) {
       let countryname = i;
@@ -9946,7 +9946,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:<p></p><ul>";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops) > 2 && this.game.deck[0].hand[i] != "china") {
+      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) > 2 && this.game.deck[0].hand[i] != "china") {
         user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
         cards_available++;
       }
@@ -10433,9 +10433,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let us_vp = 0;
     let x = this.countries["libya"].ussr;
 
-    if (x < 2) {
-    } else {
-      while (x -= 2) { us_vp++; }
+    if (x >= 2) {
+      while (x > 0) {
+        x -= 2;
+        us_vp++;
+      }
       this.updateLog("Reagan bombs Libya and US scores "+us_vp+" VP");
       this.game.state.vp += us_vp;
       this.updateVictoryPoints();
@@ -10945,9 +10947,12 @@ Twilight.prototype.limitToRegionBonus = function limitToRegionBonus() {
   }
   return;
 }
-Twilight.prototype.modifyOps = function modifyOps(ops,playernum=0) {
+Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0) {
 
   if (playernum == 0) { playernum = this.game.player; }
+
+  if (card != "") { ops = this.game.deck[0].cards[card].ops; }
+
 
   if (this.game.state.events.brezhnev == 1 && playernum == 1) {
     this.updateLog("USSR gets Brezhnev bonus +1");
