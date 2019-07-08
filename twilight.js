@@ -2547,8 +2547,8 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
           //
           // could be triggered by reload
           //
-          if (msg.extra.headline_card == undefined || msg.extra.headline_card == "") { return; }
-          if (msg.extra.headline_xor == undefined || msg.extra.headline_xor == "") { return; }
+          if (msg.extra.headline_card == undefined || msg.extra.headline_card == "") { alert("HEADLINE ERROR: 13123: please flag this for David!"); return; }
+          if (msg.extra.headline_xor == undefined || msg.extra.headline_xor == "") { alert("HEADLINE ERROR: 14133: please flag this for David!"); return; }
 
             if (this.game.state.headline_opponent_card === "") {
             this.game.state.headline_opponent_card = msg.extra.headline_card;
@@ -2559,7 +2559,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
             alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be triggered if the opponent attempts to cheat by changing their selected card after sharing the encrypted hash. It can also be rarely caused if one or both players reload or have unreliable connections during the headline exchange process. The solution in this case is for both players to reload until the game hits the first turn. " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.state.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
           }
 
-            this.game.turn = [];
+          this.game.turn = [];
           this.removeCardFromHand(this.game.state.headline_card);
           let extra      = {};
               extra.target   = this.returnNextPlayer(this.game.player);
@@ -2924,7 +2924,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
     return 0;
   }
 
-
+console.log("Hitting THIS");
 
   if (this.game.state.headline5 == 0) {
 
