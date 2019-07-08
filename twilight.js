@@ -781,6 +781,18 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         }
       }
       //
+      // Stage
+      //
+      if (mv[0] == "stage") {
+	if (mv[1] === "headline1") { this.game.state.headline1 = 1; }
+	if (mv[2] === "headline2") { this.game.state.headline2 = 1; }
+	if (mv[3] === "headline3") { this.game.state.headline3 = 1; }
+	if (mv[4] === "headline4") { this.game.state.headline4 = 1; }
+	if (mv[5] === "headline5") { this.game.state.headline5 = 1; }
+        this.game.queue.splice(qe, 1);
+	shd_continue = 1;
+      }
+      //
       // Che
       //
       if (mv[0] == "checoup") {
@@ -2792,9 +2804,6 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
   //
   let player_to_go = 1;
 
-
-
-
   //
   // headline execution starts here
   //
@@ -2906,15 +2915,24 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
       this.game.state.headline4 = 1;
 
       if (player_to_go == this.game.player) {
+        this.addMove("stage\theadline4");
         this.addMove("discard\t"+card_player+"\t"+my_card);
         this.addMove("event\t"+card_player+"\t"+my_card);
         this.removeCardFromHand(my_card);
         this.endTurn();
       } else {
-      }
 
-      // debugging
-      //this.saveGame(this.game.id);
+	//
+	// save headline4 finished
+	//
+        // saves headline4 = 0 so we can fallthrough on reload. 
+        // if no reload, we hit 0 and stop, waiting for opponent
+        // to move.
+        //
+	this.saveGame(this.game.id);
+console.log("we are going to end and wait here...");
+
+      }
 
       //
       // only one player should trigger next round
@@ -2974,15 +2992,22 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
     this.game.state.headline5 = 1;
 
     if (player_to_go == this.game.player) {
+      this.addMove("stage\theadline5");
       this.addMove("discard\t"+card_player+"\t"+my_card);
       this.addMove("event\t"+card_player+"\t"+my_card);
       this.removeCardFromHand(my_card);
       this.endTurn();
     } else {
+
+      // debugging
+      //
+      // saves headline5 = 0 so we can fallthrough on reload. 
+      // if no reload, we hit 0 and stop, waiting for opponent
+      // to move.
+      //
+      this.saveGame(this.game.id);
     }
 
-    // debugging
-    // this.saveGame(this.game.id);
 
     return 0;
 
