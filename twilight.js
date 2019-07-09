@@ -10976,7 +10976,7 @@ Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0) {
 
   if (playernum == 0) { playernum = this.game.player; }
 
-  if (card != "") { ops = this.game.deck[0].cards[card].ops; }
+  if (card != "") { ops = this.returnOpsOfCard(card); }
 
 
   if (this.game.state.events.brezhnev == 1 && playernum == 1) {
