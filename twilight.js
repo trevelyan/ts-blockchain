@@ -6801,7 +6801,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       var options_purge = [];
 
-
       if (twilight_self.countries['canada'].ussr > 0 && twilight_self.isControlled('ussr', 'canada') != 1 && twilight_self.isControlled('us', 'canada') != 1) { options_purge.push('canada'); }
       if (twilight_self.countries['uk'].ussr > 0 && twilight_self.isControlled('ussr', 'uk') != 1 && twilight_self.isControlled('us', 'uk') != 1) { options_purge.push('uk'); }
       if (twilight_self.countries['france'].ussr > 0 && twilight_self.isControlled('ussr', 'france') != 1 && twilight_self.isControlled('us', 'france') != 1) { options_purge.push('france'); }
@@ -6845,6 +6844,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
           let ussrpur = twilight_self.countries[c].ussr;
 
           twilight_self.removeInfluence(c, ussrpur, "ussr", function() {
+            twilight_self.addMove("notify\tUS removes all USSR influence from "+twilight_self.countries[c].name);
             twilight_self.addMove("remove\tus\tussr\t"+c+"\t"+ussrpur);
             twilight_self.playerFinishedPlacingInfluence();
             twilight_self.endTurn();
@@ -8656,11 +8656,14 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.game.state.events.china_card == 1) {
 
       this.game.state.vp -= 1;
+      this.updateLog("USSR gains 1 VP from Cultural Revolution");
       this.updateVictoryPoints();
 
     } else {
 
       if (this.game.state.events.china_card == 2) {
+
+        this.updateLog("USSR gains the China Card face up");
 
         if (this.game.player == 1) {
           this.game.deck[0].hand.push("china");
@@ -8712,6 +8715,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
             }
           } else {
             this.game.state.vp -= 1;
+            this.updateLog("USSR gains 1 VP from Cultural Revolution");
             this.updateVictoryPoints();
           }
         }
@@ -13134,7 +13138,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
             <li><input class="remove_card" type="checkbox" name="quagmire" /> Quagmire</li>
             <li><input class="remove_card" type="checkbox" name="saltnegotiations" /> Salt Negotiations</li>
             <li><input class="remove_card" type="checkbox" name="beartrap" /> Bear Trap</li>
-            <li><input class="remove_card saito_edition" type="checkbox" name="summit" /> Summit</li>
+            <li><input class="remove_card saito_edition" type="checkbox" name="summit" checked /> Summit</li>
             <li><input class="remove_card" type="checkbox" name="howilearned" /> How I Learned to Stop Worrying</li>
             <li><input class="remove_card" type="checkbox" name="junta" /> Junta</li>
             <li><input class="remove_card" type="checkbox" name="kitchendebates" /> Kitchen Debates</li>
@@ -13197,7 +13201,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           <div style="font-size:0.85em;font-weight:bold;clear:both;margin-top:10px;">add cards to game: </div>
           <ul id="removecards" class="removecards">
-            <li><input class="remove_card saito_edition" type="checkbox" name="handshake" /> Handshake in Space (Mid-War)</li>
+            <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> Handshake in Space (Mid-War)</li>
           </div>
         </form>
 
