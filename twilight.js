@@ -39,7 +39,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
 
   //
@@ -1797,7 +1797,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["cubanmissile","quagmire", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+            this.game.deck[0].hand = ["culturaldiplomacy","quagmire", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
           } else {
             this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","summit","lonegunman","oas","nasser","sadat"];
           }
@@ -5827,15 +5827,27 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
     deck['norad']           = { img : "TNRnTS-106" ,name : "NORAD", scoring : 0 , player : "us"   , recurring : 0 , ops : 3 };
   }
 
+
   //
   // remove any cards specified
   //
   if (this.game.options != undefined) {
     for (var key in this.game.options) {
+
       if (deck[key] != undefined) { delete deck[key]; }
+
+      //
+      // optional midwar cards
+      //
+      if (key === "culturaldiplomacy") { deck['culturaldiplomacy'] = { img : "TNRnTS-202png" , name : "Cultural Diplomacy", scoring : 0 , player : "both" , recurring : 1 , ops : 2 }; }
     }
   }
 
+
+  //
+  // specify early-war period
+  //
+  for (var key in deck) { deck[key].p = 0; }
 
   return deck;
 
@@ -5910,10 +5922,15 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
       //
       // optional midwar cards
       //
-      if (key === "handshake") { deck['handshake'] = { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 0 , ops : 1 }; }
+      if (key === "handshake") { deck['handshake'] = { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 1 }; }
 
     }
   }
+
+  //
+  // specify early-war period
+  //
+  for (var key in deck) { deck[key].p = 1; }
 
 
   return deck;
@@ -5962,6 +5979,11 @@ Twilight.prototype.returnLateWarCards = function returnLateWarCards() {
     }
   }
 
+
+  //
+  // specify early-war period
+  //
+  for (var key in deck) { deck[key].p = 2; }
 
   return deck;
 
@@ -10841,6 +10863,65 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   // OPTIONQL COMMUNITY CARDS //
   //////////////////////////////
 
+  //
+  // Cultural Diplomacy
+  //
+  if (card == "culturaldiplomacy") {
+
+    var twilight_self = this;
+    twilight_self.playerFinishedPlacingInfluence();
+
+    if ((player == "us" && this.game.player == 2) || (player == "ussr" && this.game.player == 1)) {
+
+      twilight_self.addMove("resolve\tculturaldiplomacy");
+
+      this.updateStatus("Place one influence two hops away from a country in which you have existing influence");
+
+      for (var i in this.countries) {
+
+        let countryname  = i;
+        let divname      = '#'+i;
+
+        $(divname).off();
+        $(divname).on('click', function() {
+
+          let is_this_two_hops = 0;
+          let selected_countryname = $(this).attr('id');
+
+  	  let neighbours = twilight_self.countries[selected_countryname].neighbours;
+	  for (let z = 0; z < neighbours.length; z++) {
+
+	    let this_country = twilight_self.countries[selected_countryname].neighbours[z];
+  	    let neighbours2  = twilight_self.countries[this_country].neighbours;
+
+	    for (let zz = 0; zz < neighbours2.length; zz++) {
+	      let two_hopper = neighbours2[zz];
+	      if (player == "us") { if ( twilight_self.countries[two_hopper].us > 0) { is_this_two_hops = 1; } }
+	      if (player == "ussr") { if ( twilight_self.countries[two_hopper].ussr > 0) { is_this_two_hops = 1; } }
+	      if (is_this_two_hops == 1) { z = 100; zz = 100; }
+	    }
+	  }
+
+console.log("is this two hops: " + is_this_two_hops);
+
+	  if (is_this_two_hops == 1) {
+            twilight_self.addMove("place\t"+player+"\t"+player+"\t"+selected_countryname+"\t1");
+            twilight_self.placeInfluence(selected_countryname, 1, player, function() {
+              twilight_self.playerFinishedPlacingInfluence();
+              twilight_self.endTurn();
+            });
+          } else {
+	    alert("invalid target");
+	  }
+        });
+      }
+    } else {
+      this.updateLog("Opponent is launching a soft-power tour");
+    }
+
+    return 0;
+  }
+
 
   //
   // Handshake in Space
@@ -12949,7 +13030,9 @@ Twilight.prototype.returnCardImage = function returnCardImage(cardname) {
   if (c.img.indexOf("png") > -1) {
       html = `<img class="cardimg" src="/twilight/images/${this.lang}/${c.img}.png" />`;
   } else {
-      html +='<img class="cardimg" src="/twilight/images/EarlyWar.svg" />';
+      if (c.p == 0) { html +='<img class="cardimg" src="/twilight/images/EarlyWar.svg" />'; }
+      if (c.p == 1) { html +='<img class="cardimg" src="/twilight/images/MidWar.svg" />'; }
+      if (c.p == 2) { html +='<img class="cardimg" src="/twilight/images/LateWar.svg" />'; }
 
     switch (c.player) {
       case "both":
@@ -13111,7 +13194,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
             <li><input class="remove_card" type="checkbox" name="degualle" /> De Gualle Leads France</li>
             <li><input class="remove_card" type="checkbox" name="naziscientist" /> Nazi Scientists Captured</li>
             <li><input class="remove_card" type="checkbox" name="truman" /> Truman</li>
-            <li><input class="remove_card" type="checkbox" name="olympic" /> Olympic Games</li>
+            <li><input class="remove_card" type="checkbox" name="olympic" checked /> Olympic Games</li>
             <li><input class="remove_card" type="checkbox" name="nato" /> NATO</li>
             <li><input class="remove_card" type="checkbox" name="indreds" /> Independent Reds</li>
             <li><input class="remove_card" type="checkbox" name="marshall" /> Marshall Plan</li>
@@ -13201,6 +13284,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
 
           <div style="font-size:0.85em;font-weight:bold;clear:both;margin-top:10px;">add cards to game: </div>
           <ul id="removecards" class="removecards">
+            <li><input class="remove_card saito_edition" type="checkbox" name="culturaldiplomacy" checked /> Cultural Diplomacy (Early-War)</li>
             <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> Handshake in Space (Mid-War)</li>
           </div>
         </form>

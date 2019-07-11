@@ -573,6 +573,8 @@ body {
   }
 }
 
+
+
 @media only screen and (orientation: portrait) and (max-height: 700px) {
   .cardbox {
     zoom: 0.5;
@@ -653,3 +655,4 @@ body {
     height: 5vw;
   }
 }
+
