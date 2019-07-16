@@ -6901,38 +6901,53 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       var ops_to_purge = 3;
       var ops_purged = {};
+      var available_targets = 0;
+
+      for (var i in this.countries) {
+        if (i == "italy" || i == "turkey" || i == "greece" || i == "spain" || i == "france" || i == "westgermany" || i == "uk" ||  i == "canada" || i == "benelux" || i == "finland" || i == "austria" || i == "denmark" || i == "norway" || i == "sweden") {
+          if (twilight_self.countries[i].us == 1) { available_targets += 1; }
+          if (twilight_self.countries[i].us > 1) { available_targets += 2; }
+	}
+      }
+      if (available_targets < 3) { 
+	ops_to_purge = available_targets; 
+        this.updateStatus("Remove "+ops_to_purge+" US influence from Western Europe (max 2 per country)");
+      }
+
 
       for (var i in this.countries) {
 
         let countryname  = i;
-          ops_purged[countryname] = 0;
+        ops_purged[countryname] = 0;
         let divname      = '#'+i;
 
         if (i == "italy" || i == "turkey" || i == "greece" || i == "spain" || i == "france" || i == "westgermany" || i == "uk" ||  i == "canada" || i == "benelux" || i == "finland" || i == "austria" || i == "denmark" || i == "norway" || i == "sweden") {
 
           twilight_self.countries[countryname].place = 1;
-          $(divname).off();
-          $(divname).on('click', function() {
+	  
+	  if (twilight_self.countries[countryname].us > 0) {
 
-            let c = $(this).attr('id');
-
-            if (twilight_self.countries[c].place != 1) {
-              twilight_self.displayModal("Invalid Country");
-            } else {
-              ops_purged[c]++;
-              if (ops_purged[c] >= 2) {
-                twilight_self.countries[c].place = 0;
-              }
-              twilight_self.removeInfluence(c, 1, "us", function() {
-                twilight_self.addMove("remove\tussr\tus\t"+c+"\t1");
-                ops_to_purge--;
-                if (ops_to_purge == 0) {
-                  twilight_self.playerFinishedPlacingInfluence();
-                  twilight_self.endTurn();
+            $(divname).off();
+            $(divname).on('click', function() {
+              let c = $(this).attr('id');
+              if (twilight_self.countries[c].place != 1) {
+                twilight_self.displayModal("Invalid Country");
+              } else {
+                ops_purged[c]++;
+                if (ops_purged[c] >= 2) {
+                  twilight_self.countries[c].place = 0;
                 }
-              });
-            }
-          });
+                twilight_self.removeInfluence(c, 1, "us", function() {
+                  twilight_self.addMove("remove\tussr\tus\t"+c+"\t1");
+                  ops_to_purge--;
+                  if (ops_to_purge == 0) {
+                    twilight_self.playerFinishedPlacingInfluence();
+                    twilight_self.endTurn();
+                  }
+                });
+              }
+            });
+	  }
         }
       }
       return 0;
