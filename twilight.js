@@ -39,7 +39,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
 
   //
@@ -1243,10 +1243,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       //
       if (mv[0] == "space") {
         this.playerSpaceCard(mv[2], mv[1]);
-        //
-        // and move to discard pile
-        //
-        this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
+        this.game.deck[0].discards[mv[2]] = this.game.deck[0].cards[mv[2]];
         this.game.queue.splice(qe, 1);
       }
       //
@@ -1797,9 +1794,9 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["culturaldiplomacy","quagmire", "asknot", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+            this.game.deck[0].hand = ["culturaldiplomacy","quagmire", "saltnegotiations", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
           } else {
-            this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","summit","lonegunman","oas","nasser","sadat"];
+            this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","oas","nasser","sadat"];
           }
         }
 
@@ -2177,7 +2174,6 @@ console.log("resolving earlier: " + this.game.queue[z]);
           this.game.queue.push("deal\t2");
           this.game.queue.push("deal\t1");
 
-
           let reshuffle_limit = 14;
 
           let cards_needed_per_player = 8;
@@ -2243,12 +2239,12 @@ console.log("resolving earlier: " + this.game.queue[z]);
               //
               if (player2_cards > us_cards_needed) {
                 let surplus_cards = player2_cards - us_cards_needed;
-                 player2_cards = us_cards_needed;
+                player2_cards = us_cards_needed;
                 player1_cards += surplus_cards;
               }
               if (player1_cards > ussr_cards_needed) {
                 let surplus_cards = player1_cards - ussr_cards_needed;
-                 player1_cards = ussr_cards_needed;
+                player1_cards = ussr_cards_needed;
                 player2_cards += surplus_cards;
               }
 
@@ -8299,11 +8295,12 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     let my_go = 0;
 
-    if (player == "ussr" && this.game.player == 1) { my_go = 1; }
-    if (player == "us" && this.game.player == 2) { my_go = 1; }
+    if (player === "ussr" && this.game.player == 1) { my_go = 1; }
+    if (player === "us" && this.game.player == 2) { my_go = 1; }
 
     if (my_go == 0) {
       this.updateStatus("Opponent retrieving card from discard pile");
+      console.log("HERE: " + my_go + " --- " + this.game.player + " --- " + player);
       return 0;
     }
 
@@ -8880,9 +8877,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (us_bg > ussr_bg) {
       this.game.state.events.kitchendebates = 1;
-      this.updateLog("US pokes USSR in chest...");
+      this.updateLog("US gains 2 VP and pokes USSR in chest...");
       this.game.state.vp += 2;
       this.updateVictoryPoints();
+    } else {
+      this.updateLog("US does not have more battleground countries than USSR...");
     }
 
     return 1;
