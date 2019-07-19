@@ -10990,6 +10990,7 @@ Twilight.prototype.returnOpsOfCard = function returnOpsOfCard(card="", deck=0) {
   if (this.game.deck[deck].removed[card] != undefined) {
     return this.game.deck[deck].removed[card].ops;
   }
+  if (card == "china") { return 4; }
   return 1;
 }
 Twilight.prototype.returnArrayOfRegionBonuses = function returnArrayOfRegionBonuses(card="") {
@@ -11499,7 +11500,6 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("ussr", "philippines") == 1) { total_ussr++; }
     if (this.game.state.events.formosan == 0) {
       if (this.isControlled("us", "taiwan") == 1) { total_us++; }
-      if (this.isControlled("ussr", "taiwan") == 1) { total_ussr++; }
     }
 
     //
@@ -11521,7 +11521,8 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
 
     if (this.game.state.events.formosan == 1) {
       if (bg_us == 7 && total_us > total_ussr) { vp_us = 9; }
-      if (bg_ussr == 7 && total_ussr > total_us) { vp_ussr = 9; }
+      if (bg_us == 6 && total_us > total_ussr && this.isControlled("taiwan", "us") == 0) { vp_us = 9; }
+      if (bg_ussr == 6 && total_ussr > total_us) { vp_ussr = 9; }
     } else {
       if (bg_us == 6 && total_us > total_ussr) { vp_us = 9; }
       if (bg_ussr == 6 && total_ussr > total_us) { vp_ussr = 9; }
@@ -11889,7 +11890,6 @@ Twilight.prototype.doesPlayerDominateRegion = function doesPlayerDominateRegion(
     if (this.isControlled("ussr", "pakistan") == 1) { bg_ussr++; }
     if (this.game.state.events.formosan == 1) {
       if (this.isControlled("us", "taiwan") == 1) { bg_us++; }
-      if (this.isControlled("ussr", "taiwan") == 1) { bg_ussr++; }
     }
 
     total_us = bg_us;
@@ -12753,7 +12753,7 @@ Twilight.prototype.updateVictoryPoints = function updateVictoryPoints() {
   let dt = 0;
   let dl = 0;
 
-  if (this.game.state.vp == -20) {
+  if (this.game.state.vp <= -20) {
     dt = this.game.state.vp_ps[0].top;
     dl = this.game.state.vp_ps[0].left;
   }
@@ -12913,7 +12913,7 @@ Twilight.prototype.updateVictoryPoints = function updateVictoryPoints() {
     dt = this.game.state.vp_ps[39].top;
     dl = this.game.state.vp_ps[39].left;
   }
-  if (this.game.state.vp == 20) {
+  if (this.game.state.vp >= 20) {
     dt = this.game.state.vp_ps[40].top;
     dl = this.game.state.vp_ps[40].left;
   }
@@ -13112,7 +13112,7 @@ Twilight.prototype.hideCard = function hideCard() {
 //
 // OVERWRITES GAME.JS MODULE TO ADD CARD HOVERING
 //
-Twilight.prototype.updateLog = function updateLog(str, length = 25) {
+Twilight.prototype.updateLog = function updateLog(str, length = 40) {
 
   let twilight_self = this;
 
