@@ -13129,7 +13129,7 @@ Twilight.prototype.updateLog = function updateLog(str, length = 40) {
 
   for (let i = 0; i < this.game.log.length; i++) {
     if (i > 0) { html += '<br/>'; }
-    html += "> " + this.game.log[i];
+    html += "> <span>" + this.game.log[i] + "</span>";
   }
 
   if (this.app.BROWSER == 1) {
