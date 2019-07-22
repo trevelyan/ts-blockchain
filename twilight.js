@@ -1493,7 +1493,6 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         //
         if (mv[1] == "us" && mv[2] == "china") { this.game.state.events.formosan = 0; }
         this.playOps(mv[1], mv[3], mv[2]);
-        this.game.queue.splice(qe, 1);
         shd_continue = 0;
       }
       if (mv[0] === "milops") {
@@ -3176,6 +3175,11 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
     $('.card').on('click', function() {
 
       let action2 = $(this).attr("id");
+
+      //
+      // prevent ops hang
+      //
+      twilight_self.addMove("resolve\tops");
 
       if (action2 == "place") {
 
