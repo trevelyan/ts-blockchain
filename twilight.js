@@ -15,8 +15,7 @@ function Twilight(app) {
   this.app             = app;
 
   this.name            = "Twilight";
-  this.description     = `Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War.
-  One player plays the United States (US), and the other plays the Soviet Union (USSR).`
+  this.description     = `Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War. One player plays the United States (US), and the other plays the Soviet Union (USSR).`
 
   this.browser_active  = 0;
   this.handlesEmail    = 1;
@@ -3558,7 +3557,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
             if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
-              playable_cards(this.game.deck[0].hand[i]);
+              playable_cards.push(this.game.deck[0].hand[i]);
             }
           }
         }
