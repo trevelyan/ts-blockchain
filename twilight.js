@@ -7433,10 +7433,10 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
                     twilight_self.displayModal("Invalid Option");
                   } else {
                     twilight_self.countries[c].place = 0;
-                     let uspur = twilight_self.countries[c].us;
+                    let uspur = twilight_self.countries[c].us;
                     twilight_self.removeInfluence(c, uspur, "us", function() {
                       twilight_self.addMove("remove\tus\tus\t"+c+"\t"+uspur);
-                      countries_purged--;
+                      countries_purged++;
                       if (countries_purged == countries_to_purge) {
                         twilight_self.playerFinishedPlacingInfluence();
                         twilight_self.endTurn();
