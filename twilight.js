@@ -231,12 +231,6 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   }
 
 
-  //
-  // fresh removal
-  //
-  //this.updateStatus("loading game...");
-  //this.loadGame(game_id);
-
   if (this.game.status != "") { this.updateStatus(this.game.status); }
 
 
@@ -523,6 +517,12 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
   let twilight_self = this;
   let player = "ussr"; if (this.game.player == 2) { player = "us"; }
 
+  //
+  // support observer mode
+  //
+  if (this.game.player == 0) { player = "observer"; }
+
+
   if (this.game.over == 1) {
     let winner = "ussr";
     if (this.game.winner == 2) { winner = "us"; }
@@ -687,7 +687,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             this.game.state.vp -= 6;
             this.updateVictoryPoints();
             if (this.game.state.vp > 0) {
-                  this.endGame("ussr","Wargames");
+                  this.endGame("us","Wargames");
             }
             if (this.game.state.vp < 0) {
                 this.endGame("ussr","Wargames");
@@ -699,7 +699,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             this.game.state.vp += 6;
             this.updateVictoryPoints();
             if (this.game.state.vp > 0) {
-                this.endGame("ussr","Wargames");
+                this.endGame("us","Wargames");
             }
             if (this.game.state.vp < 0) {
               this.endGame("ussr","Wargames");
@@ -1669,6 +1669,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         }
       }
       if (mv[0] === "place") {
+console.log("PLACING: " + player + " -- " + mv[1]);
         if (player != mv[1]) { this.placeInfluence(mv[3], parseInt(mv[4]), mv[2]); }
         this.game.queue.splice(qe, 1);
       }
@@ -5266,6 +5267,14 @@ Twilight.prototype.endGame = function endGame(winner, method) {
   if (winner == "us") { this.game.winner = 2; }
   if (winner == "ussr") { this.game.winner = 1; }
 
+  if (this.game.winner == this.game.player) {
+    //
+    // share wonderful news
+    //
+    this.game.over = 0;
+    this.resignGame();
+  }
+
   if (this.browser_active == 1) {
     this.displayModal("The Game is Over - " + winner.toUpperCase() + " wins by " + method);
     this.updateStatus("Game Over: " + winner.toUpperCase() + " wins by " + method);
@@ -5288,7 +5297,7 @@ Twilight.prototype.endRound = function endRound() {
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
         let player = "us";
         let winner = "ussr";
-        if (this.game.player == 1) { player = "ussr"; winner = "us"; }
+        if (this.game.player == 1) { player = "ussr"; winner = "us"; this.game.winner = 2; }
         this.resignGame(player.toUpperCase() + " held scoring card");
         this.endGame(winner, "opponent held scoring card");
       }
