@@ -1528,8 +1528,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       if (mv[0] === "coup") {
         this.updateLog(mv[1].toUpperCase() + " coups " + this.countries[mv[2]].name + " with " + mv[3] + " OPS"); 
         if (this.game.state.limit_milops != 1) {
-          if (mv[1] == "us") { this.game.state.milops_us += parseInt(mv[3]); }
-          if (mv[1] == "ussr") { this.game.state.milops_ussr += parseInt(mv[3]); }
+          if (mv[1] == "us") { this.game.state.milops_us += this.modifyOps(parseInt(mv[3]), "", 2); }
+          if (mv[1] == "ussr") { this.game.state.milops_ussr += this.modifyOps(parseInt(mv[3]), "", 1); }
           this.updateMilitaryOperations();
          }
         this.playCoup(mv[1], mv[2], mv[3]);
