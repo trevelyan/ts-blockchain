@@ -3527,7 +3527,7 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     let moves_remaining = rounds_in_turn - this.game.state.turn_in_round;
 
 
-    if (this.game.state.events.beartrap == 1) {
+    if (this.game.state.events.beartrap == 1 && this.game.player == 1) {
       user_message = "Select a card for Bear Trap: ";
     } else {
       user_message = "Select a card for Quagmire: ";
@@ -6680,7 +6680,10 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.placeInfluence("israel", this.countries['israel'].us, "ussr");
       this.removeInfluence("israel", this.countries['israel'].us, "us");
       if (this.game.state.events.flowerpower == 1) {
-        this.game.state.vp_outstanding -= 2;
+	//
+	// 2 VP for Flower Power and 2 VP for winning
+	//
+        this.game.state.vp_outstanding -= 4;
       } else {
         this.game.state.vp -= 2;
       }
@@ -10511,7 +10514,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let x = this.countries["libya"].ussr;
 
     if (x >= 2) {
-      while (x > 0) {
+      while (x > 1) {
         x -= 2;
         us_vp++;
       }
@@ -10565,7 +10568,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     }
     if (this.game.player == 1) {
 
-      this.updateStatus("Remove 3 US influence from Europe (max 1 per country)");
+      this.updateStatus("Remove 3 US influence from Western Europe (max 1 per country)");
 
       var twilight_self = this;
       twilight_self.playerFinishedPlacingInfluence();
@@ -10596,7 +10599,20 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         let countryname  = i;
         let divname      = '#'+i;
 
-        if (this.countries[i].region == "europe") {
+        if (countryname == "turkey" ||
+            countryname == "greece" ||
+            countryname == "spain" ||
+            countryname == "italy" ||
+            countryname == "france" ||
+            countryname == "canada" ||
+            countryname == "uk" ||
+            countryname == "benelux" ||
+            countryname == "denmark" ||
+            countryname == "austria" ||
+            countryname == "norway" ||
+            countryname == "sweden" ||
+            countryname == "finland" ||
+            countryname == "westgermany") {
 
           if (twilight_self.countries[countryname].us > 0) {
 
