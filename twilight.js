@@ -3755,7 +3755,15 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
 
 
     if (twilight_self.game.deck[0].cards[card].scoring == 1) {
-      twilight_self.updateStatus('Playing '+twilight_self.game.deck[0].cards[card].name+':<p></p><ul><li class="card" id="event">score region</li></ul>');
+      let html = `
+      <div>
+        <i class="fa fa-arrow-left" id="back_button"></i>
+        <div style="text-align: center;">
+          Playing ${twilight_self.game.deck[0].cards[card].name}:
+        </div>
+      </div>
+      <p></p><ul><li class="card" id="event">score region</li></ul>`
+      twilight_self.updateStatus(html);
     } else {
 
       let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card);
@@ -3777,7 +3785,15 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       }
 
 
-      let announcement = player.toUpperCase() + ' playing '+twilight_self.game.deck[0].cards[card].name+'<p></p><ul>';
+      let announcement = `
+      <div>
+        <i class="fa fa-arrow-left" id="back_button"></i>
+        <div style="text-align: center;">
+          ${player.toUpperCase()} playing ${twilight_self.game.deck[0].cards[card].name}
+        </div>
+      </div>
+      <p></p>
+      <ul>`;
 
       //
       // cannot play China card or Missile Envy (forced) for event
@@ -3845,6 +3861,11 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
 
       twilight_self.updateStatus(announcement);
     }
+
+    $('#back_button').off();
+    $('#back_button').on('click', () => {
+      this.playerTurn();
+    });
 
     $('.card').off();
     $('.card').on('click', function() {
