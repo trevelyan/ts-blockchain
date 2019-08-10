@@ -4965,11 +4965,7 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
 
 Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycallback=null) {
 
-console.log("PRE COUP HANG?");
-
   let roll    = this.rollDice(6);
-
-console.log("COUP HANG 1");
 
   //
   // Yuri and Samantha
@@ -4987,8 +4983,6 @@ console.log("COUP HANG 1");
     this.updateLog("Salt Negotiations -1 modifier on coups");
     roll--;
   }
-
-console.log("COUP HANG 2");
 
   //
   // Latin American Death Squads
@@ -5024,12 +5018,8 @@ console.log("COUP HANG 2");
     }
   }
 
-
-
   let control = this.countries[countryname].control;
   let winning = parseInt(roll) + parseInt(ops) - parseInt(control * 2);
-
-console.log("COUP HANG 3");
 
   //
   // Cuban Missile Crisis
@@ -5043,7 +5033,6 @@ console.log("COUP HANG 3");
 
 
   if (this.countries[countryname].bg == 1) {
-
     //
     // Nuclear Submarines
     //
@@ -5052,27 +5041,16 @@ console.log("COUP HANG 3");
     }
   }
 
-console.log("COUP HANG 4: " + winning);
 
   if (winning > 0) {
 
     if (this.browser_active == 1) {
-console.log("COUP HANG 4 - 2 -- 1");
-console.log("COUP HANG 4 - 2 -- 1: " + player);
-console.log("COUP HANG 4 - 2 -- 1: " + roll);
-console.log("COUP SUCCEEDED: " + player.toUpperCase() + " rolls " + roll);
-    this.displayModal(`COUP SUCCEEDED: ${player.toUpperCase()} rolls ${roll}`);
+      this.displayModal(`COUP SUCCEEDED: ${player.toUpperCase()} rolls ${roll} (${this.game.countries[countryname].name})`);
     }
-
-console.log("COUP HANG 4 - 2 -- 2");
 
     this.updateLog(player.toUpperCase() + " rolls " + roll);
 
-console.log("COUP HANG 4 - 2 -- 3");
-
     while (winning > 0) {
-
-console.log("COUP PROCESS WINNING: " + winning + " PLAYER " + player);
 
       if (player == "us") {
 
@@ -5083,8 +5061,6 @@ console.log("COUP PROCESS WINNING: " + winning + " PLAYER " + player);
         }
       }
 
-console.log("COUP PROCESS WINNING: " + winning + " PLAYER " + player + " 2");
-
       if (player == "ussr") {
         if (this.countries[countryname].us > 0) {
           this.removeInfluence(countryname, 1, "us");
@@ -5093,25 +5069,16 @@ console.log("COUP PROCESS WINNING: " + winning + " PLAYER " + player + " 2");
         }
       }
 
-console.log("COUP PROCESS WINNING: " + winning + " PLAYER " + player + " 3");
-
       winning--;
 
     }
   } else {
 
-console.log("COUP HANG 4 - 3");
-
     if (this.browser_active == 1) {
-console.log("COUP HANG 4 - 4");
       this.updateLog(player.toUpperCase() + " rolls " + roll + " (no change)");
-console.log("COUP HANG 4 - 5");
-      //twilight_self.displayModal("COUP FAILED: " + player.toUpperCase() + " rolls " + roll);
     }
   }
 
-
-console.log("COUP HANG 6");
 
   //
   // update country
@@ -5119,11 +5086,9 @@ console.log("COUP HANG 6");
   this.showInfluence(countryname, player);
 
   if (mycallback != null) {
-console.log("COUP HANG 7");
     mycallback();
   }
 
-console.log("COUP HANG 8");
   return;
 }
 Twilight.prototype.playRealign = function playRealign(country) {
@@ -6859,6 +6824,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       if (options_purge.length == 0) {
         twilight_self.addMove("notify\tUSSR has no influence that can be removed");
         twilight_self.endTurn();
+	return 0;
       }
 
       twilight_self.updateStatus("Select a non-controlled country in Europe to remove all USSR influence: ");
@@ -11135,6 +11101,27 @@ Twilight.prototype.finalScoring = function finalScoring() {
   //
   this.game.state.events.shuttlediplomacy = 0;
 
+  //
+  //
+  //
+  if (this.whoHasTheChinaCard() == "ussr") { 
+    this.game.state.vp--;
+    this.updateLog("USSR receives 1 VP for the China Card");
+    if (this.game.state.vp <= -20) {
+      this.endGame("ussr", "victory points");
+      return;
+    }
+  } else {
+    this.game.state.vp++;
+    this.updateLog("US receives 1 VP for the China Card");
+    if (this.game.state.vp >= 20) {
+      this.endGame("us", "victory points");
+      return;
+    }
+  }
+
+
+
   this.scoreRegion("europe");
   this.scoreRegion("asia");
   this.scoreRegion("mideast");
@@ -11235,6 +11222,13 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("us", "poland") == 1) { vp_us++; }
     if (this.isControlled("ussr", "canada") == 1) { vp_ussr++; }
 
+    //
+    // Report Adjustment
+    //
+    let vp_adjustment = vp_us - vp_ussr;
+    this.game.state.vp += vp_adjustment;
+    this.updateLog("Europe Scoring: " + vp_adjustment + " VP");
+
   }
 
 
@@ -11292,6 +11286,14 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
 
     vp_us = vp_us + bg_us;
     vp_ussr = vp_ussr + bg_ussr;
+
+    //
+    // Report Adjustment
+    //
+    let vp_adjustment = vp_us - vp_ussr;
+    this.game.state.vp += vp_adjustment;
+    this.updateLog("Middle-East Scoring: " + vp_adjustment + " VP");
+
   }
 
 
@@ -11321,6 +11323,14 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
 
     vp_us = vp_us + bg_us;
     vp_ussr = vp_ussr + bg_ussr;
+
+    //
+    // Report Adjustment
+    //
+    let vp_adjustment = vp_us - vp_ussr;
+    this.game.state.vp += vp_adjustment;
+    this.updateLog("Southeast Asia Scoring: " + vp_adjustment + " VP");
+
   }
 
 
@@ -11383,6 +11393,14 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
 
     vp_us = vp_us + bg_us;
     vp_ussr = vp_ussr + bg_ussr;
+
+    //
+    // Report Adjustment
+    //
+    let vp_adjustment = vp_us - vp_ussr;
+    this.game.state.vp += vp_adjustment;
+    this.updateLog("Africa Scoring: " + vp_adjustment + " VP");
+
   }
 
 
@@ -11435,6 +11453,13 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("ussr", "mexico") == 1) { vp_ussr++; }
     if (this.isControlled("ussr", "cuba") == 1) { vp_ussr++; }
 
+    //
+    // Report Adjustment
+    //
+    let vp_adjustment = vp_us - vp_ussr;
+    this.game.state.vp += vp_adjustment;
+    this.updateLog("Central America Scoring: " + vp_adjustment + " VP");
+
   }
 
 
@@ -11480,6 +11505,16 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
 
     vp_us = vp_us + bg_us;
     vp_ussr = vp_ussr + bg_ussr;
+
+
+    //
+    // Report Adjustment
+    //
+    let vp_adjustment = vp_us - vp_ussr;
+    this.game.state.vp += vp_adjustment;
+    this.updateLog("South America Scoring: " + vp_adjustment + " VP");
+
+
   }
 
 
@@ -11566,16 +11601,16 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("us", "northkorea") == 1) { vp_us++; }
     if (this.isControlled("ussr", "japan") == 1) { vp_ussr++; }
 
+    //
+    // Report Adjustment
+    //
+    let vp_adjustment = vp_us - vp_ussr;
+    this.game.state.vp += vp_adjustment;
+    this.updateLog("Asia Scoring: " + vp_adjustment + " VP");
+
 
   }
 
-  //
-  // adjust VP
-  //
-  let vp_adjustment = vp_us - vp_ussr;
-  this.game.state.vp += vp_adjustment;
-
-  this.updateLog("VP adjusted: " + vp_adjustment);
   this.updateVictoryPoints();
 
 }
