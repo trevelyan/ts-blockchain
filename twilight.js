@@ -11248,7 +11248,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Europe Scoring: " + vp_adjustment + " VP");
+    this.updateLog("Europe: " + vp_adjustment + " VP");
 
   }
 
@@ -11313,7 +11313,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Middle-East Scoring: " + vp_adjustment + " VP");
+    this.updateLog("Middle-East: " + vp_adjustment + " VP");
 
   }
 
@@ -11350,7 +11350,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Southeast Asia Scoring: " + vp_adjustment + " VP");
+    this.updateLog("Southeast Asia: " + vp_adjustment + " VP");
 
   }
 
@@ -11420,7 +11420,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Africa Scoring: " + vp_adjustment + " VP");
+    this.updateLog("Africa: " + vp_adjustment + " VP");
 
   }
 
@@ -11479,7 +11479,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Central America Scoring: " + vp_adjustment + " VP");
+    this.updateLog("Central America: " + vp_adjustment + " VP");
 
   }
 
@@ -11533,7 +11533,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("South America Scoring: " + vp_adjustment + " VP");
+    this.updateLog("South America: " + vp_adjustment + " VP");
 
 
   }
@@ -11627,8 +11627,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Asia Scoring: " + vp_adjustment + " VP");
-
+    this.updateLog("Asia: " + vp_adjustment + " VP");
 
   }
 
@@ -13196,7 +13195,7 @@ Twilight.prototype.hideCard = function hideCard() {
 //
 // OVERWRITES GAME.JS MODULE TO ADD CARD HOVERING
 //
-Twilight.prototype.updateLog = function updateLog(str, length = 40) {
+Twilight.prototype.updateLog = function updateLog(str, length = 50) {
 
   let twilight_self = this;
 
