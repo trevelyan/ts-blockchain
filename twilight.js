@@ -3164,11 +3164,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
   if (player === me) {
 
-    let html  = player.toUpperCase() + ' plays ' + ops + ' OPS:<p></p><ul>';
-    if (this.game.state.limit_placement == 0) { html += '<li class="card" id="place">place influence</li>'; }
-    if (this.game.state.limit_coups == 0) { html += '<li class="card" id="coup">launch coup</li>'; }
-    if (this.game.state.limit_realignments == 0) { html += '<li class="card" id="realign">realign country</li>'; }
-    html += '</ul>';
+    let html = twilight_self.formatPlayOpsStatus(player, ops);
     twilight_self.updateStatus(html);
 
     $('.card').off();
@@ -3183,10 +3179,9 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
       if (action2 == "place") {
 
-        twilight_self.updateStatus("Place " + ops + " influence");
-
         let j = ops;
-        twilight_self.updateStatus("Place " + j + " influence.");
+        let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
+        twilight_self.updateStatus(html);
         twilight_self.prePlayerPlaceInfluence(player);
         if (j == 1) {
           twilight_self.uneventOpponentControlledCountries(player, card);
@@ -3208,7 +3203,8 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
             twilight_self.uneventOpponentControlledCountries(player, card);
           }
 
-          twilight_self.updateStatus("Place " + j + " influence");
+          let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
+          twilight_self.updateStatus(html);
 
         if (j <= 0) {
             if (twilight_self.isRegionBonus(card) == 1) {
@@ -3227,15 +3223,20 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
       }
 
       if (action2 == "coup") {
-        twilight_self.updateStatus("Pick a country to coup");
+
+        let html = twilight_self.formatStatusHeader("Pick a country to coup", true);
+        twilight_self.updateStatus(html);
         twilight_self.playerCoupCountry(player, ops, card);
-        return;
+
+        // return;
       }
 
 
       if (action2 == "realign") {
 
-        twilight_self.updateStatus("Realign with " + ops + " OPS, or:<p></p><ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>");
+        let html = twilight_self.formatStatusHeader(`Realign with ${ops} OPS, or:`, true);
+        html += `<p></p><ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>`;
+        twilight_self.updateStatus(html);
 
         $('.card').off();
         $('.card').on('click', function() {
@@ -3276,6 +3277,9 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
           j--;
 
           twilight_self.updateStatus("Realign with " + j + " OPS, or:<p></p><ul><li class=\"card\" id=\"cancelrealign\">stop realigning</li></ul>");
+          let html = twilight_self.formatStatusHeader(`Realign with ${j} OPS, or:`, true);
+          html += `<p></p><ul><li class=\"card\" id=\"cancelrealign\">end turn</li></ul>`;
+          twilight_self.updateStatus(html);
 
           $('.card').off();
           $('.card').on('click', function() {
@@ -3333,6 +3337,10 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
           }
         });
       }
+      $('#back_button').off();
+      $('#back_button').on('click', () => {
+        twilight_self.playOps(player, ops, card);
+      });
     });
   }
 
@@ -3340,13 +3348,14 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
 }
 
-
-
-
-
-
-
-
+Twilight.prototype.formatPlayOpsStatus = function formatPlayOpsStatus(player, ops) {
+  let html = `${player.toUpperCase()} plays ${ops} OPS:<p></p><ul>`;
+  if (this.game.state.limit_placement == 0) { html += '<li class="card" id="place">place influence</li>'; }
+  if (this.game.state.limit_coups == 0) { html += '<li class="card" id="coup">launch coup</li>'; }
+  if (this.game.state.limit_realignments == 0) { html += '<li class="card" id="realign">realign country</li>'; }
+  html += '</ul>';
+  return html;
+}
 
 
 
@@ -3755,14 +3764,12 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
 
 
     if (twilight_self.game.deck[0].cards[card].scoring == 1) {
-      let html = `
-      <div>
-        <i class="fa fa-arrow-left" id="back_button"></i>
-        <div style="text-align: center;">
-          Playing ${twilight_self.game.deck[0].cards[card].name}:
-        </div>
-      </div>
-      <p></p><ul><li class="card" id="event">score region</li></ul>`
+      let status_header = `Playing ${twilight_self.game.deck[0].cards[card].name}:`;
+      let html = ``;
+
+      // true means we want to include the back button in our functionality
+      html += twilight_self.formatStatusHeader(status_header, true);
+      html += `<p></p><ul><li class="card" id="event">score region</li></ul>`
       twilight_self.updateStatus(html);
     } else {
 
@@ -3785,15 +3792,11 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       }
 
 
-      let announcement = `
-      <div>
-        <i class="fa fa-arrow-left" id="back_button"></i>
-        <div style="text-align: center;">
-          ${player.toUpperCase()} playing ${twilight_self.game.deck[0].cards[card].name}
-        </div>
-      </div>
-      <p></p>
-      <ul>`;
+      let announcement = twilight_self.formatStatusHeader(
+        `${player.toUpperCase()} playing ${twilight_self.game.deck[0].cards[card].name}`,
+        true
+      );
+      announcement += `<p></p><ul>`;
 
       //
       // cannot play China card or Missile Envy (forced) for event
