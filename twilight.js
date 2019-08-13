@@ -528,7 +528,7 @@ Twilight.prototype.handleGame = function handleGame(msg=null) {
     if (this.game.winner == 2) { winner = "us"; }
     let gid = $('#sage_game_id').attr("class");
     if (gid === this.game.id) {
-      this.updateStatus("Game Over: "+winner.toUpperCase() + " wins");
+      this.updateStatus("<span>Game Over:</span> "+winner.toUpperCase() + "</span> <span>wins</span>");
     }
     return 0;
   }
@@ -656,7 +656,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
                 //
                 // move to discard pile
                 //
-                this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
+                this.updateLog("<span>" + mv[1].toUpperCase() + " discards</span> <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
                 //
                 // discard pile is parallel to normal
                 //
@@ -732,9 +732,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
           if (this.game.player == 2) {
 
-            let html  = "Grain Sales pulls <span class=\"showcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span> from USSR. Do you want to play this card?";
+            let html  = "<span>Grain Sales pulls</span> <span class=\"showcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span> <span>from USSR. Do you want to play this card?</span>";
             if (mv[2] == "unintervention" && this.game.state.headline == 1) {} else {
-                html += '<li class="card" id="play">play card</li>';
+                html += '<ul><li class="card" id="play">play card</li>';
             }
                 html += '<li class="card" id="nope">return card</li>';
                 html += '</ul>';
@@ -943,7 +943,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         let roll = this.rollDice(6);
 
         //this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
-        this.updateLog(mv[1].toUpperCase() + " rolls a " + roll);
+        this.updateLog(mv[1].toUpperCase() + " </span>rolls a<span> " + roll);
 
         if (roll < 5) {
 
@@ -1158,7 +1158,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           }
 
 
-          this.updateStatus("Select "+countries_to_double+" countries in South America to double USSR influence");
+          this.updateStatus("<span>Select</span> "+countries_to_double+" <span>countries in South America to double USSR influence</span>");
 
           //
           // double influence in two countries
@@ -1209,7 +1209,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           this.updateStatus(html);
         }
         if (this.game.player == 2) {
-          let html  = "Do you wish to take an extra turn:<p></p><ul>";
+          let html  = "<span>Do you wish to take an extra turn:<span><p></p><ul>";
           html += '<li class="card" id="play">play turn</li>';
           html += '<li class="card" id="nope">no turn</li>';
           html += '</ul>';
@@ -1310,7 +1310,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (mv[1] == "us") {
 
           let num = mv[2];
-          let html = "Aldrich Ames triggered. USSR discard card from US hand:<p></p><ul>";
+          let html = "<span>Aldrich Ames triggered. USSR discard card from US hand:<span><p></p><ul>";
           this.game.queue.splice(qe, 1);
 
           for (let i = 0; i < num; i++) {
@@ -1352,7 +1352,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           }
 
           this.game.queue.splice(qe, 1);
-          this.updateLog("USSR discards <span class=\"logcard\" id=\""+mv[2]+"\">"+this.game.deck[0].cards[mv[2]].name + "</span>");
+          this.updateLog("<span>USSR discards </span><span class=\"logcard\" id=\""+mv[2]+"\">"+this.game.deck[0].cards[mv[2]].name + "</span>");
           shd_continue = 1;
         }
 
@@ -1481,12 +1481,12 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         } else {
           this.updateStatus("Opponent is being dealt new cards.");
         }
-        this.updateStatus(player.toUpperCase() + " is fetching new cards");
+        this.updateStatus(player.toUpperCase() + "</span><span>is fetching new cards</span>");
         return 0;
       }
       if (mv[0] === "ops") {
         if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
-        this.updateLog(mv[1].toUpperCase() + " plays <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> for " + mv[3] + " OPS");
+        this.updateLog("<span>" + mv[1].toUpperCase() + " plays </span><span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> <span>for " + mv[3] + " OPS</span>");
         //
         // unset formosan if China card played by US
         //
@@ -1495,7 +1495,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         shd_continue = 0;
       }
       if (mv[0] === "milops") {
-        this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " milops");
+        this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> <span>" + mv[2] + "</span> <span>milops");
         if (mv[1] === "us") {
           this.game.state.milops_us += parseInt(mv[2]);
         } else {
@@ -1507,7 +1507,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       if (mv[0] === "vp") {
         if (mv.length > 3) {
           if (parseInt(mv[3]) == 1) {
-            this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
+            this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> " + mv[2] + " <span>VP");
             if (mv[1] === "us") {
               this.game.state.vp_outstanding += parseInt(mv[2]);
             } else {
@@ -1515,7 +1515,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             }
           }
         } else {
-          this.updateLog(mv[1].toUpperCase() + " receives " + mv[2] + " VP");
+          this.updateLog(mv[1].toUpperCase() + "</span> <span>receives</span> <span>" + mv[2] + "</span> <span>VP");
           if (mv[1] === "us") {
             this.game.state.vp += parseInt(mv[2]);
           } else {
@@ -1526,7 +1526,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "coup") {
-        this.updateLog(mv[1].toUpperCase() + " coups " + this.countries[mv[2]].name + " with " + mv[3] + " OPS"); 
+        this.updateLog("<span>" + mv[1].toUpperCase() + "</span> <span>coups</span> <span>" + this.countries[mv[2]].name + "</span> <span>with</span> <span>" + mv[3] + "</span> <span>OPS</span>"); 
         if (this.game.state.limit_milops != 1) {
           if (mv[1] == "us") { this.game.state.milops_us += this.modifyOps(parseInt(mv[3]), "", 2); }
           if (mv[1] == "ussr") { this.game.state.milops_ussr += this.modifyOps(parseInt(mv[3]), "", 1); }
@@ -1538,7 +1538,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
 
       if (mv[0] === "realign") {
-        this.updateLog(mv[1].toUpperCase() + " realigns " + this.countries[mv[2]].name + " with 1 OPS");
+        this.updateLog("<span>" + mv[1].toUpperCase() + " <span>realigns</span> <span>" + this.countries[mv[2]].name + "</span> <span>with 1 OPS</span>");
         if (mv[1] != player) { this.playRealign(mv[2]); }
         this.game.queue.splice(qe, 1);
       }
@@ -1572,7 +1572,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       if (mv[0] === "event") {
 
         if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.game.deck[0].cards[mv[2]].name; }
-        this.updateLog(mv[1].toUpperCase() + " triggers <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> event");
+        this.updateLog("<span>" + mv[1].toUpperCase() + "</span> <span>triggers</span> <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.state.event_name + "</span> <span>event</span>");
 
         shd_continue = this.playEvent(mv[1], mv[2]);
 
@@ -1645,19 +1645,19 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
                   if (event_removal == 1) {
 
-                    this.updateLog(this.game.deck[0].cards[i].name + " removed from game");
+                    this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>removed from game</span>");
                     this.game.deck[0].removed[i] = this.game.deck[0].cards[i];
                     delete this.game.deck[0].cards[i];
 
                   } else {
 
                     // just discard -- NATO catch mostly
-                    this.updateLog(this.game.deck[0].cards[i].name + " discarded");
+                    this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>discarded</span>");
                       this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
 
                   }
                 } else {
-                  this.updateLog(this.game.deck[0].cards[i].name + " discarded");
+                  this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>discarded</span>");
                     this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
                 }
                 }
@@ -1769,11 +1769,11 @@ console.log("resolving earlier: " + this.game.queue[z]);
         for (var i in this.game.deck[0].cards) {
           if (mv[1] == i) {
             if (this.game.deck[0].cards[i].recurring != 1) {
-              this.updateLog(this.game.deck[0].cards[i].name + " removed from game");
+              this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>removed from game</span>");
               this.game.deck[0].removed[i] = this.game.deck[0].cards[i];
               delete this.game.deck[0].cards[i];
             } else {
-              this.updateLog(this.game.deck[0].cards[i].name + " discarded");
+              this.updateLog("<span>" + this.game.deck[0].cards[i].name + "</span> <span>discarded</span>");
               this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
             }
           }
@@ -1955,7 +1955,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
           //
           // US gets extra move
           //
-          let html  = "Do you want to take an extra turn: (North Sea Oil)<p></p><ul>";
+          let html  = "<span>Do you want to take an extra turn: (North Sea Oil)</span><p></p><ul>";
               html += '<li class="card" id="play">play extra turn</li>';
               html += '<li class="card" id="nope">do not play</li>';
               html += '</ul>';
@@ -1995,7 +1995,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
           if (this.game.state.eagle_has_landed == "us") { bonus_player = 2; }
 
           if (this.game.player != bonus_player) {
-            this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " is deciding whether to discard a card");
+            this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " </span><span>is deciding whether to discard a card");
             this.saveGame(this.game.id);
             return 0;
           }
@@ -2003,8 +2003,8 @@ console.log("resolving earlier: " + this.game.queue[z]);
           //
           // DISCARD CARD
           //
-          let html  = "US may discard a card: (Eagle Has Landed)<p></p><ul>";
-          if (bonus_player == 1) { html  = "USSR may discard a card: (Bear Has Landed)<p></p><ul>"; }
+          let html  = "<span>US may discard a card: (Eagle Has Landed)</span><p></p><ul>";
+          if (bonus_player == 1) { html  = "<span>USSR may discard a card: (Bear Has Landed)</span><p></p><ul>"; }
               html += '<li class="card" id="discard">discard card</li>';
               html += '<li class="card" id="nope">do not discard</li>';
               html += '</ul>';
@@ -2090,14 +2090,14 @@ console.log("resolving earlier: " + this.game.queue[z]);
           if (this.game.state.space_shuttle == "us") { bonus_player = 2; }
 
           if (this.game.player != bonus_player) {
-            this.updateStatus(this.game.state.space_shuttle.toUpperCase() + " is deciding whether to take extra turn");
+            this.updateStatus(this.game.state.space_shuttle.toUpperCase() + "</span> <span>is deciding whether to take extra turn");
             return 0;
           }
 
           //
           // player gets extra move
           //
-          let html  = "Do you want to take an extra turn: (Space Shuttle)<p></p><ul>";
+          let html  = "<span>Do you want to take an extra turn: (Space Shuttle)</span><p></p><ul>";
               html += '<li class="card" id="play">play extra turn</li>';
               html += '<li class="card" id="nope">do not play</li>';
               html += '</ul>';
@@ -2135,7 +2135,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
         }
         this.endRound();
 
-        this.updateStatus("Preparing for round " + this.game.state.round);
+        this.updateStatus("<span>Preparing for round</span> " + this.game.state.round);
 
         let rounds_in_turn = 6;
         if (this.game.state.round > 3) { rounds_in_turn = 7; }
@@ -2168,7 +2168,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
         //
         if (this.game.state.round > 1) {
 
-          this.updateLog(this.game.deck[0].crypt.length + " cards remaining in deck...");
+          this.updateLog(this.game.deck[0].crypt.length + " <span>cards remaining in deck...</span>");
 
           this.game.queue.push("deal\t2");
           this.game.queue.push("deal\t1");
@@ -2653,7 +2653,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 
       if (this.game.player == first_picker) {
 
-        let x = player.toUpperCase() + " picks headline card first: <p></p><ul>";
+        let x = player.toUpperCase() + " <span>picks headline card first:</span> <p></p><ul>";
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
         }
@@ -2694,9 +2694,9 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
       } else {
 
         if (first_picker == 1) {
-          this.updateStatus(player + " is selecting headline card first");
+          this.updateStatus(player + " <span>is selecting headline card first</span>");
         } else {
-          this.updateStatus(player + " is selecting headline card first");
+          this.updateStatus(player + " <span>is selecting headline card first</span>");
         }
       }
       return 0;
@@ -2715,7 +2715,7 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
           this.game.state.headline_opponent_card = msg.extra.headline_card;
         }
 
-        let x = player.toUpperCase() + ' selected <span id="'+this.game.state.headline_opponent_card+'" class="showcard">' + this.game.deck[0].cards[this.game.state.headline_opponent_card].name + '</span>. ' + this.game.state.man_in_earth_orbit.toUpperCase() + ' pick your headline card second: <p></p><ul>';
+        let x = "<span>" + player.toUpperCase() + '</span> <span>selected<span> <span id="'+this.game.state.headline_opponent_card+'" class="showcard">' + this.game.deck[0].cards[this.game.state.headline_opponent_card].name + '</span>. <span>' + this.game.state.man_in_earth_orbit.toUpperCase() + '</span> <span>pick your headline card second:</span> <p></p><ul>';
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
         }
@@ -2863,15 +2863,15 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 
     if (us_plays_defectors == 1) {
 
-      this.updateLog("US headlines <span class=\"logcard\" id=\"defectors\">Defectors</span>");
+      this.updateLog("<span>US headlines</span> <span class=\"logcard\" id=\"defectors\">Defectors</span>");
 
       this.game.turn = [];
       this.game.queue.push("discard\tus\tdefectors");
       if (my_card != "defectors") {
-        this.updateLog("USSR headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+        this.updateLog("<span>USSR headlines</span> <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
         this.game.queue.push("discard\tussr\t"+my_card);
       } else {
-        this.updateLog("USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>");
+        this.updateLog("<span>USSR headlines</span> <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>");
         this.game.queue.push("discard\tussr\t"+opponent_card);
       }
 
@@ -2898,13 +2898,13 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 
       // show headline card information to both players
       if (this.game.player == 1) {
-        this.updateStatus("US headlines <span class=\"showcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. USSR headlines <span class=\"showcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
-        this.updateLog("US headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>.");
-        this.updateLog("USSR headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+        this.updateStatus("<span>US headlines</span> <span class=\"showcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. USSR headlines <span class=\"showcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+        this.updateLog("<span>US headlines</span> <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>.");
+        this.updateLog("<span>USSR headlines</span> <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
       } else {
-        this.updateStatus("USSR headlines <span class=\"showcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. US headlines <span class=\"showcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
-        this.updateLog("USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>.");
-        this.updateLog("US headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+        this.updateStatus("<span>USSR headlines</span> <span class=\"showcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>. US headlines <span class=\"showcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
+        this.updateLog("<span>USSR headlines <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>.");
+        this.updateLog("<span>US headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
       }
 
       this.game.state.headline4 = 1;
@@ -3370,7 +3370,7 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
   let x = `
   <div class="cardbox-status-container">
-    <div>${player.toUpperCase()} pick your headline card</div>
+    <div>${player.toUpperCase()} <span>pick your headline card</span></div>
     ${this.returnCardList(this.game.deck[0].hand)}
   </div>
   `
@@ -4360,7 +4360,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
     twilight_self.addMove("RESOLVE");
 
-    this.updateStatusAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
+    this.updateStatusAndListCards(`You are the USSR. Place</span> ${bonus} <span>additional influence in countries with existing Soviet influence.`);
 
     let ops_to_place = bonus;
 
@@ -4395,7 +4395,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
     twilight_self.addMove("RESOLVE");
 
-    this.updateStatusAndListCards(`You are the US. Place ${bonus} additional influence in countries with existing American influence.`);
+    this.updateStatusAndListCards(`You are the US. Place</span> ${bonus} <span>additional influence in countries with existing American influence.`);
 
     let ops_to_place = bonus;
 
@@ -4457,7 +4457,7 @@ Twilight.prototype.removeInfluence = function removeInfluence(country, inf, play
     this.showInfluence(country, "us");
   }
 
-  this.updateLog(player.toUpperCase() + " removes " + inf + " from " + this.countries[country].name);
+  this.updateLog(player.toUpperCase() + "</span> <span>removes</span> " + inf + "<span>from</span> <span>" + this.countries[country].name);
 
   this.showInfluence(country, player, mycallback);
 
@@ -4470,7 +4470,7 @@ Twilight.prototype.placeInfluence = function placeInfluence(country, inf, player
     this.countries[country].ussr = parseInt(this.countries[country].ussr) + parseInt(inf);
   }
 
-  this.updateLog(player.toUpperCase() + " places " + inf + " in " + this.countries[country].name);
+  this.updateLog(player.toUpperCase() + "</span> <span>places</span> " + inf + " <span>in</span> <span>" + this.countries[country].name);
 
   this.showInfluence(country, player, mycallback);
 
@@ -4868,13 +4868,13 @@ Twilight.prototype.playerSpaceCard = function playerSpaceCard(card, player) {
   if (next_box == 7) { if (roll < 4) { successful = 1; } }
   if (next_box == 8) { if (roll < 2) { successful = 1; } }
 
-  this.updateLog(player.toUpperCase() + " attempts space race (rolls " + roll + ")");
+  this.updateLog("<span>" + player.toUpperCase() + "</span> <span>attempts space race (rolls</span> " + roll + ")");
 
   if (successful == 1) {
-    this.updateLog(player.toUpperCase() + " advances in the Space Race");
+    this.updateLog("<span>" + player.toUpperCase() + "</span> <span>advances in the Space Race</span>");
     this.advanceSpaceRace(player);
   } else {
-    this.updateLog(player.toUpperCase() + " fails in the Space Race");
+    this.updateLog("<span>" + player.toUpperCase() + "</span> <span>fails in the Space Race</span>");
   }
 
 }
@@ -5072,7 +5072,7 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
       this.displayModal(`COUP SUCCEEDED: ${player.toUpperCase()} rolls ${roll} (${this.game.countries[countryname].name})`);
     }
 
-    this.updateLog(player.toUpperCase() + " rolls " + roll);
+    this.updateLog(player.toUpperCase() + " <span>rolls</span> " + roll);
 
     while (winning > 0) {
 
@@ -5099,7 +5099,7 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
   } else {
 
     if (this.browser_active == 1) {
-      this.updateLog(player.toUpperCase() + " rolls " + roll + " (no change)");
+      this.updateLog(player.toUpperCase() + "</span> <span>rolls</span> " + roll + " <span>(no change)");
     }
   }
 
@@ -5164,8 +5164,8 @@ Twilight.prototype.playRealign = function playRealign(country) {
     let roll_us   = this.rollDice(6);
     let roll_ussr = this.rollDice(6);
 
-    this.updateLog("US bonus " + bonus_us + " vs. USSR bonus " + bonus_ussr);
-    this.updateLog("US roll " + roll_us + " vs. USSR roll " + roll_ussr);
+    this.updateLog("<span>US bonus</span> " + bonus_us + " <span>vs. USSR bonus</span> " + bonus_ussr);
+    this.updateLog("<span>US roll</span> " + roll_us + " <span>vs. USSR roll</span> " + roll_ussr);
 
     roll_us   = roll_us + bonus_us;
     roll_ussr = roll_ussr + bonus_ussr;
@@ -5265,8 +5265,8 @@ Twilight.prototype.endGame = function endGame(winner, method) {
   }
 
   if (this.browser_active == 1) {
-    this.displayModal("The Game is Over - " + winner.toUpperCase() + " wins by " + method);
-    this.updateStatus("Game Over: " + winner.toUpperCase() + " wins by " + method);
+    this.displayModal("<span>The Game is Over</span> - " + winner.toUpperCase() + " <span>wins by</span> " + method);
+    this.updateStatus("<span>The Game is Over</span> - " + winner.toUpperCase() + " <span>wins by</span> " + method);
   }
 }
 
@@ -5304,11 +5304,11 @@ Twilight.prototype.endRound = function endRound() {
 
     if (ussr_milops_deficit > 0) {
       this.game.state.vp += ussr_milops_deficit;
-      this.updateLog("USSR penalized " + ussr_milops_deficit + " VP (milops)");
+      this.updateLog("<span>USSR penalized</span> " + ussr_milops_deficit + " <span>VP (milops)</span>");
     }
     if (us_milops_deficit > 0) {
       this.game.state.vp -= us_milops_deficit;
-      this.updateLog("US penalized " + us_milops_deficit + " VP (milops)");
+      this.updateLog("<span>US penalized</span> " + us_milops_deficit + " <span>VP (milops)</span>");
     }
   }
 
@@ -6015,7 +6015,7 @@ Twilight.prototype.returnDiscardedCards = function returnDiscardedCards() {
 Twilight.prototype.playEvent = function playEvent(player, card) {
 
   if (this.game.deck[0].cards[card] != undefined) {
-    this.updateStatus("Playing event: " + this.game.deck[0].cards[card].name);
+    this.updateStatus("Playing event:</span> <span>" + this.game.deck[0].cards[card].name);
   } else {
     //
     // event already run - sync loading error
@@ -6262,7 +6262,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     } else {
 
 
-      let userhtml = "Match USSR influence in which country?<p></p><ul>";
+      let userhtml = "<span>Match USSR influence in which country?</span><p></p><ul>";
 
       if (yugo_diff > 0) {
         userhtml += '<li class="card" id="yugoslavia">Yugoslavia</li>';
@@ -6662,7 +6662,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (this.isControlled("us", "syria") == 1) { target++; }
 
     let roll = this.rollDice(6);
-    this.updateLog(player.toUpperCase()+" rolls "+roll);
+    this.updateLog("<span>" + player.toUpperCase()+"</span> <span>rolls</span> "+roll);
 
     if (roll >= target) {
       this.updateLog("USSR wins the Arab-Israeli War");
@@ -6707,7 +6707,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     let roll = this.rollDice(6);
 
-    this.updateLog("Korean War happens (roll: " + roll + ")");
+    this.updateLog("<span>Korean War happens (roll:</span> " + roll + ")");
 
     if (roll >= target) {
       this.updateLog("North Korea wins the Korean War");
@@ -7127,7 +7127,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         return 0;
       }
 
-      this.updateStatus('Blockade triggers:<p></p><ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>');
+      this.updateStatus('<span>Blockade triggers:</span><p></p><ul><li class="card" id="discard">discard 3 OP card</li><li class="card" id="remove">remove all US influence in W. Germany</li></ul>');
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -7135,7 +7135,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         let action = $(this).attr("id");
 
         if (action == "discard") {
-          let choicehtml = "Choose a card to discard:<p></p><ul>";
+          let choicehtml = "<span>Choose a card to discard:</span><p></p><ul>";
           for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
             if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops, twilight_self.game.deck[0].hand[i]) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
               choicehtml += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
@@ -8069,7 +8069,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         //
         // select highest card
         //
-        let user_message = "Select card to give opponent:<p></p><ul>";
+        let user_message = "<span>Select card to give opponent:</span><p></p><ul>";
         for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]].ops == selected_ops && this.game.deck[0].hand[i] != "china") {
             user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
@@ -8464,7 +8464,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let us_roll = this.rollDice(6);
     let ussr_roll = this.rollDice(6);
 
-    this.updateLog("Summit: US rolls "+us_roll+" and USSR rolls "+ussr_roll);
+    this.updateLog("<span>Summit: US rolls</span> "+us_roll+" <span>and USSR rolls</span> "+ussr_roll);
 
     if (this.doesPlayerDominateRegion("ussr", "europe") == 1)   { ussr_roll++; }
     if (this.doesPlayerDominateRegion("ussr", "mideast") == 1)  { ussr_roll++; }
@@ -8511,7 +8511,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         let x = 0;
         let y = 0;
 
-        this.updateStatus('You win the Summit:<p></p><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li></ul>');
+        this.updateStatus('<span>You win the Summit:</span><p></p><ul><li class="card" id="raise">raise DEFCON</li><li class="card" id="lower">lower DEFCON</li></ul>');
 
         $('.card').off();
         $('.card').on('click', function() {
@@ -8576,7 +8576,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (player == "us" && this.game.player == 2) { my_go = 1; }
 
     if (my_go == 0) {
-      this.updateStatus(player.toUpperCase() + " playing Junta");
+      this.updateStatus(player.toUpperCase() + "</span> <span>playing Junta");
     }
     if (my_go == 1) {
 
@@ -8657,7 +8657,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   //
   if (card == "abmtreaty") {
 
-    this.updateStatus(player.toUpperCase() + " plays ABM Treaty");
+    this.updateStatus(player.toUpperCase() + "</span> <span>plays ABM Treaty");
     this.updateLog("DEFCON increases by 1");
 
     this.game.state.defcon++;
@@ -9645,7 +9645,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     this.game.state.vp += us_bonus;
     this.updateVictoryPoints();
-    this.updateLog("US VP bonus is: " + us_bonus);
+    this.updateLog("<span>US VP bonus is:</span> " + us_bonus);
 
     return 1;
 
@@ -9707,7 +9707,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       this.game.state.vp -= ussr_bonus;
       this.updateVictoryPoints();
-      this.updateLog("USSR VP bonus is: " + ussr_bonus);
+      this.updateLog("<span>USSR VP bonus is:</span> " + ussr_bonus);
 
     }
 
@@ -9964,7 +9964,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       if (ops_available < 2) { ops_to_purge = ops_available; }
 
-      this.updateStatus("Remove "+ops_to_purge+" US influence from the Middle East");
+      this.updateStatus("Remove</span> <span>"+ops_to_purge+" </span>US influence from the Middle East");
       for (var i in this.countries) {
 
         let countryname  = i;
@@ -10014,7 +10014,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let cards_available = 0;
     let twilight_self = this;
 
-    let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:<p></p><ul>";
+    let user_message = "<span>Choose a card to discard or USSR doubles influence in two countries in South America:</span><p></p><ul>";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) > 2 && this.game.deck[0].hand[i] != "china") {
         user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
@@ -10238,7 +10238,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       return 0;
     }
 
-    let html = "Chernobyl triggered. Designate region to prohibit USSR placement of influence from OPS: <p></p><ul>";
+    let html = "<span>Chernobyl triggered. Designate region to prohibit USSR placement of influence from OPS: </span><p></p><ul>";
         html += '<li class="card" id="asia">Asia</li>';
         html += '<li class="card" id="europe">Europe</li>';
         html += '<li class="card" id="africa">Africa</li>';
@@ -10418,7 +10418,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let player_to_go = 1;
     if (player == "us") { player_to_go = 2; }
 
-    let choicehtml = 'Wargames triggers. Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponents)<p></p><ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
+    let choicehtml = '<span>Wargames triggers. Do you want to give your opponent 6 VP and End the Game? (VP ties will be won by opponents)</span><p></p><ul><li class="card" id="endgame">end the game</li><li class="card" id="cont">continue playing</li></ul>';
 
     if (player_to_go == this.game.player) {
       this.updateStatus(choicehtml);
@@ -10508,7 +10508,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         x -= 2;
         us_vp++;
       }
-      this.updateLog("Reagan bombs Libya and US scores "+us_vp+" VP");
+      this.updateLog("<span>Reagan bombs Libya and US scores</span> "+us_vp+" <span>VP</span>");
       this.game.state.vp += us_vp;
       this.updateVictoryPoints();
     }
@@ -10771,7 +10771,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       if (this.game.state.vp < 0) { influence_to_add = 6; }
 
       this.addMove("resolve\treformer");
-      this.updateStatus('Add '+influence_to_add+' influence in Europe (max 2 per country)');
+      this.updateStatus('Add</span> '+influence_to_add+' <span>influence in Europe (max 2 per country)');
 
       var ops_to_place = influence_to_add;
       var ops_placed = {};
@@ -11251,7 +11251,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Europe: " + vp_adjustment + " VP");
+    this.updateLog("<span>Europe: </span>" + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11316,7 +11316,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Middle-East: " + vp_adjustment + " VP");
+    this.updateLog("<span>Middle-East:</span>" + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11353,7 +11353,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Southeast Asia: " + vp_adjustment + " VP");
+    this.updateLog("<span>Southeast Asia:</span>" + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11423,7 +11423,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Africa: " + vp_adjustment + " VP");
+    this.updateLog("<span>Africa:</span>" + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11482,7 +11482,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Central America: " + vp_adjustment + " VP");
+    this.updateLog("<span>Central America:</span>" + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11536,7 +11536,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("South America: " + vp_adjustment + " VP");
+    this.updateLog("<span>South America:</span>" + vp_adjustment + " <span>VP</span>");
 
 
   }
@@ -11630,7 +11630,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("Asia: " + vp_adjustment + " VP");
+    this.updateLog("<span>Asia:</span>" + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -12104,7 +12104,7 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
 
   if (this.app.BROWSER == 1) {
 
-    $('#status').html(this.game.status);
+    $('#status').html("<span>" + this.game.status + "</span>");
 
     try {
       twilight_self.addShowCardEvents();
@@ -12189,7 +12189,7 @@ Twilight.prototype.lowerDefcon = function lowerDefcon() {
 
   this.game.state.defcon--;
 
-  this.updateLog("DEFCON falls to " + this.game.state.defcon);
+  this.updateLog("<span>DEFCON falls to</span> " + this.game.state.defcon);
 
   if (this.game.state.defcon == 2) {
     if (this.game.state.events.norad == 1) {
@@ -12340,7 +12340,7 @@ Twilight.prototype.updateActionRound = function updateActionRound() {
 }
 Twilight.prototype.advanceSpaceRace = function advanceSpaceRace(player) {
 
-  this.updateLog(player.toUpperCase() + " has advanced in the space race");
+  this.updateLog("<span>" + player.toUpperCase() + "</span> <span>has advanced in the space race</span>");
 
   if (player == "us") {
 
