@@ -3370,7 +3370,7 @@ Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
   let x = `
   <div class="cardbox-status-container">
-    <div>${player.toUpperCase()} <span>pick your headline card</span></div>
+    <div><span>${player.toUpperCase()}</span> <span>pick your headline card</span></div>
     ${this.returnCardList(this.game.deck[0].hand)}
   </div>
   `
