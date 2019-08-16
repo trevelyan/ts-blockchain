@@ -38,7 +38,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
 
   //
@@ -1795,7 +1795,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
           if (this.game.player == 1) {
             this.game.deck[0].hand = ["culturaldiplomacy","quagmire", "saltnegotiations", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
           } else {
-            this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","oas","nasser","sadat"];
+            this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","mideast","nasser","sadat"];
           }
         }
 
@@ -3548,6 +3548,14 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
     //
     if (cards_available > 0 && scoring_cards_available <= moves_remaining) {
       this.updateStatus(user_message);
+      playable_cards = [];
+      for (i = 0; i < this.game.deck[0].hand.length; i++) {
+        if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
+          if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
+            playable_cards.push(this.game.deck[0].hand[i]);
+          }
+        }
+      }
     } else {
       if (scoring_cards_available > 0) {
         if (this.game.state.events.beartrap == 1) {
