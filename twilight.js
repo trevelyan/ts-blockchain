@@ -1620,6 +1620,13 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
                   }
 
                   //
+                  // Solidarity not removed if Pope John Paul II not in play
+                  //
+                  if (this.game.state.events.johnpaul == 0 && mv[2] == "solidarity") {
+                    event_removal = 0;
+                  }
+
+                  //
                   // Star Wars not removed if not triggered
                   //
                   if (this.game.state.events.starwars == 0 && mv[2] == "starwars") {
