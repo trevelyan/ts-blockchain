@@ -5992,7 +5992,7 @@ Twilight.prototype.returnLateWarCards = function returnLateWarCards() {
   if (this.game.options.deck != "original" ) {
     deck['iraniraq']          = { img : "TNRnTS-102" , name : "Iran-Iraq War", scoring : 0 , player : "both" , recurring : 1 , ops : 2 };
     deck['yuri']              = { img : "TNRnTS-109" , name : "Yuri and Samantha", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 };
-    deck['awacs']             = { img : "TNRnTS-110" , name : "AWACS Sale to Soviets", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
+    deck['awacs']             = { img : "TNRnTS-110" , name : "AWACS Sale to Saudis", scoring : 0 , player : "us" , recurring : 0 , ops : 3 };
   }
 
   //
@@ -10091,7 +10091,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 
   //
-  // AWACS Sale to Soviets
+  // AWACS Sale to Saudis
   //
   if (card == "awacs") {
     this.game.state.events.awacs = 1;
