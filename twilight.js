@@ -306,6 +306,12 @@ console.log("\n\n\n\n");
   $('.ussr').css('height', this.scale(100)+"px");
 
   //
+  $('.formosan').css('width', this.scale(202)+"px");
+  $('.formosan').css('height', this.scale(132)+"px");
+  $('.formosan').css('top', this.scale(this.countries['taiwan'].top-32)+"px");
+  $('.formosan').css('left', this.scale(this.countries['taiwan'].left)+"px");
+
+  //
   // update defcon and milops and stuff
   //
   this.updateDefcon();
@@ -1490,7 +1496,10 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         //
         // unset formosan if China card played by US
         //
-        if (mv[1] == "us" && mv[2] == "china") { this.game.state.events.formosan = 0; }
+        if (mv[1] == "us" && mv[2] == "china") { 
+	  this.game.state.events.formosan = 0; 
+	  $('.formosan').hide();
+	}
         this.playOps(mv[1], mv[3], mv[2]);
         shd_continue = 0;
       }
@@ -4939,6 +4948,21 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
         }
       }
 
+      //
+      // sanity Cuban Missile Crisis check
+      //
+      if (twilight_self.game.state.events.cubanmissilecrisis == 2 && player =="us" ||
+          twilight_self.game.state.events.cubanmissilecrisis == 1 && player =="ussr"
+      ) {
+        if (confirm("Are you sure you wish to coup during the Cuban Missile Crisis?")) {
+        } else {
+          twilight_self.playOps(player, ops, card);
+          return;
+        }
+      }
+
+
+
       if (player == "us") {
         if (twilight_self.countries[countryname].ussr <= 0) { twilight_self.displayModal("Cannot Coup"); } else { valid_target = 1; }
       } else {
@@ -5006,13 +5030,6 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
     });
   }
 }
-
-// Twilight.prototype.displayModal( = function displayModalmodalHeaderText, modalBodyText) {
-//   $('.modal').show();
-//   $('#modal_header_text').html(modalHeaderText);
-//   $('#modal_body_text').html(modalBodyText);
-//   this.attachEvents();
-// }
 
 
 Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycallback=null) {
@@ -6806,6 +6823,12 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   //////////////
   if (card == "formosan") {
     this.game.state.events.formosan = 1;
+
+    //
+    // show revised gameboard piece
+    //
+    $('.formosan_resolution').show();
+
     return 1;
   }
 
@@ -10373,10 +10396,17 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     this.addMove("resolve\tstarwars");
 
+
     let user_message = "Choose card to reclaim: <p></p><ul>";
     for (var i in this.game.deck[0].discards) {
       if (this.game.state.headline == 1 && i == "unintervention") {} else {
-        user_message += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
+        if (this.game.deck[0].cards[i] != undefined) {
+          if (this.game.deck[0].cards[i].name != undefined) {
+            if (this.game.deck[0].cards[i].scoring != 1) {
+              user_message += '<li class="card showcard" id="'+i+'">'+this.game.deck[0].cards[i].name+'</li>';
+            }
+          }
+        }
       }
     }
     user_message += '</li>';
@@ -11279,7 +11309,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("<span>Europe: </span>" + vp_adjustment + " <span>VP</span>");
+    this.updateLog("<span>Europe: </span> " + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11344,7 +11374,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("<span>Middle-East:</span>" + vp_adjustment + " <span>VP</span>");
+    this.updateLog("<span>Middle-East:</span> " + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11381,7 +11411,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("<span>Southeast Asia:</span>" + vp_adjustment + " <span>VP</span>");
+    this.updateLog("<span>Southeast Asia:</span> " + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11451,7 +11481,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("<span>Africa:</span>" + vp_adjustment + " <span>VP</span>");
+    this.updateLog("<span>Africa:</span> " + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11510,7 +11540,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("<span>Central America:</span>" + vp_adjustment + " <span>VP</span>");
+    this.updateLog("<span>Central America:</span> " + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -11564,7 +11594,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("<span>South America:</span>" + vp_adjustment + " <span>VP</span>");
+    this.updateLog("<span>South America:</span> " + vp_adjustment + " <span>VP</span>");
 
 
   }
@@ -11658,7 +11688,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
-    this.updateLog("<span>Asia:</span>" + vp_adjustment + " <span>VP</span>");
+    this.updateLog("<span>Asia:</span> " + vp_adjustment + " <span>VP</span>");
 
   }
 
@@ -12711,6 +12741,14 @@ Twilight.prototype.updateEventTiles = function updateEventTiles() {
     $('#eventtile_quagmire').css('display','block');
   }
 
+  if (this.game.state.events.formosan == 0) {
+    $('#eventtile_formosan').css('display','none');
+    $('.formosan_resolution').hide();
+  } else {
+    $('#eventtile_formosan').css('display','block');
+    $('.formosan_resolution').show();
+  }
+
   if (this.game.state.events.beartrap == 0) {
     $('#eventtile_beartrap').css('display','none');
   } else {
@@ -12745,6 +12783,12 @@ Twilight.prototype.updateEventTiles = function updateEventTiles() {
     $('#eventtile_iranianhostagecrisis').css('display','none');
   } else {
     $('#eventtile_iranianhostagecrisis').css('display','block');
+  }
+
+  if (this.game.state.events.shuttledisplomacy == 0) {
+    $('#eventtile_shuttlediplomacy').css('display','none');
+  } else {
+    $('#eventtile_shuttlediplomacy').css('display','block');
   }
 
   if (this.game.state.events.ironlady == 0) {

@@ -3,6 +3,13 @@
   padding: 10px;
 }
 
+.formosan {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  background-image: url("images/Formosan.png");
+  background-size: cover;
+}
 .removecards li {
   float: left;
   min-width: 300px;
