@@ -4056,6 +4056,19 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
           twilight_self.addMove("ops\t"+player+"\t"+card+"\t"+twilight_self.game.deck[0].cards[card].ops);
           if (card == "china") { twilight_self.addMove("limit\tchina"); }
           twilight_self.removeCardFromHand(card);
+
+          //
+          // Flower Power
+          //
+          if (twilight_self.game.state.events.flowerpower == 1) {
+            if (card == "arabisraeli" || card == "koreanwar" || card == "brushwar" || card == "indopaki" || card == "iraniraq") {
+              if (player === "us") {
+                twilight_self.addMove("notify\tFlower Power triggered by "+card);
+                twilight_self.addMove("vp\tussr\t2\t1");
+              }
+            }
+          }
+
           twilight_self.endTurn();
           return;
 
@@ -4221,7 +4234,7 @@ Twilight.prototype.prePlayerPlaceInfluence = function prePlayerPlaceInfluence(pl
         //
         // skip argentina if only has 1 and ironlady_before_ops
         //
-        if (this.game.state.ironlady_before_ops == 1 && this.game.countries['argentina'].ussr == 1 && i === "argentina") { place_in_country = 0; }
+        if (this.game.state.ironlady_before_ops == 1 && this.game.countries['chile'].ussr < 1 && this.game.countries['uruguay'].ussr < 1 && this.game.countries['paraguay'].ussr < 1 && this.game.countries['argentina'].ussr == 1 && i === "argentina") { place_in_country = 0; }
 
         this.game.countries[i].place = place_in_country;
 
