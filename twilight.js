@@ -12785,7 +12785,7 @@ Twilight.prototype.updateEventTiles = function updateEventTiles() {
     $('#eventtile_iranianhostagecrisis').css('display','block');
   }
 
-  if (this.game.state.events.shuttledisplomacy == 0) {
+  if (this.game.state.events.shuttlediplomacy == 0) {
     $('#eventtile_shuttlediplomacy').css('display','none');
   } else {
     $('#eventtile_shuttlediplomacy').css('display','block');
@@ -13322,8 +13322,9 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
           </select>
 
           <label for="deck">Deck:</label>
-          <select name="deck" onchange='if ($(this).val() == "saito") { $(".saito_edition").prop("checked",true); } else { $(".saito_edition").prop("checked", false); } '>
-            <option value="original">original</option>
+          <select name="deck" id="deckselect" onchange='
+if ($("#deckselect").val() == "saito") { $(".saito_edition").prop("checked",true); } else { $(".saito_edition").prop("checked", false); if ($("#deckselect").val() == "optional") { $(".optional_edition").prop("checked", false); } else { $(".optional_edition").prop("checked", true); } }  '> 
+           <option value="original">original</option>
             <option value="optional">optional</option>
             <option value="saito" selected>saito edition</option>
           </select>
@@ -13366,7 +13367,7 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
             <li><input class="remove_card" type="checkbox" name="degualle" /> De Gualle Leads France</li>
             <li><input class="remove_card" type="checkbox" name="naziscientist" /> Nazi Scientists Captured</li>
             <li><input class="remove_card" type="checkbox" name="truman" /> Truman</li>
-            <li><input class="remove_card" type="checkbox" name="olympic" checked /> Olympic Games</li>
+            <li><input class="remove_card saito_edition" type="checkbox" name="olympic" checked /> Olympic Games</li>
             <li><input class="remove_card" type="checkbox" name="nato" /> NATO</li>
             <li><input class="remove_card" type="checkbox" name="indreds" /> Independent Reds</li>
             <li><input class="remove_card" type="checkbox" name="marshall" /> Marshall Plan</li>
@@ -13382,6 +13383,10 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
             <li><input class="remove_card" type="checkbox" name="destalinization" /> Destalinization</li>
             <li><input class="remove_card" type="checkbox" name="nucleartestban" /> Nuclear Test Ban Treaty</li>
             <li><input class="remove_card" type="checkbox" name="formosan" /> Formosan Resolution</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="defectors" /> Defectors</li>
+            <li><input class="remove_card optional_edition " type="checkbox" name="specialrelation" /> Special Relationship</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="cambridge" /> The Cambridge Five</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="norad" /> NORAD</li>
           </ul>
           <ul class="removecards" style="clear:both;margin-top:13px">
             <li><input class="remove_card" type="checkbox" name="brushwar" /> Brush War</li>
@@ -13430,6 +13435,8 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
             <li><input class="remove_card" type="checkbox" name="africa" /> Africa Scoring</li>
             <li><input class="remove_card" type="checkbox" name="onesmallstep" /> One Small Step</li>
             <li><input class="remove_card" type="checkbox" name="southamerica" /> South America</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="che" /> Che</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="tehran" /> Our Man in Tehran</li>
           </ul>
           <ul class="removecards" style="clear:both;margin-top:13px">
             <li><input class="remove_card" type="checkbox" name="iranianhostage" /> Iranian Hostage Crisis</li>
@@ -13452,6 +13459,9 @@ Twilight.prototype.returnGameOptionsHTML = function returnGameOptionsHTML() {
             <li><input class="remove_card" type="checkbox" name="pershing" /> Pershing II Deployed</li>
             <li><input class="remove_card" type="checkbox" name="wargames" /> Wargames</li>
             <li><input class="remove_card" type="checkbox" name="solidarity" /> Solidarity</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="iraniraq" /> Iran-Iraq War</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="yuri" /> Yuri and Samantha</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="awacs" /> Solidarity</li>
           </ul>
 
           <div style="font-size:0.85em;font-weight:bold;clear:both;margin-top:10px;">add cards to game: </div>
