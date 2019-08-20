@@ -509,6 +509,28 @@ console.log("\n\n\n\n");
     }
   }
 
+  let twilight_self = this;
+  $('.scoring_card').off();
+  $('.scoring_card')
+    .mouseover(function() {
+      let region = this.id;
+      let scoring = twilight_self.calculateScoring(region);
+      let total_vp = scoring.us.vp - scoring.ussr.vp;
+      let vp_color = "white";
+
+      if (total_vp > 0) { vp_color = "blue" }
+      if (total_vp < 0) { vp_color = "red" }
+
+      $(`.display_card#${region}`).show();
+      $(`.display_vp#${region}`).html(
+        `VP: <div style="color:${vp_color}">&nbsp${total_vp}</div>`
+      );
+    })
+    .mouseout(function() {
+      let region = this.id;
+      $(`.display_card#${region}`).hide();
+    })
+
 }
 
 
@@ -11220,6 +11242,276 @@ Twilight.prototype.finalScoring = function finalScoring() {
   }
 
   return 1;
+}
+
+Twilight.prototype.calculateControlledBattlegroundCountries = function calculateControlledBattlegroundCountries(scoring, bg_countries) {
+  for (var [player, side] of Object.entries(scoring)) {
+    for (var country of bg_countries) {
+      if (this.isControlled(player, country) == 1) { side.bg++; }
+    }
+  }
+  return scoring;
+}
+
+Twilight.prototype.calculateControlledCountries = function calculateControlledCountries(scoring, countries) {
+  for (var [player, side] of Object.entries(scoring)) {
+    for (country in countries) {
+      if (this.isControlled(player, country) == 1) { side.total++ };
+    }
+  }
+  return scoring;
+}
+
+Twilight.prototype.determineRegionVictor = function determineRegionVictor(scoring) {
+  if (scoring.us.bg == 5 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 10000; }
+  else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 7; }
+  else if (scoring.us.total > 0) { scoring.us.vp = 3; }
+
+  if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = 10000; }
+  else if (scoring.ussr.bg > scoring.us.bg && scoring.us.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = 7; }
+  else if (scoring.ussr.total > 0) { scoring.ussr.vp = 3; }
+
+  scoring.us.vp = scoring.us.vp + scoring.us.bg;
+  scoring.ussr.vp = scoring.ussr.vp + scoring.ussr.bg;
+
+  return scoring;
+}
+
+Twilight.prototype.calculateScoring = function calculateScoring(region) {
+  var scoring = {
+    us: {total: 0, bg: 0, vp: 0},
+    ussr: {total: 0, bg: 0, vp: 0},
+  }
+
+  switch (region) {
+    case "europe":
+      let eu_bg_countries = ["italy", "france", "westgermany", "eastgermany", "poland"];
+      let eu_countries = [
+        "spain",
+        "greece",
+        "turkey",
+        "yugoslavia",
+        "bulgaria",
+        "austria",
+        "romania",
+        "hungary",
+        "czechoslovakia",
+        "benelux",
+        "uk",
+        "canada",
+        "norway",
+        "denmark",
+        "sweden",
+        "finland",
+      ];
+
+      scoring = this.calculateControlledBattlegroundCountries(scoring, eu_bg_countries);
+      scoring.us.total = scoring.us.bg;
+      scoring.ussr.total = scoring.ussr.bg;
+      scoring = this.calculateControlledCountries(scoring, eu_countries);
+      scoring = this.determineRegionVictor(scoring);
+
+      //
+      // neighbouring countries
+      //
+      if (this.isControlled("us", "finland") == 1) { scoring.us.vp++; }
+      if (this.isControlled("us", "romania") == 1) { scoring.us.vp++; }
+      if (this.isControlled("us", "poland") == 1) { scoring.us.vp++; }
+      if (this.isControlled("ussr", "canada") == 1) { scoring.ussr.vp++; }
+      break;
+
+    case "mideast":
+      let me_bg_countries = [
+        "libya",
+        "egypt",
+        "israel",
+        "iraq",
+        "iran",
+        "saudiarabia"
+      ];
+
+      let me_countries = [
+        "lebanon",
+        "syria",
+        "jordan",
+        "gulfstates",
+      ];
+
+      // pseudo function to calculate control
+      scoring = this.calculateControlledBattlegroundCountries(scoring, me_bg_countries);
+      scoring.us.total = scoring.us.bg;
+      scoring.ussr.total = scoring.ussr.bg;
+      scoring = this.calculateControlledCountries(scoring, me_countries);
+
+      //
+      // Shuttle Diplomacy
+      //
+      if (this.game.state.events.shuttlediplomacy == 1) {
+        if (scoring.ussr.bg > 0) {
+          scoring.ussr.bg--;
+          scoring.ussr.total--;
+        }
+        this.game.state.events.shuttlediplomacy = 0;
+      }
+
+      scoring = this.determineRegionVictor(scoring);
+
+      // scoring transform
+      break;
+    case "seasia":
+      let seasia_countries = [
+        "burma",
+        "laos",
+        "vietnam",
+        "malaysia",
+        "philippines",
+        "indonesia",
+        "thailand",
+      ];
+
+      for (side in scoring) {
+        for (country in seasia_countries) {
+          if (this.isControlled(side.player, country) == 1) { country == "thailand" ? side.bg+=2 : side.bg++; }
+        }
+      }
+
+      scoring.us.vp = scoring.us.vp + scoring.us.bg;
+      scoring.ussr.vp = scoring.ussr.vp + scoring.ussr.bg;
+      break;
+    case "africa":
+      let af_bg_countries = [
+        "algeria",
+        "nigeria",
+        "zaire",
+        "angola",
+        "southafrica",
+      ];
+
+      let af_countries = [
+        "morocco",
+        "tunisia",
+        "westafricanstates",
+        "saharanstates",
+        "sudan",
+        "ivorycoast",
+        "ethiopia",
+        "somalia",
+        "cameroon",
+        "kenya",
+        "seafricanstates",
+        "zimbabwe",
+        "botswana",
+      ];
+
+      scoring = this.calculateControlledBattlegroundCountries(scoring, af_bg_countries);
+      scoring.us.total = scoring.us.bg;
+      scoring.ussr.total = scoring.ussr.bg;
+      scoring = this.calculateControlledCountries(scoring, af_countries);
+      scoring = this.determineRegionVictor(scoring);
+
+      break;
+    case "centralamerica":
+      let ca_bg_countries = [
+        "mexico",
+        "cuba",
+        "panama",
+      ];
+
+      let ca_countries = [
+        "guatemala",
+        "elsalvador",
+        "honduras",
+        "costarica",
+        "nicaragua",
+        "haiti",
+        "dominicanrepublic",
+      ];
+
+      scoring = this.calculateControlledBattlegroundCountries(scoring, ca_bg_countries);
+      scoring.us.total = scoring.us.bg;
+      scoring.ussr.total = scoring.ussr.bg;
+      scoring = this.calculateControlledCountries(scoring, ca_countries);
+      scoring = this.determineRegionVictor(scoring);
+
+      //
+      // neighbouring countries
+      //
+      if (this.isControlled("ussr", "mexico") == 1) { vp_ussr++; }
+      if (this.isControlled("ussr", "cuba") == 1) { vp_ussr++; }
+
+      break;
+    case "southamerica":
+      let sa_bg_countries = [
+        "venezuela",
+        "brazil",
+        "argentina",
+        "chile",
+      ];
+
+      let sa_countries = [
+        "colombia",
+        "ecuador",
+        "peru",
+        "bolivia",
+        "paraguay",
+        "uruguay",
+      ];
+
+      scoring = this.calculateControlledBattlegroundCountries(scoring, sa_bg_countries);
+      scoring.us.total = scoring.us.bg;
+      scoring.ussr.total = scoring.ussr.bg;
+      scoring = this.calculateControlledCountries(scoring, sa_countries);
+      scoring = this.determineRegionVictor(scoring);
+
+      break;
+    case "asia":
+      let as_bg_countries = [
+        "northkorea",
+        "southkorea",
+        "japan",
+        "thailand",
+        "india",
+        "pakistan",
+      ];
+
+      let as_countries = [
+        "afghanistan",
+        "burma",
+        "laos",
+        "vietnam",
+        "malaysia",
+        "australia",
+        "indonesia",
+        "philippines",
+      ];
+
+      scoring = this.calculateControlledBattlegroundCountries(scoring, as_bg_countries);
+
+      if (this.game.state.events.formosan == 1) {
+        if (this.isControlled("us", "taiwan") == 1) { scoring.us.bg++; }
+        if (this.isControlled("ussr", "taiwan") == 1) { scoring.ussr.bg++; }
+      }
+
+      scoring.us.total = scoring.us.bg;
+      scoring.ussr.total = scoring.ussr.bg;
+      scoring = this.calculateControlledCountries(scoring, as_countries);
+
+      if (this.game.state.events.formosan == 0) {
+        if (this.isControlled("us", "taiwan") == 1) { scoring.us.total++; }
+      }
+
+      scoring = this.determineRegionVictor(scoring);
+
+      //
+      // neighbouring countries
+      //
+      if (this.isControlled("us", "afghanistan") == 1) { scoring.us.vp++; }
+      if (this.isControlled("us", "northkorea") == 1) { scoring.us.vp++; }
+      if (this.isControlled("ussr", "japan") == 1) { scoring.ussr.vp++; }
+
+      break;
+    }
+  return scoring;
 }
 
 
