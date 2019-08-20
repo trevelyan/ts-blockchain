@@ -13602,7 +13602,7 @@ if ($("#deckselect").val() == "saito") { $(".saito_edition").prop("checked",true
             <li><input class="remove_card saito_edition" type="checkbox" name="culturaldiplomacy" checked /> Cultural Diplomacy (Early-War)</li>
             <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> Handshake in Space (Mid-War)</li>
             <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> Rust Lands in Red Square (Late-War)</li>
-            <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> Gouzenko Affair (Early-War)</li>
+            <li><input class="remove_card" type="checkbox" name="handshake" /> Gouzenko Affair (Early-War)</li>
             <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> 1971 Berlin Agreement (Mid-War)</li>
           </div>
         </form>
