@@ -38,8 +38,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
-
+  this.is_testing = 1;
 
   //
   // default to graphics
@@ -276,6 +275,14 @@ console.log("\n\n\n\n");
     // TESTING
     //
     if (this.is_testing == 1) {
+
+      this.game.options = {};
+      this.game.options.culturaldiplomacy = 1;
+      this.game.options.gouzenkoaffair = 1;
+      this.game.options.berlinagreement = 1;
+      this.game.options.handshake = 1;
+      this.game.options.rustinredsquare = 1;
+
       let a = this.returnEarlyWarCards();
       let b = this.returnMidWarCards();
       let c = this.returnLateWarCards();
@@ -1809,9 +1816,9 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["culturaldiplomacy","quagmire", "saltnegotiations", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+            this.game.deck[0].hand = ["gouzenkoaffair","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
           } else {
-            this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","mideast","nasser","sadat"];
+            this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","europe","nasser","sadat"];
           }
         }
 
@@ -5651,6 +5658,7 @@ Twilight.prototype.returnState = function returnState() {
 
   // events - early war
   state.events = {};
+  state.events.optional = {};			// optional cards -- makes easier to search for
   state.events.formosan           = 0;
   state.events.redscare_player1   = 0;
   state.events.redscare_player2   = 0;
@@ -5882,6 +5890,7 @@ Twilight.prototype.returnEarlyWarCards = function returnEarlyWarCards() {
       // optional midwar cards
       //
       if (key === "culturaldiplomacy") { deck['culturaldiplomacy'] = { img : "TNRnTS-202png" , name : "Cultural Diplomacy", scoring : 0 , player : "both" , recurring : 1 , ops : 2 }; }
+      if (key === "gouzenkoaffair") { deck['gouzenkoaffair'] = { img : "TNRnTS-204png" , name : "Gouzenko Affair", scoring : 0 , player : "ussr" , recurring : 0 , ops : 2 }; }
     }
   }
 
@@ -5965,6 +5974,7 @@ Twilight.prototype.returnMidWarCards = function returnMidWarCards() {
       // optional midwar cards
       //
       if (key === "handshake") { deck['handshake'] = { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 1 }; }
+      if (key === "berlinagreement") { deck['berlinagreement'] = { img : "TNRnTS-205png" , name : "Berlin Agreement", scoring : 0 , player : "both" , recurring : 0 , ops : 2 }; }
 
     }
   }
@@ -6017,7 +6027,15 @@ Twilight.prototype.returnLateWarCards = function returnLateWarCards() {
   //
   if (this.game.options != undefined) {
     for (var key in this.game.options) {
+
       if (deck[key] != undefined) { delete deck[key]; }
+
+      //
+      // optional latewar cards
+      //
+      if (key === "rustinredsquare") { deck['rustinredsquare'] = { img : "TNRnTS-203png" , name : "Rust Lands in Red Square", scoring : 0 , player : "us" , recurring : 0 , ops : 1 }; }
+
+
     }
   }
 
@@ -7150,6 +7168,11 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   // Blockade //
   //////////////
   if (card == "blockade") {
+
+    if (this.game.state.events.optional.berlinagreement == 1) {
+      this.updateLog("Berlin Agreement prevents Blockade.");
+      return 1;
+    }
 
     if (this.game.player == 1) {
       this.updateStatus("US is responding to Blockade");
@@ -10992,8 +11015,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	    }
 	  }
 
-console.log("is this two hops: " + is_this_two_hops);
-
 	  if (is_this_two_hops == 1) {
             twilight_self.addMove("place\t"+player+"\t"+player+"\t"+selected_countryname+"\t1");
             twilight_self.placeInfluence(selected_countryname, 1, player, function() {
@@ -11028,6 +11049,110 @@ console.log("is this two hops: " + is_this_two_hops);
     }
     return 1;
   }
+
+
+
+  //
+  // Rust Lands in Red Square -- credit https://www.reddit.com/user/paul_thomas84/
+  //
+  if (card == "rustinredsquare") {
+    this.updateLog("DEFCON increases by 1");
+    this.updateLog("USSR milops reset to 0");
+    this.game.state.defcon++;
+    this.game.state.milops_ussr = 0;
+    this.updateDefcon();
+    this.updateMilitaryOperations();
+    return 1;
+  }
+
+
+
+  //
+  // Gouzenko Affair -- credit https://www.reddit.com/user/ludichrisness/
+  //
+  if (card == "gouzenkoaffair") {
+    this.updateLog("Canada now permanently adjacent to USSR");
+    this.game.countries['canada'].ussr += 2;
+    this.game.state.events.optional.gouzenkoaffair = 1;
+    this.showInfluence("canada", "ussr");
+    return 1;
+  }
+
+
+  //
+  // Berlin Agreement -- credit https://www.reddit.com/user/mlhermann/
+  //
+  if (card == "berlinagreement") {
+
+    this.game.state.events.optional.berlinagreement = 1;
+
+    let twilight_self = this;
+
+    let me = "ussr";
+    let opponent = "us";
+    if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
+
+    this.game.countries['eastgermany'].us += 2;
+    this.game.countries['westgermany'].ussr += 2;
+
+    this.showInfluence("eastgermany", "us");
+    this.showInfluence("westgermany", "ussr");
+
+    let ops_to_place = 1;
+    let placeable = [];
+
+    for (var i in twilight_self.countries) {
+      let countryname  = i;
+      let us_predominates = 0;
+      let ussr_predominates = 0;
+      if (this.countries[countryname].region == "europe") {
+        if (this.countries[countryname].us > this.countries[countryname].ussr) { us_predominates = 1; }
+        if (this.countries[countryname].us < this.countries[countryname].ussr) { ussr_predominates = 1; }
+	if (player == "us" && us_predominates == 1) { placeable.push(countryname); }
+	if (player == "ussr" && ussr_predominates == 1) { placeable.push(countryname); }
+      }
+    }
+ 
+    if (placeable.length == 0) {
+      this.updateLog(player + " cannot place 1 additional OP");
+      return 1;
+    } else {
+
+      if (player == opponent) { 
+	this.updateStatus("Opponent is placing 1 influence in a European country in which they have a predominance of influence");
+	return 0; 
+      }
+
+      this.addMove("resolve\tberlinagreement");
+      this.updateStatus("Place 1 influence in a European country in which you have a predominance of influence");
+
+      for (let i = 0; i < placeable.length; i++) {
+
+        let countryname = placeable[i];
+        let divname = "#"+placeable[i];
+
+        this.game.countries[placeable[i]].place = 1;
+
+        $(divname).off();
+        $(divname).on('click', function() {
+
+          twilight_self.placeInfluence(countryname, 1, player, function() {
+            twilight_self.addMove("place\t"+player+"\t"+player+"\t"+countryname+"\t1");
+            twilight_self.playerFinishedPlacingInfluence();
+            twilight_self.endTurn();
+          });
+
+	});
+
+      }
+
+    }
+
+    return 0;
+  }
+
+
+
 
 
 
@@ -11303,6 +11428,14 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("us", "romania") == 1) { vp_us++; }
     if (this.isControlled("us", "poland") == 1) { vp_us++; }
     if (this.isControlled("ussr", "canada") == 1) { vp_ussr++; }
+
+    //
+    // GOUZENKO AFFAIR -- early war optional
+    //
+    if (this.game.state.events.optional.gouzenkoaffair == 1) {
+      if (this.isControlled("us", "canada") == 1) { vp_us++; }  
+    }
+
 
     //
     // Report Adjustment
@@ -13468,6 +13601,9 @@ if ($("#deckselect").val() == "saito") { $(".saito_edition").prop("checked",true
           <ul id="removecards" class="removecards">
             <li><input class="remove_card saito_edition" type="checkbox" name="culturaldiplomacy" checked /> Cultural Diplomacy (Early-War)</li>
             <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> Handshake in Space (Mid-War)</li>
+            <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> Rust Lands in Red Square (Late-War)</li>
+            <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> Gouzenko Affair (Early-War)</li>
+            <li><input class="remove_card saito_edition" type="checkbox" name="handshake" checked /> 1971 Berlin Agreement (Mid-War)</li>
           </div>
         </form>
 
