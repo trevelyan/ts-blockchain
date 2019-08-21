@@ -11566,8 +11566,8 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       //
       // neighbouring countries
       //
-      if (this.isControlled("ussr", "mexico") == 1) { vp_ussr++; }
-      if (this.isControlled("ussr", "cuba") == 1) { vp_ussr++; }
+      if (this.isControlled("ussr", "mexico") == 1) { scoring.ussr.vp++; }
+      if (this.isControlled("ussr", "cuba") == 1) { scoring.ussr.vp++; }
 
       break;
     case "southamerica":
