@@ -11497,9 +11497,9 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "thailand",
       ];
 
-      for (side in scoring) {
+      for (var [player, side] of Object.entries(scoring)) {
         for (country in seasia_countries) {
-          if (this.isControlled(side.player, country) == 1) { country == "thailand" ? side.bg+=2 : side.bg++; }
+          if (this.isControlled(player, country) == 1) { country == "thailand" ? side.bg+=2 : side.bg++; }
         }
       }
 
