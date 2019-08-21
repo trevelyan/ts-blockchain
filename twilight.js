@@ -11394,7 +11394,7 @@ Twilight.prototype.determineRegionVictor = function determineRegionVictor(scorin
   else if (scoring.us.total > 0) { scoring.us.vp = region_scoring_range.presence; }
 
   if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
-  else if (scoring.ussr.bg > scoring.us.bg && scoring.us.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.domination; }
+  else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.domination; }
   else if (scoring.ussr.total > 0) { scoring.ussr.vp = region_scoring_range.presence; }
 
   scoring.us.vp = scoring.us.vp + scoring.us.bg;
@@ -11632,7 +11632,23 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.total++; }
       }
 
-      scoring = this.determineRegionVictor(scoring, as_scoring_range);
+      if (scoring.us.bg == 5 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.control; }
+      else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.domination; }
+
+      if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
+      else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.domination; }
+
+      if (this.game.state.events.formosan == 1) {
+        if (scoring.us.bg == 7 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 9; }
+        if (scoring.us.bg == 6 && scoring.us.total > scoring.ussr.total && this.isControlled("taiwan", "us") == 0) { scoring.us.vp = 9; }
+        if (scoring.ussr.bg == 6 && scoring.ussr.total > scoring.us.total) { vp_ussr = 9; }
+      } else {
+        if (scoring.us.bg == 6 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 9; }
+        if (scoring.ussr.bg == 6 && scoring.ussr.total > scoring.us.total) { vp_ussr = 9; }
+      }
+
+      scoring.us.vp = scoring.us.vp + scoring.us.bg;
+      scoring.ussr.vp = scoring.ussr.vp + scoring.ussr.bg;
 
       //
       // neighbouring countries
