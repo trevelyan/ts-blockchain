@@ -527,6 +527,7 @@ console.log("\n\n\n\n");
 
       if (total_vp > 0) { vp_color = "blue" }
       if (total_vp < 0) { vp_color = "red" }
+      if (total_vp > 20 || total_vp < -20) { total_vp = "WIN" }
 
       $(`.display_card#${region}`).show();
       $(`.display_vp#${region}`).html(
@@ -11387,14 +11388,14 @@ Twilight.prototype.calculateControlledCountries = function calculateControlledCo
   return scoring;
 }
 
-Twilight.prototype.determineRegionVictor = function determineRegionVictor(scoring) {
-  if (scoring.us.bg == 5 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 10000; }
-  else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 7; }
-  else if (scoring.us.total > 0) { scoring.us.vp = 3; }
+Twilight.prototype.determineRegionVictor = function determineRegionVictor(scoring, region_scoring_range) {
+  if (scoring.us.bg == 5 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.control; }
+  else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.domination; }
+  else if (scoring.us.total > 0) { scoring.us.vp = region_scoring_range.presence; }
 
-  if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = 10000; }
-  else if (scoring.ussr.bg > scoring.us.bg && scoring.us.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = 7; }
-  else if (scoring.ussr.total > 0) { scoring.ussr.vp = 3; }
+  if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
+  else if (scoring.ussr.bg > scoring.us.bg && scoring.us.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.domination; }
+  else if (scoring.ussr.total > 0) { scoring.ussr.vp = region_scoring_range.presence; }
 
   scoring.us.vp = scoring.us.vp + scoring.us.bg;
   scoring.ussr.vp = scoring.ussr.vp + scoring.ussr.bg;
@@ -11429,12 +11430,13 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "sweden",
         "finland",
       ];
+      let eu_scoring_range = {presence: 3, domination: 7, control: 10000 };
 
       scoring = this.calculateControlledBattlegroundCountries(scoring, eu_bg_countries);
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, eu_countries);
-      scoring = this.determineRegionVictor(scoring);
+      scoring = this.determineRegionVictor(scoring, eu_scoring_range);
 
       //
       // neighbouring countries
@@ -11461,6 +11463,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "jordan",
         "gulfstates",
       ];
+      let me_scoring_range = {presence: 3, domination: 5, control: 7 };
 
       // pseudo function to calculate control
       scoring = this.calculateControlledBattlegroundCountries(scoring, me_bg_countries);
@@ -11479,7 +11482,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         this.game.state.events.shuttlediplomacy = 0;
       }
 
-      scoring = this.determineRegionVictor(scoring);
+      scoring = this.determineRegionVictor(scoring, me_scoring_range);
 
       // scoring transform
       break;
@@ -11527,12 +11530,13 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "zimbabwe",
         "botswana",
       ];
+      let af_scoring_range = {presence: 1, domination: 4, control: 6 };
 
       scoring = this.calculateControlledBattlegroundCountries(scoring, af_bg_countries);
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, af_countries);
-      scoring = this.determineRegionVictor(scoring);
+      scoring = this.determineRegionVictor(scoring, af_scoring_range);
 
       break;
     case "centralamerica":
@@ -11551,12 +11555,13 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "haiti",
         "dominicanrepublic",
       ];
+      let ca_scoring_range = {presence: 1, domination: 3, control: 5};
 
       scoring = this.calculateControlledBattlegroundCountries(scoring, ca_bg_countries);
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, ca_countries);
-      scoring = this.determineRegionVictor(scoring);
+      scoring = this.determineRegionVictor(scoring, ca_scoring_range);
 
       //
       // neighbouring countries
@@ -11581,12 +11586,13 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "paraguay",
         "uruguay",
       ];
+      let sa_scoring_range = {presence: 2, domination: 5, control: 6};
 
       scoring = this.calculateControlledBattlegroundCountries(scoring, sa_bg_countries);
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, sa_countries);
-      scoring = this.determineRegionVictor(scoring);
+      scoring = this.determineRegionVictor(scoring, sa_scoring_range);
 
       break;
     case "asia":
@@ -11609,6 +11615,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "indonesia",
         "philippines",
       ];
+      let as_scoring_range = {presence: 3, domination: 7, control: 9};
 
       scoring = this.calculateControlledBattlegroundCountries(scoring, as_bg_countries);
 
@@ -11625,7 +11632,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.total++; }
       }
 
-      scoring = this.determineRegionVictor(scoring);
+      scoring = this.determineRegionVictor(scoring, as_scoring_range);
 
       //
       // neighbouring countries
@@ -12587,7 +12594,7 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
 
   if (this.app.BROWSER == 1) {
 
-    $('#status').html("<span>" + this.game.status + "</span>");
+    $('#status').html(this.game.status);
 
     try {
       twilight_self.addShowCardEvents();
