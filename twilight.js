@@ -38,7 +38,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   //
   // default to graphics
@@ -1839,7 +1839,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["gouzenkoaffair","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+            this.game.deck[0].hand = ["gouzenkoaffair","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
           } else {
             this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","europe","nasser","sadat"];
           }
@@ -11388,12 +11388,12 @@ Twilight.prototype.calculateControlledCountries = function calculateControlledCo
   return scoring;
 }
 
-Twilight.prototype.determineRegionVictor = function determineRegionVictor(scoring, region_scoring_range) {
-  if (scoring.us.bg == 5 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.control; }
+Twilight.prototype.determineRegionVictor = function determineRegionVictor(scoring, region_scoring_range, max_bg_num) {
+  if (scoring.us.bg == max_bg_num && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.control; }
   else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.domination; }
   else if (scoring.us.total > 0) { scoring.us.vp = region_scoring_range.presence; }
 
-  if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
+  if (scoring.ussr.bg == max_bg_num && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
   else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.domination; }
   else if (scoring.ussr.total > 0) { scoring.ussr.vp = region_scoring_range.presence; }
 
@@ -11436,7 +11436,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, eu_countries);
-      scoring = this.determineRegionVictor(scoring, eu_scoring_range);
+      scoring = this.determineRegionVictor(scoring, eu_scoring_range, eu_bg_countries.length);
 
       //
       // neighbouring countries
@@ -11469,7 +11469,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring = this.calculateControlledBattlegroundCountries(scoring, me_bg_countries);
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
-      scoring = this.calculateControlledCountries(scoring, me_countries);
+      scoring = this.calculateControlledCountries(scoring, me_countries, me_bg_countries.length);
 
       //
       // Shuttle Diplomacy
@@ -11498,7 +11498,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       ];
 
       for (var [player, side] of Object.entries(scoring)) {
-        for (country in seasia_countries) {
+        for (country of seasia_countries) {
           if (this.isControlled(player, country) == 1) { country == "thailand" ? side.bg+=2 : side.bg++; }
         }
       }
@@ -11536,7 +11536,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, af_countries);
-      scoring = this.determineRegionVictor(scoring, af_scoring_range);
+      scoring = this.determineRegionVictor(scoring, af_scoring_range, af_bg_countries.length);
 
       break;
     case "centralamerica":
@@ -11557,7 +11557,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       ];
       let ca_scoring_range = {presence: 1, domination: 3, control: 5};
 
-      scoring = this.calculateControlledBattlegroundCountries(scoring, ca_bg_countries);
+      scoring = this.calculateControlledBattlegroundCountries(scoring, ca_bg_countries, ca_bg_countries.length);
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, ca_countries);
@@ -11592,7 +11592,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, sa_countries);
-      scoring = this.determineRegionVictor(scoring, sa_scoring_range);
+      scoring = this.determineRegionVictor(scoring, sa_scoring_range, sa_bg_countries.length);
 
       break;
     case "asia":
@@ -11632,11 +11632,16 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.total++; }
       }
 
-      if (scoring.us.bg == 5 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.control; }
-      else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.domination; }
-
-      if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
-      else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.domination; }
+      //
+      // Shuttle Diplomacy
+      //
+      if (this.game.state.events.shuttlediplomacy == 1) {
+        if (scoring.ussr.bg > 0) {
+          scoring.ussr.bg--;
+          scoring.ussr.total--;
+        }
+        this.game.state.events.shuttlediplomacy = 0;
+      }
 
       if (this.game.state.events.formosan == 1) {
         if (scoring.us.bg == 7 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 9; }
@@ -11646,6 +11651,12 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         if (scoring.us.bg == 6 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 9; }
         if (scoring.ussr.bg == 6 && scoring.ussr.total > scoring.us.total) { vp_ussr = 9; }
       }
+
+      if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = as_scoring_range.domination; }
+      else if (scoring.us.total > 0) { scoring.us.vp = as_scoring_range.presence; }
+
+      if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = as_scoring_range.domination; }
+      else if (scoring.ussr.total > 0) { scoring.ussr.vp = as_scoring_range.presence; }
 
       scoring.us.vp = scoring.us.vp + scoring.us.bg;
       scoring.ussr.vp = scoring.ussr.vp + scoring.ussr.bg;
