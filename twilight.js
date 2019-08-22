@@ -313,10 +313,10 @@ console.log("\n\n\n\n");
   $('.ussr').css('height', this.scale(100)+"px");
 
   //
-  $('.formosan').css('width', this.scale(202)+"px");
-  $('.formosan').css('height', this.scale(132)+"px");
-  $('.formosan').css('top', this.scale(this.countries['taiwan'].top-32)+"px");
-  $('.formosan').css('left', this.scale(this.countries['taiwan'].left)+"px");
+  $('.formosan_resolution').css('width', this.scale(202)+"px");
+  $('.formosan_resolution').css('height', this.scale(132)+"px");
+  $('.formosan_resolution').css('top', this.scale(this.countries['taiwan'].top-32)+"px");
+  $('.formosan_resolution').css('left', this.scale(this.countries['taiwan'].left)+"px");
 
   //
   // update defcon and milops and stuff
@@ -6864,12 +6864,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   //////////////
   if (card == "formosan") {
     this.game.state.events.formosan = 1;
-
-    //
-    // show revised gameboard piece
-    //
     $('.formosan_resolution').show();
-
     return 1;
   }
 
