@@ -11376,7 +11376,7 @@ Twilight.prototype.calculateControlledBattlegroundCountries = function calculate
 
 Twilight.prototype.calculateControlledCountries = function calculateControlledCountries(scoring, countries) {
   for (var [player, side] of Object.entries(scoring)) {
-    for (country in countries) {
+    for (var country of countries) {
       if (this.isControlled(player, country) == 1) { side.total++ };
     }
   }
@@ -11616,15 +11616,16 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
 
       if (this.game.state.events.formosan == 1) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.bg++; }
-        if (this.isControlled("ussr", "taiwan") == 1) { scoring.ussr.bg++; }
       }
 
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
+
       scoring = this.calculateControlledCountries(scoring, as_countries);
 
       if (this.game.state.events.formosan == 0) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.total++; }
+        if (this.isControlled("ussr", "taiwan") == 1) { scoring.ussr.total++; }
       }
 
       //
@@ -12075,7 +12076,6 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("ussr", "pakistan") == 1) { bg_ussr++; }
     if (this.game.state.events.formosan == 1) {
       if (this.isControlled("us", "taiwan") == 1) { bg_us++; }
-      if (this.isControlled("ussr", "taiwan") == 1) { bg_ussr++; }
     }
 
     total_us = bg_us;
@@ -12099,6 +12099,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("ussr", "philippines") == 1) { total_ussr++; }
     if (this.game.state.events.formosan == 0) {
       if (this.isControlled("us", "taiwan") == 1) { total_us++; }
+      if (this.isControlled("ussr", "taiwan") == 1) { total_us++; }
     }
 
     //
