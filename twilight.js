@@ -11458,13 +11458,13 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "jordan",
         "gulfstates",
       ];
-      let me_scoring_range = {presence: 3, domination: 5, control: 7 };
+      let me_scoring_range = { presence: 3, domination: 5, control: 7 };
 
       // pseudo function to calculate control
       scoring = this.calculateControlledBattlegroundCountries(scoring, me_bg_countries);
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
-      scoring = this.calculateControlledCountries(scoring, me_countries, me_bg_countries.length);
+      scoring = this.calculateControlledCountries(scoring, me_countries);
 
       //
       // Shuttle Diplomacy
@@ -11477,7 +11477,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         this.game.state.events.shuttlediplomacy = 0;
       }
 
-      scoring = this.determineRegionVictor(scoring, me_scoring_range);
+      scoring = this.determineRegionVictor(scoring, me_scoring_range, me_bg_countries.length);
 
       // scoring transform
       break;
@@ -11552,11 +11552,11 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       ];
       let ca_scoring_range = {presence: 1, domination: 3, control: 5};
 
-      scoring = this.calculateControlledBattlegroundCountries(scoring, ca_bg_countries, ca_bg_countries.length);
+      scoring = this.calculateControlledBattlegroundCountries(scoring, ca_bg_countries);
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, ca_countries);
-      scoring = this.determineRegionVictor(scoring, ca_scoring_range);
+      scoring = this.determineRegionVictor(scoring, ca_scoring_range, ca_bg_countries.length);
 
       //
       // neighbouring countries
