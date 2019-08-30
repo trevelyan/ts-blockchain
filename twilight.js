@@ -13928,7 +13928,7 @@ if ($("#deckselect").val() == "saito") { $(".saito_edition").prop("checked",true
             <li><input class="remove_card" type="checkbox" name="solidarity" /> Solidarity</li>
             <li><input class="remove_card optional_edition" type="checkbox" name="iraniraq" /> Iran-Iraq War</li>
             <li><input class="remove_card optional_edition" type="checkbox" name="yuri" /> Yuri and Samantha</li>
-            <li><input class="remove_card optional_edition" type="checkbox" name="awacs" /> Solidarity</li>
+            <li><input class="remove_card optional_edition" type="checkbox" name="awacs" /> AWACS Sale to Saudis</li>
           </ul>
 
           <div style="font-size:0.85em;font-weight:bold;clear:both;margin-top:10px;">add cards to game: </div>
