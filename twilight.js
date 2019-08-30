@@ -1441,9 +1441,9 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           return 0;
         }
 
-        let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.<p></p><ul>";
-            user_message += '<li class="card" id="taketear">take coup or realign</li>';
-            user_message += '<li class="card" id="skiptear">skip coup</li>';
+        let user_message = "<span>Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.</span><p></p><ul>";
+            user_message += '<li class="card" id="taketear"><span>ake coup or realign</span></li>';
+            user_message += '<li class="card" id="skiptear"><span>skip coup</span></li>';
             user_message += '</ul>';
         twilight_self.updateStatus(user_message);
 
@@ -1454,7 +1454,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           let action2 = $(this).attr("id");
 
             if (action2 == "skiptear") {
-            twilight_self.updateStatus("Skipping Tear Down this Wall...");
+            twilight_self.updateStatus("<span>Skipping Tear Down this Wall...</span>");
             twilight_self.addMove("resolve\tteardownthiswall");
             twilight_self.endTurn();
           }
@@ -1521,9 +1521,9 @@ console.log("\n\n\n");
           }
           this.endTurn();
         } else {
-          this.updateStatus("Opponent is being dealt new cards.");
+          this.updateStatus("<span>Opponent is being dealt new cards.</span>");
         }
-        this.updateStatus(player.toUpperCase() + "</span><span>is fetching new cards</span>");
+        this.updateStatus(player.toUpperCase() + "</span> <span>is fetching new cards</span>");
         return 0;
       }
       if (mv[0] === "ops") {
@@ -1845,7 +1845,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["gouzenkoaffair","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy"];
+            this.game.deck[0].hand = ["gouzenkoaffair","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
           } else {
             this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","europe","nasser","sadat"];
           }
@@ -2047,7 +2047,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
           if (this.game.state.eagle_has_landed == "us") { bonus_player = 2; }
 
           if (this.game.player != bonus_player) {
-            this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " </span><span>is deciding whether to discard a card");
+            this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " </span> <span>is deciding whether to discard a card");
             this.saveGame(this.game.id);
             return 0;
           }
@@ -2079,7 +2079,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
               let cards_discarded = 0;
 
               let cards_to_discard = 0;
-              let user_message = "Select card to discard:<p></p><ul>";
+              let user_message = "<span>Select card to discard:</span><p></p><ul>";
               for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
                 if (twilight_self.game.deck[0].hand[i] != "china") {
                   user_message += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
@@ -2088,14 +2088,14 @@ console.log("resolving earlier: " + this.game.queue[z]);
               }
 
               if (cards_to_discard == 0) {
-                twilight_self.updateStatus("No cards available to discard! Please wait for next turn...");
+                twilight_self.updateStatus("<span>No cards available to discard! Please wait for next turn...</span>");
                 twilight_self.addMove("notify\tUS has no cards available to discard");
                 twilight_self.endTurn(1);
                  twilight_self.saveGame(twilight_self.game.id);
                 return;
               }
 
-              user_message += '</ul><p></p>If you wish to cancel your discard, <span class="card dashed" id="finished">click here</span>.';
+              user_message += '</ul><p></p></span>If you wish to cancel your discard,</span> <span class="card dashed" id="finished">click here</span>.';
               twilight_self.updateStatus(user_message);
 
               $('.card').off();
@@ -3401,7 +3401,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 }
 
 Twilight.prototype.formatPlayOpsStatus = function formatPlayOpsStatus(player, ops) {
-  let html = `${player.toUpperCase()} plays ${ops} OPS:<p></p><ul>`;
+  let html = `<span>${player.toUpperCase()} plays ${ops} OPS:</span><p></p><ul>`;
   if (this.game.state.limit_placement == 0) { html += '<li class="card" id="place">place influence</li>'; }
   if (this.game.state.limit_coups == 0) { html += '<li class="card" id="coup">launch coup</li>'; }
   if (this.game.state.limit_realignments == 0) { html += '<li class="card" id="realign">realign country</li>'; }
@@ -3997,7 +3997,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
         //
         if (twilight_self.game.deck[0].cards[card].player != "both" && twilight_self.game.deck[0].cards[card].player != player) {
 
-          let fr =  "This is your opponent's event. Are you sure you wish to play it for the event instead of the OPS?<p></p><ul>";
+          let fr =  "<span>This is your opponent's event. Are you sure you wish to play it for the event instead of the OPS?</span><p></p><ul>";
               fr += '<li class="card" id="playevent">play event</li>';
               fr += '<li class="card" id="pickagain">pick again</li>';
               fr += '</ul>';
@@ -6113,7 +6113,7 @@ Twilight.prototype.returnDiscardedCards = function returnDiscardedCards() {
 Twilight.prototype.playEvent = function playEvent(player, card) {
 
   if (this.game.deck[0].cards[card] != undefined) {
-    this.updateStatus("Playing event:</span> <span>" + this.game.deck[0].cards[card].name);
+    this.updateStatus("<span>Playing event:</span> <span>" + this.game.deck[0].cards[card].name + "</span>");
   } else {
     //
     // event already run - sync loading error
@@ -6241,13 +6241,13 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "cambridge") {
 
     if (this.game.state.round > 7) {
-      this.updateLog("The Cambridge Five cannot be played as an event in Late War");
-      this.updateStatus("The Cambridge Five cannot be played as an event in Late War");
+      this.updateLog("<span>The Cambridge Five cannot be played as an event in Late Wa</span>");
+      this.updateStatus("<span>The Cambridge Five cannot be played as an event in Late War</span>");
       return 1;
     }
 
     if (this.game.player == 1) {
-      this.updateStatus("USSR is playing The Cambridge Five (fetching scoring cards in US hand)");
+      this.updateStatus("<span>USSR is playing The Cambridge Five (fetching scoring cards in US hand)</span>");
       return 0;
     }
 
@@ -7306,7 +7306,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       this.addMove("resolve\tolympic");
 
-      twilight_self.updateStatus(opponent.toUpperCase() + ' holds the Olympics:<p></p><ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul>');
+      twilight_self.updateStatus('<span>' + opponent.toUpperCase() + ' holds the Olympics:</span><p></p><ul><li class="card" id="boycott">boycott</li><li class="card" id="participate">participate</li></ul>');
 
       $('.card').off();
       $('.card').on('click', function() {
@@ -8711,7 +8711,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 	      //
 	      $('.country').off();
 
-              let confirmoptional = 'Do you wish to launch a free coup or conduct realignment rolls in Central or South America with the Junta card?<p></p><ul><li class="card" id="conduct">coup or realign</li><li class="card" id="skip">skip</li></ul>';
+              let confirmoptional = '<span>Do you wish to launch a free coup or conduct realignment rolls in Central or South America with the Junta card?</span><p></p><ul><li class="card" id="conduct">coup or realign</li><li class="card" id="skip">skip</li></ul>';
               twilight_self.updateStatus(confirmoptional);
 
               $('.card').off();
@@ -11388,19 +11388,19 @@ Twilight.prototype.calculateControlledBattlegroundCountries = function calculate
 
 Twilight.prototype.calculateControlledCountries = function calculateControlledCountries(scoring, countries) {
   for (var [player, side] of Object.entries(scoring)) {
-    for (country in countries) {
+    for (var country of countries) {
       if (this.isControlled(player, country) == 1) { side.total++ };
     }
   }
   return scoring;
 }
 
-Twilight.prototype.determineRegionVictor = function determineRegionVictor(scoring, region_scoring_range) {
-  if (scoring.us.bg == 5 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.control; }
+Twilight.prototype.determineRegionVictor = function determineRegionVictor(scoring, region_scoring_range, max_bg_num) {
+  if (scoring.us.bg == max_bg_num && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.control; }
   else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.domination; }
   else if (scoring.us.total > 0) { scoring.us.vp = region_scoring_range.presence; }
 
-  if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
+  if (scoring.ussr.bg == max_bg_num && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
   else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.domination; }
   else if (scoring.ussr.total > 0) { scoring.ussr.vp = region_scoring_range.presence; }
 
@@ -11443,7 +11443,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, eu_countries);
-      scoring = this.determineRegionVictor(scoring, eu_scoring_range);
+      scoring = this.determineRegionVictor(scoring, eu_scoring_range, eu_bg_countries.length);
 
       //
       // neighbouring countries
@@ -11470,7 +11470,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         "jordan",
         "gulfstates",
       ];
-      let me_scoring_range = {presence: 3, domination: 5, control: 7 };
+      let me_scoring_range = { presence: 3, domination: 5, control: 7 };
 
       // pseudo function to calculate control
       scoring = this.calculateControlledBattlegroundCountries(scoring, me_bg_countries);
@@ -11489,7 +11489,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         this.game.state.events.shuttlediplomacy = 0;
       }
 
-      scoring = this.determineRegionVictor(scoring, me_scoring_range);
+      scoring = this.determineRegionVictor(scoring, me_scoring_range, me_bg_countries.length);
 
       // scoring transform
       break;
@@ -11505,7 +11505,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       ];
 
       for (var [player, side] of Object.entries(scoring)) {
-        for (country in seasia_countries) {
+        for (country of seasia_countries) {
           if (this.isControlled(player, country) == 1) { country == "thailand" ? side.bg+=2 : side.bg++; }
         }
       }
@@ -11543,7 +11543,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, af_countries);
-      scoring = this.determineRegionVictor(scoring, af_scoring_range);
+      scoring = this.determineRegionVictor(scoring, af_scoring_range, af_bg_countries.length);
 
       break;
     case "centralamerica":
@@ -11568,7 +11568,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, ca_countries);
-      scoring = this.determineRegionVictor(scoring, ca_scoring_range);
+      scoring = this.determineRegionVictor(scoring, ca_scoring_range, ca_bg_countries.length);
 
       //
       // neighbouring countries
@@ -11599,7 +11599,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
       scoring = this.calculateControlledCountries(scoring, sa_countries);
-      scoring = this.determineRegionVictor(scoring, sa_scoring_range);
+      scoring = this.determineRegionVictor(scoring, sa_scoring_range, sa_bg_countries.length);
 
       break;
     case "asia":
@@ -11628,22 +11628,28 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
 
       if (this.game.state.events.formosan == 1) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.bg++; }
-        if (this.isControlled("ussr", "taiwan") == 1) { scoring.ussr.bg++; }
       }
 
       scoring.us.total = scoring.us.bg;
       scoring.ussr.total = scoring.ussr.bg;
+
       scoring = this.calculateControlledCountries(scoring, as_countries);
 
       if (this.game.state.events.formosan == 0) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.total++; }
+        if (this.isControlled("ussr", "taiwan") == 1) { scoring.ussr.total++; }
       }
 
-      if (scoring.us.bg == 5 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.control; }
-      else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = region_scoring_range.domination; }
-
-      if (scoring.ussr.bg == 5 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.control; }
-      else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = region_scoring_range.domination; }
+      //
+      // Shuttle Diplomacy
+      //
+      if (this.game.state.events.shuttlediplomacy == 1) {
+        if (scoring.ussr.bg > 0) {
+          scoring.ussr.bg--;
+          scoring.ussr.total--;
+        }
+        this.game.state.events.shuttlediplomacy = 0;
+      }
 
       if (this.game.state.events.formosan == 1) {
         if (scoring.us.bg == 7 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 9; }
@@ -11653,6 +11659,12 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         if (scoring.us.bg == 6 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 9; }
         if (scoring.ussr.bg == 6 && scoring.ussr.total > scoring.us.total) { vp_ussr = 9; }
       }
+
+      if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = as_scoring_range.domination; }
+      else if (scoring.us.total > 0) { scoring.us.vp = as_scoring_range.presence; }
+
+      if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = as_scoring_range.domination; }
+      else if (scoring.ussr.total > 0) { scoring.ussr.vp = as_scoring_range.presence; }
 
       scoring.us.vp = scoring.us.vp + scoring.us.bg;
       scoring.ussr.vp = scoring.ussr.vp + scoring.ussr.bg;
@@ -12076,7 +12088,6 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("ussr", "pakistan") == 1) { bg_ussr++; }
     if (this.game.state.events.formosan == 1) {
       if (this.isControlled("us", "taiwan") == 1) { bg_us++; }
-      if (this.isControlled("ussr", "taiwan") == 1) { bg_ussr++; }
     }
 
     total_us = bg_us;
@@ -12100,6 +12111,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("ussr", "philippines") == 1) { total_ussr++; }
     if (this.game.state.events.formosan == 0) {
       if (this.isControlled("us", "taiwan") == 1) { total_us++; }
+      if (this.isControlled("ussr", "taiwan") == 1) { total_us++; }
     }
 
     //
@@ -12617,7 +12629,7 @@ Twilight.prototype.updateStatus = function updateStatus(str) {
 
   if (this.app.BROWSER == 1) {
 
-    $('#status').html(this.game.status);
+    $('#status').html("<span>" + this.game.status + "</span>");
 
     try {
       twilight_self.addShowCardEvents();
@@ -12715,9 +12727,9 @@ Twilight.prototype.lowerDefcon = function lowerDefcon() {
 
   if (this.game.state.defcon == 1) {
     if (this.game.state.turn == 0) {
-      this.endGame("us", "USSR triggers thermonuclear war");
+      this.endGame("us", "<span>USSR triggers thermonuclear war</span>");
     } else {
-      this.endGame("ussr", "US triggers thermonuclear war");
+      this.endGame("ussr", "<span>US triggers thermonuclear war</span>");
     }
   }
 
