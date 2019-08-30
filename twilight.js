@@ -1506,6 +1506,12 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
           let ussr_cards_needed = cards_needed_per_player - ussr_cards;
           reshuffle_limit = us_cards_needed + ussr_cards_needed;
 
+console.log("\n\n\n-------debugging-------");
+console.log("CARDS IN MY DECK: " + this.game.deck[0].hand.length);
+console.log("US cards needed: " + us_cards_needed);
+console.log("USSR cards needed: " + ussr_cards_needed);
+console.log("\n\n\n");
+
           if (mv[1] == 1) {
             this.addMove("RESOLVE");
             this.addMove("DEAL\t1\t"+mv[1]+"\t"+ussr_cards_needed);
@@ -3874,6 +3880,12 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       }
       if (card == "china") { can_play_event = 0; }
       if (card == "missileenvy" && is_this_missile_envy_noneventable == 1) { can_play_event = 0; }
+
+      //
+      // cannot play event of opponent card (usability fix)
+      //
+      if (twilight_self.game.deck[0].cards[card].player == opponent) { can_play_event = 0; }
+
       if (can_play_event == 1) { announcement += '<li class="card" id="event">play event</li>'; }
 
       announcement += '<li class="card" id="ops">play ops</li>';
@@ -9075,7 +9087,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   if (card == "puppet") {
 
     if (this.game.player == 1) {
-      this.updateStatus("US is playing Puppet Regimes");
+      this.updateStatus("US is playing Puppet Governments");
       return 0;
     }
     if (this.game.player == 2) {
@@ -13713,7 +13725,7 @@ Twilight.prototype.hideCard = function hideCard() {
 //
 // OVERWRITES GAME.JS MODULE TO ADD CARD HOVERING
 //
-Twilight.prototype.updateLog = function updateLog(str, length = 50) {
+Twilight.prototype.updateLog = function updateLog(str, length = 75) {
 
   let twilight_self = this;
 
