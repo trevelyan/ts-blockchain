@@ -7510,7 +7510,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
             var countries_purged = 0;
 
-            for (var i in this.countries) {
+            for (var i in twilight_self.countries) {
 
               let countryname  = i;
               let divname      = '#'+i;
