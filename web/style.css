@@ -189,7 +189,7 @@ body {
   height:30px;
 }
 
-.status > ul {
+.status > span > ul {
   list-style-type: none;
   padding: 0;
   border: 1px solid #ccc;
@@ -198,7 +198,7 @@ body {
   text-align: center;
 }
 
-.status > ul > li {
+.status > span > ul > li {
   border-bottom: 1px solid #ccc;
   padding: 5px;
   margin: 0;
@@ -206,7 +206,7 @@ body {
   transition: .1s color;
 }
 
-.status > ul > li:hover {
+.status > span > ul > li:hover {
   background-color: #005f5f;
   color: #fff
 }
