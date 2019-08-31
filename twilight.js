@@ -11307,8 +11307,9 @@ Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0) {
 
   if (playernum == 0) { playernum = this.game.player; }
 
-  if (card != "") { ops = this.returnOpsOfCard(card); }
-
+  if (card == "olympic" && ops == 4) {} else {
+    if (card != "") { ops = this.returnOpsOfCard(card); }
+  }
 
   if (this.game.state.events.brezhnev == 1 && playernum == 1) {
     this.updateLog("USSR gets Brezhnev bonus +1");
