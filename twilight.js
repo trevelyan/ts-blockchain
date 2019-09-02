@@ -1571,12 +1571,29 @@ console.log("\n\n\n");
         this.game.queue.splice(qe, 1);
       }
       if (mv[0] === "coup") {
+
+	let card = "";
+	if (mv.length >= 5) { card = mv[4]; }
+
         this.updateLog("<span>" + mv[1].toUpperCase() + "</span> <span>coups</span> <span>" + this.countries[mv[2]].name + "</span> <span>with</span> <span>" + mv[3] + "</span> <span>OPS</span>"); 
         if (this.game.state.limit_milops != 1) {
-          if (mv[1] == "us") { this.game.state.milops_us += this.modifyOps(parseInt(mv[3]), "", 2); }
-          if (mv[1] == "ussr") { this.game.state.milops_ussr += this.modifyOps(parseInt(mv[3]), "", 1); }
+	  //
+	  // modify ops is handled incoherently with milops, so we calculate afresh here
+	  //
+	  // reason is that modify ops is run before submitting coups sometimes and sometimes now
+	  //
+	  if (card != "") {
+            if (mv[1] == "us") { this.game.state.milops_us += this.modifyOps(parseInt(mv[3]), card, 2); }
+            if (mv[1] == "ussr") { this.game.state.milops_ussr += this.modifyOps(parseInt(mv[3]), card, 1); }
+	  } else {
+            if (mv[1] == "us") { this.game.state.milops_us += this.modifyOps(parseInt(mv[3]), "", 2); }
+            if (mv[1] == "ussr") { this.game.state.milops_ussr += this.modifyOps(parseInt(mv[3]), "", 1); }
+	  }
           this.updateMilitaryOperations();
          }
+	//
+	// do not submit card, ops already modified
+	//
         this.playCoup(mv[1], mv[2], mv[3]);
         this.game.queue.splice(qe, 1);
       }
@@ -1771,6 +1788,10 @@ console.log("PLACING: " + player + " -- " + mv[1]);
             let lmv = this.game.queue[le].split("\t");
             let rmvd = 0;
 
+            if (lmv[0] == "ops" && mv[1] == "ops") {
+              this.game.queue.splice(le, 2);
+              rmvd = 1;
+            }
             if (lmv[0] == "play" && mv[1] == "play") {
               this.game.queue.splice(le, 2);
               rmvd = 1;
@@ -1845,7 +1866,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["gouzenkoaffair","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
+            this.game.deck[0].hand = ["cia","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
           } else {
             this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","europe","nasser","sadat"];
           }
@@ -5065,7 +5086,7 @@ Twilight.prototype.playerCoupCountry = function playerCoupCountry(player,  ops, 
 
         // twilight_self.displayModal("Coup launched in " + twilight_self.game.countries[countryname].name);
         twilight_self.displayModal("Coup Launched", `Coup launched in ${twilight_self.game.countries[countryname].name}`);
-        twilight_self.addMove("coup\t"+player+"\t"+countryname+"\t"+ops);
+        twilight_self.addMove("coup\t"+player+"\t"+countryname+"\t"+ops+"\t"+card);
         twilight_self.endTurn();
       }
 
@@ -5082,9 +5103,11 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
   // Yuri and Samantha
   //
   if (this.game.state.events.yuri == 1) {
-    this.game.state.vp -= 1;
-    this.updateVictoryPoints();
-    this.updateLog("USSR gains 1 VP from Yuri and Samantha");
+    if (player == "us") {
+      this.game.state.vp -= 1;
+      this.updateVictoryPoints();
+      this.updateLog("USSR gains 1 VP from Yuri and Samantha");
+    }
   }
 
   //
