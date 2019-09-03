@@ -7523,7 +7523,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
           if (options_purge.length <= countries_to_purge) {
 
             for (let i = 0; i < options_purge.length; i++) {
-              twilight_self.addMove("remove\tus\tus\t"+options_purge[i]+"\t"+twilight_self.countries[options_purge[i]].us);
+              twilight_self.addMove("remove\tussr\tus\t"+options_purge[i]+"\t"+twilight_self.countries[options_purge[i]].us);
               twilight_self.removeInfluence(options_purge[i], twilight_self.countries[options_purge[i]].us, "us");
             }
 
@@ -7555,7 +7555,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
                     twilight_self.countries[c].place = 0;
                     let uspur = twilight_self.countries[c].us;
                     twilight_self.removeInfluence(c, uspur, "us", function() {
-                      twilight_self.addMove("remove\tus\tus\t"+c+"\t"+uspur);
+                      twilight_self.addMove("remove\tussr\tus\t"+c+"\t"+uspur);
                       countries_purged++;
                       if (countries_purged == countries_to_purge) {
                         twilight_self.playerFinishedPlacingInfluence();
