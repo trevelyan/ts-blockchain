@@ -3874,7 +3874,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
 
 
       let announcement = twilight_self.formatStatusHeader(
-        `${player.toUpperCase()} playing ${twilight_self.game.deck[0].cards[card].name}`,
+        `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
         true
       );
       announcement += `<p></p><ul>`;
@@ -6285,7 +6285,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
             if (scoring_cards.length > 0) { scoring_cards += ", "; scoring_alert += "\t"; }
-            scoring_cards += this.game.deck[0].hand[i];
+            scoring_cards += '<span>' + this.game.deck[0].hand[i] + '</span>';
             scoring_alert += this.game.deck[0].hand[i];
           }
         }
@@ -11075,7 +11075,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.endTurn();
             });
           } else {
-	    alert("invalid target");
+      // alert("invalid target");
+      twilight_self.displayModal("Invalid Target");
 	  }
         });
       }
