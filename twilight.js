@@ -13747,8 +13747,7 @@ Twilight.prototype.returnCardImage = function returnCardImage(cardname) {
 
   if (c.scoring == 1) {
     html +='<img class="cardimg" src="/twilight/images/MayNotBeHeld.svg" />';
-  }
-  if (c.recurring == 0) {
+  } else if (c.recurring == 0) {
     html +='<img class="cardimg" src="/twilight/images/RemoveFromPlay.svg" />';
   }
 
