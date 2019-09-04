@@ -11302,6 +11302,7 @@ Twilight.prototype.isRegionBonus = function isRegionBonus(card="") {
   // The China Card
   //
   if (this.game.state.events.china_card_in_play == 1 && this.game.state.events.china_card_eligible == 1) {
+
     this.updateStatus("Extra 1 OP Available for Asia");
     this.game.state.events.region_bonus = "asia";
     return 1;
@@ -11323,7 +11324,32 @@ Twilight.prototype.limitToRegionBonus = function limitToRegionBonus() {
     if (this.countries[i].region.indexOf(this.game.state.events.region_bonus) == -1) {
       let divname = '#'+i;
       $(divname).off();
-    }
+    } else {
+
+	let extra_bonus_available = 0;
+	if (this.game.state.events.region_bonus == "seasia" && this.game.state.events.china_card_eligible == 1) {
+	  extra_bonus_available = 1;
+	}
+
+	if (extra_bonus_available == 0) {
+          if (this.game.player == 1) {
+
+            // prevent breaking control
+            if (this.isControlled("us", i) == 1) {
+              let divname = '#'+i;
+              $(divname).off();
+	    }
+          } else {
+
+            // prevent breaking control
+            if (this.isControlled("ussr", i) == 1) {
+              let divname = '#'+i;
+              $(divname).off();
+	    }
+	  }
+	}
+      }
+
   }
   return;
 }
