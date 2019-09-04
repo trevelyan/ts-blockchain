@@ -21,7 +21,7 @@ function Twilight(app) {
   this.handlesEmail    = 1;
   this.emailAppName    = "Twilight Struggle";
   this.useHUD          = 1;
-  this.addHUDMenu      = ['Cards','Lang'];
+  this.addHUDMenu      = ['Cards','Lang', 'Player'];
 
   //
   // this sets the ratio used for determining
@@ -80,6 +80,9 @@ Twilight.prototype.triggerHUDMenu = function triggerHUDMenu(menuitem) {
       break;
     case "lang":
       this.handleLangMenuItem();
+      break;
+    case "player":
+      this.handlePlayerMenuItem();
       break;
     case "log":
       this.handleLogMenuItem();
@@ -189,6 +192,22 @@ Twilight.prototype.handleLangMenuItem = function handleLangMenuItem(){
     }
 
   });
+}
+
+Twilight.prototype.handlePlayerMenuItem = async function handlePlayerMenuItem() {
+  let opponent = await this.app.dns.fetchIdentifierPromise(this.game.opponents[0]);
+
+  if (this.app.crypto.isPublicKey(opponent)) {
+    opponent = opponent.substring(0, 16);
+  }
+
+  let user_message = `
+    <div id="menu-container">
+      Opponent: ${opponent}
+    </div>
+  `;
+
+  $('.hud_menu_overlay').html(user_message);
 }
 
 
@@ -13752,8 +13771,7 @@ Twilight.prototype.returnCardImage = function returnCardImage(cardname) {
 
   if (c.scoring == 1) {
     html +='<img class="cardimg" src="/twilight/images/MayNotBeHeld.svg" />';
-  }
-  if (c.recurring == 0) {
+  } else if (c.recurring == 0) {
     html +='<img class="cardimg" src="/twilight/images/RemoveFromPlay.svg" />';
   }
 
