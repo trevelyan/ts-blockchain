@@ -6350,7 +6350,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     while (original_us > 0) { 
       influence_to_remove++;
       original_us -= 2;
-    )
+    }
 
     this.removeInfluence("egypt", influence_to_remove, "us");
     this.placeInfluence("egypt", 2, "ussr");
