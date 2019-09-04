@@ -6324,15 +6324,20 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   // NASSER
   //
   if (card == "nasser") {
-    if (parseInt(this.countries["egypt"].us) % 2 == 1) {
-      this.removeInfluence("egypt", 1, "us");
-    }
-    if (parseInt(this.countries["egypt"].us) > 0) {
-      this.removeInfluence("egypt", (parseInt(this.countries["egypt"].us)/2), "us");
-    }
+
+    let original_us = parseInt(this.countries["egypt"].us);
+    let influence_to_remove = 0;
+
+    while (original_us > 0) { 
+      influence_to_remove++;
+      original_us -= 2;
+    )
+
+    this.removeInfluence("egypt", influence_to_remove, "us");
     this.placeInfluence("egypt", 2, "ussr");
     this.updateStatus("Nasser - Soviets add two influence in Egypt. US loses half (rounded-up) of all influence in Egypt.");
     return 1;
+
   }
 
 
