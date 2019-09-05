@@ -5394,8 +5394,8 @@ Twilight.prototype.endGame = function endGame(winner, method) {
   }
 
   if (this.browser_active == 1) {
-    this.displayModal("<span>The Game is Over</span> - " + winner.toUpperCase() + " <span>wins by</span> " + method);
-    this.updateStatus("<span>The Game is Over</span> - " + winner.toUpperCase() + " <span>wins by</span> " + method);
+    this.displayModal("<span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span>");
+    this.updateStatus("<span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span>");
   }
 }
 
