@@ -7788,9 +7788,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (this.game.state.defcon <= 1) {
       if (this.game.state.turn == 0) {
-        this.endGame("ussr", "defcon");
-      } else {
         this.endGame("us", "defcon");
+      } else {
+        this.endGame("ussr", "defcon");
       }
 
       return;
