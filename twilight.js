@@ -1823,7 +1823,7 @@ console.log("PLACING: " + player + " -- " + mv[1]);
               this.game.queue.splice(le, 2);
               rmvd = 1;
             }
-            if (lmv[0] == "bonus_placement" && mv[1] == "bonus_placement") {
+            if (lmv[0] == "placement_bonus" && mv[1] == "placement_bonus") {
               this.game.queue.splice(le, 2);
               rmvd = 1;
             }
@@ -4489,7 +4489,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
   if (player == "ussr") {
 
-    twilight_self.addMove("resolve\tbonus_placement");
+    twilight_self.addMove("resolve\tplacement_bonus");
 
     this.updateStatusAndListCards(`You are the USSR. Place</span> ${bonus} <span>additional influence in countries with existing Soviet influence.`);
 
@@ -4524,7 +4524,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
   if (player == "us") {
 
-    twilight_self.addMove("resolve\tbonus_placement");
+    twilight_self.addMove("resolve\tplacement_bonus");
 
     this.updateStatusAndListCards(`You are the US. Place</span> ${bonus} <span>additional influence in countries with existing American influence.`);
 
