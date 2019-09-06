@@ -2410,7 +2410,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
         //
         // deactivate cards
         //
-          this.game.state.events.china_card_eligible = 0;
+        this.game.state.events.china_card_eligible = 0;
 
 
         //
@@ -4368,7 +4368,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
   if (player == "ussr") {
 
-    twilight_self.addMove("RESOLVE");
+    twilight_self.addMove("resolve");
 
     this.updateStatusAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
 
@@ -4418,7 +4418,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
   if (player == "us") {
 
-    twilight_self.addMove("RESOLVE");
+    twilight_self.addMove("resolve");
 
     this.updateStatusAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
 
@@ -4477,7 +4477,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
   if (player == "ussr") {
 
-    twilight_self.addMove("RESOLVE");
+    twilight_self.addMove("resolve");
 
     this.updateStatusAndListCards(`You are the USSR. Place</span> ${bonus} <span>additional influence in countries with existing Soviet influence.`);
 
@@ -4512,7 +4512,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
   if (player == "us") {
 
-    twilight_self.addMove("RESOLVE");
+    twilight_self.addMove("resolve");
 
     this.updateStatusAndListCards(`You are the US. Place</span> ${bonus} <span>additional influence in countries with existing American influence.`);
 
