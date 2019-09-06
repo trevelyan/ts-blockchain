@@ -1819,7 +1819,15 @@ console.log("PLACING: " + player + " -- " + mv[1]);
               this.game.queue.splice(le, 2);
               rmvd = 1;
             }
-            if (lmv[0] == "deal" && mv[1] == "deal") {
+            if (lmv[0] == "placement" && mv[1] == "placement") {
+              this.game.queue.splice(le, 2);
+              rmvd = 1;
+            }
+            if (lmv[0] == "bonus_placement" && mv[1] == "bonus_placement") {
+              this.game.queue.splice(le, 2);
+              rmvd = 1;
+            }
+	    if (lmv[0] == "deal" && mv[1] == "deal") {
               this.game.queue.splice(le, 2);
               rmvd = 1;
             }
@@ -4372,7 +4380,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
   if (player == "ussr") {
 
-    twilight_self.addMove("resolve");
+    twilight_self.addMove("resolve\tplacement");
 
     this.updateStatusAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
 
@@ -4422,7 +4430,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
   if (player == "us") {
 
-    twilight_self.addMove("resolve");
+    twilight_self.addMove("resolve\tplacement");
 
     this.updateStatusAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
 
@@ -4481,7 +4489,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
   if (player == "ussr") {
 
-    twilight_self.addMove("resolve");
+    twilight_self.addMove("resolve\tbonus_placement");
 
     this.updateStatusAndListCards(`You are the USSR. Place</span> ${bonus} <span>additional influence in countries with existing Soviet influence.`);
 
@@ -4516,7 +4524,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
   if (player == "us") {
 
-    twilight_self.addMove("resolve");
+    twilight_self.addMove("resolve\tbonus_placement");
 
     this.updateStatusAndListCards(`You are the US. Place</span> ${bonus} <span>additional influence in countries with existing American influence.`);
 
