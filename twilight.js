@@ -1532,10 +1532,10 @@ console.log("USSR cards needed: " + ussr_cards_needed);
 console.log("\n\n\n");
 
           if (mv[1] == 1) {
-            this.addMove("RESOLVE");
+            this.addMove("resolve\tdeal");
             this.addMove("DEAL\t1\t"+mv[1]+"\t"+ussr_cards_needed);
           } else {
-            this.addMove("RESOLVE");
+            this.addMove("resolve\tdeal");
             this.addMove("DEAL\t1\t"+mv[1]+"\t"+us_cards_needed);
           }
           this.endTurn();
@@ -1816,6 +1816,10 @@ console.log("PLACING: " + player + " -- " + mv[1]);
               rmvd = 1;
             }
             if (lmv[0] == "event" && lmv[2] == mv[1]) {
+              this.game.queue.splice(le, 2);
+              rmvd = 1;
+            }
+            if (lmv[0] == "deal" && mv[1] == "deal") {
               this.game.queue.splice(le, 2);
               rmvd = 1;
             }
