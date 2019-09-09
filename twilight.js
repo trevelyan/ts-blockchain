@@ -233,8 +233,10 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   // enable chat
   //
   if (this.browser_active == 1) {
-    const chat = this.app.modules.returnModule("Chat");
-    chat.addPopUpChat();
+    if (!this.app.browser.isMobileBrowser(navigator.userAgent)) {
+      const chat = this.app.modules.returnModule("Chat");
+      chat.addPopUpChat();
+    }
   }
 
   //
