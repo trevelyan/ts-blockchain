@@ -1534,10 +1534,10 @@ console.log("USSR cards needed: " + ussr_cards_needed);
 console.log("\n\n\n");
 
           if (mv[1] == 1) {
-            this.addMove("RESOLVE");
+            this.addMove("resolve\tdeal");
             this.addMove("DEAL\t1\t"+mv[1]+"\t"+ussr_cards_needed);
           } else {
-            this.addMove("RESOLVE");
+            this.addMove("resolve\tdeal");
             this.addMove("DEAL\t1\t"+mv[1]+"\t"+us_cards_needed);
           }
           this.endTurn();
@@ -1818,6 +1818,18 @@ console.log("PLACING: " + player + " -- " + mv[1]);
               rmvd = 1;
             }
             if (lmv[0] == "event" && lmv[2] == mv[1]) {
+              this.game.queue.splice(le, 2);
+              rmvd = 1;
+            }
+            if (lmv[0] == "placement" && mv[1] == "placement") {
+              this.game.queue.splice(le, 2);
+              rmvd = 1;
+            }
+            if (lmv[0] == "placement_bonus" && mv[1] == "placement_bonus") {
+              this.game.queue.splice(le, 2);
+              rmvd = 1;
+            }
+	    if (lmv[0] == "deal" && mv[1] == "deal") {
               this.game.queue.splice(le, 2);
               rmvd = 1;
             }
@@ -2412,7 +2424,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
         //
         // deactivate cards
         //
-          this.game.state.events.china_card_eligible = 0;
+        this.game.state.events.china_card_eligible = 0;
 
 
         //
@@ -4370,7 +4382,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
   if (player == "ussr") {
 
-    twilight_self.addMove("RESOLVE");
+    twilight_self.addMove("resolve\tplacement");
 
     this.updateStatusAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
 
@@ -4420,7 +4432,7 @@ Twilight.prototype.playerPlaceInitialInfluence = function playerPlaceInitialInfl
 
   if (player == "us") {
 
-    twilight_self.addMove("RESOLVE");
+    twilight_self.addMove("resolve\tplacement");
 
     this.updateStatusAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
 
@@ -4479,7 +4491,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
   if (player == "ussr") {
 
-    twilight_self.addMove("RESOLVE");
+    twilight_self.addMove("resolve\tplacement_bonus");
 
     this.updateStatusAndListCards(`You are the USSR. Place</span> ${bonus} <span>additional influence in countries with existing Soviet influence.`);
 
@@ -4514,7 +4526,7 @@ Twilight.prototype.playerPlaceBonusInfluence = function playerPlaceBonusInfluenc
 
   if (player == "us") {
 
-    twilight_self.addMove("RESOLVE");
+    twilight_self.addMove("resolve\tplacement_bonus");
 
     this.updateStatusAndListCards(`You are the US. Place</span> ${bonus} <span>additional influence in countries with existing American influence.`);
 
@@ -5396,8 +5408,8 @@ Twilight.prototype.endGame = function endGame(winner, method) {
   }
 
   if (this.browser_active == 1) {
-    this.displayModal("<span>The Game is Over</span> - " + winner.toUpperCase() + " <span>wins by</span> " + method);
-    this.updateStatus("<span>The Game is Over</span> - " + winner.toUpperCase() + " <span>wins by</span> " + method);
+    this.displayModal("<span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span>");
+    this.updateStatus("<span>The Game is Over</span> - <span>" + winner.toUpperCase() + "</span> <span>wins by</span> <span>" + method + "<span>");
   }
 }
 
@@ -6345,15 +6357,20 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   // NASSER
   //
   if (card == "nasser") {
-    if (parseInt(this.countries["egypt"].us) % 2 == 1) {
-      this.removeInfluence("egypt", 1, "us");
+
+    let original_us = parseInt(this.countries["egypt"].us);
+    let influence_to_remove = 0;
+
+    while (original_us > 0) { 
+      influence_to_remove++;
+      original_us -= 2;
     }
-    if (parseInt(this.countries["egypt"].us) > 0) {
-      this.removeInfluence("egypt", (parseInt(this.countries["egypt"].us)/2), "us");
-    }
+
+    this.removeInfluence("egypt", influence_to_remove, "us");
     this.placeInfluence("egypt", 2, "ussr");
     this.updateStatus("Nasser - Soviets add two influence in Egypt. US loses half (rounded-up) of all influence in Egypt.");
     return 1;
+
   }
 
 
@@ -7785,9 +7802,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     if (this.game.state.defcon <= 1) {
       if (this.game.state.turn == 0) {
-        this.endGame("ussr", "defcon");
-      } else {
         this.endGame("us", "defcon");
+      } else {
+        this.endGame("ussr", "defcon");
       }
 
       return;
@@ -9761,12 +9778,20 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       if (this.game.state.space_race_us < this.game.state.space_race_ussr) {
         this.updateLog("US takes one small step into space...");
         this.game.state.space_race_us += 1;
+	if (this.game.state.space_race_us == 2) { this.game.state.animal_in_space = ""; }
+	if (this.game.state.space_race_us == 4) { this.game.state.man_in_earth_orbit = ""; }
+	if (this.game.state.space_race_us == 6) { this.game.state.eagle_has_landed = ""; }
+	if (this.game.state.space_race_us == 8) { this.game.state.space_shuttle = ""; }
         this.advanceSpaceRace("us");
       }
     } else {
       if (this.game.state.space_race_ussr < this.game.state.space_race_us) {
         this.updateLog("USSR takes one small step into space...");
         this.game.state.space_race_ussr += 1;
+	if (this.game.state.space_race_ussr == 2) { this.game.state.animal_in_space = ""; }
+	if (this.game.state.space_race_ussr == 4) { this.game.state.man_in_earth_orbit = ""; }
+	if (this.game.state.space_race_ussr == 6) { this.game.state.eagle_has_landed = ""; }
+	if (this.game.state.space_race_ussr == 8) { this.game.state.space_shuttle = ""; }
         this.advanceSpaceRace("ussr");
       }
     }
