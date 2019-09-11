@@ -4422,11 +4422,7 @@ Twilight.prototype.removeInfluence = function removeInfluence(country, inf, play
     this.showInfluence(country, "us");
   }
 
-<<<<<<< HEAD
   this.updateLog(player.toUpperCase() + "</span> <span>removes </span> " + inf + "<span> from</span> <span>" + this.countries[country].name);
-=======
-  this.updateLog(player.toUpperCase() + "</span> <span>removes</span> " + inf + " <span>from</span> <span>" + this.countries[country].name);
->>>>>>> eed3313fc3ee863bb2dd2f24e07bfbbb42580fbb
 
   this.showInfluence(country, player, mycallback);
 
