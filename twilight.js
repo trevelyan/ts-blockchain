@@ -840,11 +840,6 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
       // Stage
       //
       if (mv[0] == "stage") {
-	if (mv[1] === "headline1") { this.game.state.headline1 = 1; }
-	if (mv[2] === "headline2") { this.game.state.headline2 = 1; }
-	if (mv[3] === "headline3") { this.game.state.headline3 = 1; }
-	if (mv[4] === "headline4") { this.game.state.headline4 = 1; }
-	if (mv[5] === "headline5") { this.game.state.headline5 = 1; }
         this.game.queue.splice(qe, 1);
 	shd_continue = 1;
       }
@@ -1809,6 +1804,10 @@ console.log("PLACING: " + player + " -- " + mv[1]);
             let lmv = this.game.queue[le].split("\t");
             let rmvd = 0;
 
+            if (lmv[0] == "headline" && mv[1] == "headline") {
+              this.game.queue.splice(le, 2);
+              rmvd = 1;
+            }
             if (lmv[0] == "ops" && mv[1] == "ops") {
               this.game.queue.splice(le, 2);
               rmvd = 1;
@@ -1966,21 +1965,29 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
       if (mv[0] === "headline") {
 
-        // set to player1
-        if (msg == null) { msg = {}; }
-        if (msg.extra == undefined) {
-          msg = {};
-          msg.extra = {};
-          msg.extra.target = 1;
-        } else {
-          if (!(msg.extra.target > 0)) { msg.extra.target = 1; }
-        }
+	let stage  = "headline1";
+        let player = 1;
+	let hash   = "";
+	let xor    = "";
+	let card   = "";
 
-        let x = this.playHeadline(msg);
-        if (x == 1) {
-          this.game.queue.splice(qe, 1);
-        }
-        else { return 0; }
+	if (mv.length > 2) {	  
+	  stage = mv[1];
+	  player = parseInt(mv[2]);
+	}
+
+        if (mv.length > 3) { hash = mv[3]; }
+        if (mv.length > 4) { xor = mv[4]; }
+	if (mv.length > 5) { card = mv[5]; }
+
+console.log("HEADLINE: " + stage + " -- " + player + " -- " + hash + " -- " + xor + " -- " + card);
+
+        let x = this.playHeadlineModern(stage, player, hash, xor, card);
+
+	//
+	// do not remove from queue -- handle RESOLVE on endTurn submission
+	//
+	return 0;
 
       }
       if (mv[0] === "round") {
@@ -2252,13 +2259,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
           this.game.queue.push("play\t1");
         }
         this.game.queue.push("headline");
-
-        // reset headline
-        this.game.state.headline1 = 0;
-        this.game.state.headline2 = 0;
-        this.game.state.headline3 = 0;
-        this.game.state.headline4 = 0;
-        this.game.state.headline5 = 0;
+        this.game.state.headline = 0;
 
 
         //
@@ -2502,240 +2503,137 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
 
 
-Twilight.prototype.playHeadline = function playHeadline(msg) {
 
-  if (	this.game.state.headline1 == 1 &&
-        this.game.state.headline2 == 1 &&
-        this.game.state.headline3 == 1 &&
-        this.game.state.headline4 == 1 &&
-        this.game.state.headline5 == 1) { return 1; }
 
+Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, player, hash="", xor="", card="") {
+
+  //
+  // NO HEADLINE PEEKING
+  //
   if (this.game.state.man_in_earth_orbit == "") {
-    if (this.game.state.headline1 == 0) {
 
-      //
-      // remember we are in the headline
-      //
-      this.game.state.headline = 1;
-
-      //
-      // player one picks headline card
-      //
-      if (msg.extra.target == 1) {
+    //
+    // USSR picks
+    //
+    if (stage == "headline1") {
+      if (this.game.player == player) {
         this.updateLog("USSR selecting headline card");
-        if (this.game.player == 1) {
-
-          //
-          // then make my own turn
-          //
-          this.playerPickHeadlineCard();
-
-        } else {
-          // TODO
-          this.updateStatusAndListCards(`Waiting for USSR to pick headline card`);
-        }
-        return 0;
+	this.addMove("resolve\theadline");
+        this.playerPickHeadlineCard();
+      } else {
+        this.updateStatusAndListCards(`Waiting for USSR to pick headline card`);
       }
+      return 0;
+    }
 
-      if (msg.extra.target == 2) {
+    //
+    // US picks
+    //
+    if (stage == "headline2") {
+      if (this.game.player == player) {
+
+        this.game.state.headline_opponent_hash = hash;
 
         this.updateLog("US selecting headline card");
-        if (this.game.player == 2) {
+	this.addMove("resolve\theadline");
+        this.playerPickHeadlineCard();
 
-          //
-          // accept headline card submission
-          //
-            if (this.game.state.headline_opponent_hash === "") {
-            this.game.state.headline_opponent_hash = msg.extra.headline_hash;
-          }
+      } else {
 
-          //
-          // then make my own turn
-          //
-          this.playerPickHeadlineCard();
+        this.updateStatusAndListCards(`Waiting for US to pick headline card`);
 
-        } else {
-          if (this.game.player == 1) {
-            this.game.state.headline1 = 1;
-          }
-          this.updateStatusAndListCards(`Waiting for US to pick headline card`);
-        }
-        return 0;
       }
       return 0;
     }
 
-    if (this.game.state.headline2 == 0) {
 
-      this.updateLog("Encrypted headline card selection");
+    //
+    // USSR sends XOR
+    //
+    if (stage == "headline3") {
+      if (this.game.player == player) {
 
-      //
-      // player one sends XOR
-      //
-      if (msg.extra.target == 1) {
+        this.game.state.headline_opponent_hash = hash;
+
         this.updateLog("Initiating blind headline card swap");
-        if (this.game.player == 1) {
 
-          if (this.game.state.headline_opponent_hash === "") {
-            this.game.state.headline_opponent_hash = msg.extra.headline_hash;
-            }
+	this.addMove("resolve\theadline");
+	this.addMove("headline\theadline4\t"+2+"\t"+this.game.state.headline_hash+"\t"+this.game.state.headline_xor+"\t"+this.game.state.headline_card);
+	this.endTurn();
 
-          this.game.turn = [];
+      } else {
 
-          let extra      = {};
-              extra.headline_card = this.game.state.headline_card;
-              extra.headline_xor  = this.game.state.headline_xor;
-              extra.target   = this.returnNextPlayer(this.game.player);
+        this.updateLog("Waiting for USSR to confirm card selection");
 
-          this.sendMessage("game", extra);
-
-          return 0;
-
-        } else {
-
-          this.updateStatus("Waiting for USSR to send confirming information");
-
-          //
-          // try saving here to avoid headline issues
-          //
-          //this.saveGame(this.game.id);
-
-        }
-        return 0;
-      }
-
-
-      //
-      // player two sends XOR
-      //
-      if (msg.extra.target == 2) {
-        this.updateLog("Continuing blind headline card swap");
-        if (this.game.player == 2) {
-
-          if (this.game.state.headline_opponent_card === "") {
-            this.game.state.headline_opponent_card = msg.extra.headline_card;
-            this.game.state.headline_opponent_xor = msg.extra.headline_xor;
-          }
-
-          this.updateStatus("Exchanging encrypted and shuffled cards...");
-          this.updateLog("Secure card exchange...");
-
-          this.game.turn = [];
-
-          if (this.game.state.headline_opponent_hash != this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor)) {
-            alert("PLAYER 1 HASH WRONG: -- this is a development error message that can be triggered if the opponent attempts to cheat by changing their selected card after sharing the encrypted hash. It can also be rarely caused if one or both players reload or have unreliable connections during the headline exchange process. The solution in this case is for both players to reload until the game hits the first turn. " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.state.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
-          }
-
-          this.game.state.headline2 = 1;
-
-          let extra      = {};
-              extra.headline_card = this.game.state.headline_card;
-              extra.headline_xor  = this.game.state.headline_xor;
-              extra.target   = this.returnNextPlayer(this.game.player);
-          this.sendMessage("game", extra);
-
-          return 0;
-
-        } else {
-
-          this.updateStatus("Waiting for US to decrypt USSR headline card...");
-          this.game.state.headline2 = 1;
-
-        }
-        return 0;
       }
       return 0;
     }
 
 
-    if (this.game.state.headline3 == 0) {
+    //
+    // US confirms USSR XOR and sends its XOR
+    //
+    if (stage == "headline4") {
+      if (this.game.player == player) {
 
-      //
-      // player one receives confirming info
-      //
-      if (msg.extra.target == 1) {
-        this.updateLog("Confirming USSR headline card");
-        if (this.game.player == 1) {
+        this.game.state.headline_opponent_xor  = xor;
+        this.game.state.headline_opponent_card = card;
 
-          //
-          // could be triggered by reload
-          //
-          if (msg.extra.headline_card == undefined || msg.extra.headline_card == "") { alert("HEADLINE ERROR: 13123: please flag this for David!"); return; }
-          if (msg.extra.headline_xor == undefined || msg.extra.headline_xor == "") { alert("HEADLINE ERROR: 14133: please flag this for David!"); return; }
-
-            if (this.game.state.headline_opponent_card === "") {
-            this.game.state.headline_opponent_card = msg.extra.headline_card;
-            this.game.state.headline_opponent_xor = msg.extra.headline_xor;
-          }
-
-          if (this.game.state.headline_opponent_hash != this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor)) {
-            alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be triggered if the opponent attempts to cheat by changing their selected card after sharing the encrypted hash. It can also be rarely caused if one or both players reload or have unreliable connections during the headline exchange process. The solution in this case is for both players to reload until the game hits the first turn. " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.state.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
-          }
-
-          this.game.turn = [];
-          this.removeCardFromHand(this.game.state.headline_card);
-          let extra      = {};
-              extra.target   = this.returnNextPlayer(this.game.player);
-          this.sendMessage("game", extra);
-          return 0;
-
-        } else {
-
-          this.updateStatus("Waiting for US to decrypt USSR headline card...");
-
-          //
-          // try saving here to avoid headline issues
-          //
-          // we sometimes have issues with player 2 dropping
-          // in the case of unreliable reloads, so we are
-          // saving the game here.
-          //
-          //this.saveGame(this.game.id);
-
+        if (this.game.state.headline_opponent_hash != this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor)) {
+          alert("PLAYER 1 HASH WRONG: -- this is a development error message that can be triggered if the opponent attempts to cheat by changing their selected card after sharing the encrypted hash. It can also be rarely caused if one or both players reload or have unreliable connections during the headline exchange process. The solution in this case is for both players to reload until the game hits the first turn. " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.state.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
         }
-        return 0;
-      }
 
+        this.updateLog("Initiating blind headline card swap");
 
-      if (msg.extra.target == 2) {
-        this.updateLog("Confirming US headline card");
-        if (this.game.player == 2) {
+	this.addMove("resolve\theadline");
+	this.addMove("headline\theadline5\t"+1+"\t"+this.game.state.headline_hash+"\t"+this.game.state.headline_xor+"\t"+this.game.state.headline_card);
+	this.endTurn();
 
-          //
-          // we now have both headline cards, just tell players what they are
-          //
-          this.game.state.headline3 = 1;
+      } else {
 
-          this.game.turn = [];
-          this.removeCardFromHand(this.game.state.headline_card);
-          let extra      = {};
-              extra.skipqueue = 1;
-              extra.target   = this.returnNextPlayer(this.game.player);
-          this.sendMessage("game", extra);
+        this.updateLog("Waiting for US to confirm card selection");
 
-        } else {
-
-          //
-          // we now have both headline cards, just tell players what they are
-          //
-          this.game.state.headline3 = 1;
-
-        }
-        return 0;
       }
       return 0;
     }
-  } // no man in earth orbit
+
+
+    //
+    // USSR confirms US XOR
+    //
+    if (stage == "headline5") {
+      if (this.game.player == player) {
+
+        this.game.state.headline_opponent_xor  = xor;
+        this.game.state.headline_opponent_card = card;
+
+        if (this.game.state.headline_opponent_hash != this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor)) {
+          alert("PLAYER 2 HASH WRONG: -- this is a development error message that can be triggered if the opponent attempts to cheat by changing their selected card after sharing the encrypted hash. It can also be rarely caused if one or both players reload or have unreliable connections during the headline exchange process. The solution in this case is for both players to reload until the game hits the first turn. " + this.game.state.headline_opponent_hash + " -- " + this.game.state.headline_opponent_card + " -- " + this.game.state.headline_opponent_xor + " -- " + this.app.crypto.encodeXOR(this.app.crypto.stringToHex(this.game.state.headline_opponent_card), this.game.state.headline_opponent_xor));
+        }
+
+        this.updateLog("Initiating blind headline card swap");
+
+	this.addMove("resolve\theadline");
+	this.addMove("headline\theadline6\t"+2+"\t"+this.game.state.headline_hash+"\t"+this.game.state.headline_xor+"\t"+this.game.state.headline_card);
+	this.endTurn();
+
+      } else {
+
+        this.updateLog("Waiting for US to confirm card selection");
+
+      }
+      return 0;
+    }
 
 
 
-
+  } // end man-in-earth orbit
 
 
 
 
   //
-  // man in earth orbit
+  // man in earth orbit = HEADLINE PEEKING
   //
   else {
 
@@ -2746,174 +2644,96 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
 
     let first_picker = 2;
     let second_picker = 1;
-    let player = "US";
+    let playerside = "US";
 
-    if (this.game.state.man_in_earth_orbit === "us") { first_picker = 1; second_picker = 2; player = "USSR"; }
+    if (this.game.state.man_in_earth_orbit === "us") { first_picker = 1; second_picker = 2; playerside = "USSR"; }
+
 
     //
-    // first player picks
+    // first player sends card 
     //
-    if (this.game.state.headline1 == 0) {
-
-      this.game.state.headline1 = 1;
+    if (stage == "headline1") {
 
       if (this.game.player == first_picker) {
-
-        let x = player.toUpperCase() + " <span>picks headline card first:</span> <p></p><ul>";
-        for (i = 0; i < this.game.deck[0].hand.length; i++) {
-          x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
-        }
-        x += '</ul>';
-
-        this.updateStatus(x);
-
-        let twilight_self = this;
-
-        $('.card').off();
-        twilight_self.addShowCardEvents();
-        $('.card').on('click', function() {
-
-          let card = $(this).attr("id");
-
-          // cannot pick china card or UN intervention
-          if (card == "china") { twilight_self.displayModal("Invalid Headline", "You cannot headline China"); return; }
-          if (card == "unintervention") { twilight_self.displayModal("Invalid Headline", "You cannot headline UN Intervention"); return; }
-
-          twilight_self.game.state.headline_card = card;
-          twilight_self.game.state.headline_xor = "MAN_IN_EARTH_ORBIT";
-          twilight_self.game.state.headline_hash = "MAN_IN_EARTH_ORBIT";
-          twilight_self.updateStatus("Headline card selected, please wait...");
-
-          twilight_self.game.turn = [];
-
-          let extra       = {};
-          extra.headline_card = twilight_self.game.state.headline_card;
-          extra.target    = twilight_self.returnNextPlayer(twilight_self.game.player);
-
-          $('.card').off();
-          $('.showcard').off();
-          twilight_self.hideCard();
-
-          twilight_self.sendMessage("game", extra);
-
-        });
+        this.updateLog(playerside + " selecting headline card first");
+	this.addMove("resolve\theadline");
+	this.playerPickHeadlineCard();
       } else {
-
-        if (first_picker == 1) {
-          this.updateStatus(player + " <span>is selecting headline card first</span>");
-        } else {
-          this.updateStatus(player + " <span>is selecting headline card first</span>");
-        }
+        this.updateStatusAndListCards(playerside + ' picks headline card first');
       }
       return 0;
+
     }
 
-    //
-    // second player picks
-    //
-    if (this.game.state.headline2 == 0) {
 
-      this.game.state.headline2 = 1;
+
+    //
+    // second player sends card 
+    //
+    if (stage == "headline2") {
 
       if (this.game.player == second_picker) {
 
-        if (this.game.state.headline_opponent_card === "") {
-          this.game.state.headline_opponent_card = msg.extra.headline_card;
-        }
+        this.game.state.headline_opponent_hash = hash;
+        this.game.state.headline_opponent_xor = xor;
+        this.game.state.headline_opponent_card = card;
 
-        let x = "<span>" + player.toUpperCase() + '</span> <span>selected<span> <span id="'+this.game.state.headline_opponent_card+'" class="showcard">' + this.game.deck[0].cards[this.game.state.headline_opponent_card].name + '</span>. <span>' + this.game.state.man_in_earth_orbit.toUpperCase() + '</span> <span>pick your headline card second:</span> <p></p><ul>';
-        for (i = 0; i < this.game.deck[0].hand.length; i++) {
-          x += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
-        }
-        x += '</ul>';
+        this.updateLog(playerside + " selecting headline card player");
+	this.addMove("resolve\theadline");
+	this.playerPickHeadlineCard();
 
-        this.updateStatus(x);
-
-        let twilight_self = this;
-
-        $('.card').off();
-        twilight_self.addShowCardEvents();
-        $('.card').on('click', function() {
-
-          let card = $(this).attr("id");
-
-          // cannot pick china card or UN intervention
-          if (card == "china") { twilight_self.displayModal("Invalid Headline", "You cannot headline China"); return; }
-          if (card == "unintervention") { twilight_self.displayModal("Invalid Headline", "You cannot headline UN Intervention"); return; }
-
-          twilight_self.updateStatus("Headline card selected, waiting for opponent response....");
-          twilight_self.game.state.headline_card = card;
-          twilight_self.game.state.headline_xor = "MAN_IN_EARTH_ORBIT";
-          twilight_self.game.state.headline_hash = "MAN_IN_EARTH_ORBIT";
-
-          twilight_self.game.turn = [];
-
-          let extra       = {};
-          extra.headline_card = twilight_self.game.state.headline_card;
-          extra.headline_opponent_card = twilight_self.game.state.headline_opponent_card;
-          extra.target    = twilight_self.returnNextPlayer(twilight_self.game.player);
-
-          $('.card').off();
-          $('.showcard').off();
-          twilight_self.hideCard();
-
-          twilight_self.sendMessage("game", extra);
-
-        });
       } else {
-
-        if (this.game.state.headline_card === "") {
-          this.game.state.headline_card = msg.extra.headline_card;
-        }
-
-        if (first_picker == 1) {
-          this.updateStatus("US is selecting headline card second");
-        } else {
-          this.updateStatus("USSR is selecting headline card second");
-        }
-
+        this.updateStatusAndListCards('Opponent picking headline card second');
       }
-
       return 0;
+
     }
 
 
+
     //
-    // second player picks
+    // first player gets second player pick, then we move on....
     //
-    if (this.game.state.headline3 == 0) {
-      this.game.state.headline3 = 1;
+    if (stage == "headline3") {
+
       if (this.game.player == first_picker) {
-        this.game.state.headline_opponent_card = msg.extra.headline_card;
-        this.game.state.headline_card = msg.extra.headline_opponent_card;
-        this.removeCardFromHand(this.game.state.headline_card);
-      } else {
-        this.game.state.headline_card = msg.extra.headline_card;
-        this.removeCardFromHand(this.game.state.headline_card);
+
+        this.game.state.headline_opponent_hash = hash;
+        this.game.state.headline_opponent_xor = xor;
+        this.game.state.headline_opponent_card = card;
+
       }
+
+      stage = "headline6";
+
     }
 
-    //
-    // fall through to headline execution
-    //
+  } // end man-in-earth-orbit
 
-  }
+
+
+
+
+
+
 
 
   //
-  // default to USSR
+  // default to ussr
   //
   let player_to_go = 1;
 
   //
   // headline execution starts here
   //
-  if (this.game.state.headline4 == 0) {
+  if (stage == "headline6") {
 
     this.updateLog("Moving into first headline card event");
 
     let my_card = this.game.state.headline_card;
     let opponent_card = this.game.state.headline_opponent_card;
+
+console.log("HERE: " + my_card + " -- " + opponent_card);
 
     if (this.game.player == 1) {
       if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
@@ -2929,7 +2749,6 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
         player_to_go = 1;
       }
     }
-
 
     let player = "ussr";
     let opponent = "us";
@@ -2981,12 +2800,6 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
         this.game.queue.push("discard\tussr\t"+opponent_card);
       }
 
-      this.game.state.headline4 = 1;
-      this.game.state.headline5 = 1;
-      this.game.state.headline  = 0;
-      // debugging test
-      //this.saveGame(this.game.id);
-
       this.updateLog("Defectors cancels USSR headline.");
       this.updateStatus("Defectors cancels USSR headline. Moving into first turn...");
 
@@ -3013,39 +2826,27 @@ Twilight.prototype.playHeadline = function playHeadline(msg) {
         this.updateLog("<span>US headlines <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
       }
 
-      this.game.state.headline4 = 1;
+
 
       if (player_to_go == this.game.player) {
-        this.addMove("stage\theadline4");
+	this.addMove("resolve\theadline");
+	this.addMove("headline\theadline7\t"+2+"\t"+this.game.state.headline_hash+"\t"+this.game.state.headline_xor+"\t"+this.game.state.headline_card);
         this.addMove("discard\t"+card_player+"\t"+my_card);
         this.addMove("event\t"+card_player+"\t"+my_card);
         this.removeCardFromHand(my_card);
         this.endTurn();
-      } else {
-
-	//
-	// save headline4 finished
-	//
-        // saves headline4 = 0 so we can fallthrough on reload. 
-        // if no reload, we hit 0 and stop, waiting for opponent
-        // to move.
-        //
-	//this.saveGame(this.game.id);
-console.log("we are going to end and wait here...");
-
       }
-
-      //
-      // only one player should trigger next round
-      //
     }
-
     return 0;
   }
 
-console.log("Hitting THIS");
 
-  if (this.game.state.headline5 == 0) {
+
+
+  //
+  // second player plays headline card
+  // 
+  if (stage == "headline7") {
 
     let my_card = this.game.state.headline_card;
     let opponent_card = this.game.state.headline_opponent_card;
@@ -3083,32 +2884,15 @@ console.log("Hitting THIS");
     if (this.game.player == 2) { player = "us"; opponent = "ussr"; }
     let card_player = player;
 
-    //
-    // headline4 is our FIRST headline card
-    // headline5 is our SECOND headline card
-    //
-
-    let shd_continue = 1;
-
-    this.game.state.headline5 = 1;
+    this.game.state.headline  = 0;
 
     if (player_to_go == this.game.player) {
-      this.addMove("stage\theadline5");
+      this.addMove("resolve\theadline");
       this.addMove("discard\t"+card_player+"\t"+my_card);
       this.addMove("event\t"+card_player+"\t"+my_card);
       this.removeCardFromHand(my_card);
       this.endTurn();
-    } else {
-
-      // debugging
-      //
-      // saves headline5 = 0 so we can fallthrough on reload. 
-      // if no reload, we hit 0 and stop, waiting for opponent
-      // to move.
-      //
-      //this.saveGame(this.game.id);
     }
-
 
     return 0;
 
@@ -3123,15 +2907,7 @@ console.log("Hitting THIS");
 
 Twilight.prototype.playMove = function playMove(msg) {
 
-  //
-  // no longer in headline phase
-  //
   this.game.state.headline  = 0;
-  this.game.state.headline1 = 0;
-  this.game.state.headline2 = 0;
-  this.game.state.headline3 = 0;
-  this.game.state.headline4 = 0;
-  this.game.state.headline5 = 0;
   this.game.state.headline_hash = "";
   this.game.state.headline_card = "";
   this.game.state.headline_xor = "";
@@ -3468,22 +3244,58 @@ Twilight.prototype.formatPlayOpsStatus = function formatPlayOpsStatus(player, op
 
 Twilight.prototype.playerPickHeadlineCard = function playerPickHeadlineCard() {
 
+  let twilight_self = this;
+
   if (this.browser_active == 0) { return; }
 
   let player = "us";
-
   if (this.game.player == 1) { player = "ussr"; }
+  let x = "";
 
-  let x = `
-  <div class="cardbox-status-container">
-    <div><span>${player.toUpperCase()}</span> <span>pick your headline card</span></div>
-    ${this.returnCardList(this.game.deck[0].hand)}
-  </div>
-  `
-  //player.toUpperCase() + " pick your headline card: <br />" + this.returnCardList(this.game.deck[0].hand);
+  //
+  // HEADLINE PEEKING / man in earth orbit
+  //
+  if (this.game.state.man_in_earth_orbit != "") { 
+    if (this.game.state.man_in_earth_orbit === "us") { 
+      if (this.game.player == 1) {
+        x = `<div class="cardbox-status-container">
+          <div><span>${player.toUpperCase()}</span> <span>pick your headline card first</span></div>
+          ${this.returnCardList(this.game.deck[0].hand)}
+        </div>`;
+      } else {
+        x = `<div class="cardbox-status-container">
+          <div><span>${player.toUpperCase()}</span> <span>pick your headline card second (opponent selected: ${twilight_self.game.state.headline_opponent_card})</span></div>
+          ${this.returnCardList(this.game.deck[0].hand)}
+        </div>`;
+      }
+    } else {
+      if (this.game.player == 1) {
+        x = `<div class="cardbox-status-container">
+          <div><span>${player.toUpperCase()}</span> <span>pick your headline card second (opponent selected: ${twilight_self.game.state.headline_opponent_card})</span></div>
+          ${this.returnCardList(this.game.deck[0].hand)}
+        </div>`;
+      } else {
+        x = `<div class="cardbox-status-container">
+          <div><span>${player.toUpperCase()}</span> <span>pick your headline card first</span></div>
+          ${this.returnCardList(this.game.deck[0].hand)}
+        </div>`;
+      }
+    }
+  //
+  // NORMAL HEADLINE ORDER
+  //
+  } else {
+    x = `<div class="cardbox-status-container">
+      <div><span>${player.toUpperCase()}</span> <span>pick your headline card</span></div>
+      ${this.returnCardList(this.game.deck[0].hand)}
+    </div>`;
+  }
 
 
-  let twilight_self = this;
+
+
+
+
   this.updateStatus(x);
 
 
@@ -3525,23 +3337,43 @@ Twilight.prototype.playerTurnHeadlineSelected = function playerTurnHeadlineSelec
   twilight_self.game.state.headline_xor = twilight_self.app.crypto.hash(Math.random());
   twilight_self.game.state.headline_hash = twilight_self.app.crypto.encodeXOR(twilight_self.app.crypto.stringToHex(twilight_self.game.state.headline_card), twilight_self.game.state.headline_xor);
 
-  if (twilight_self.game.player != 1) {
-    twilight_self.game.state.headline1 = 1;
+
+  //
+  // HEADLINE PEEKING / man in earth orbit
+  //
+  if (this.game.state.man_in_earth_orbit != "") { 
+    if (this.game.state.man_in_earth_orbit === "us") { 
+      if (this.game.player == 1) {
+        twilight_self.addMove("headline\theadline2\t2\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card+"\t");
+      } else {
+        twilight_self.addMove("headline\theadline3\t2\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card+"\t");
+      }
+    } else {
+      if (this.game.player == 1) {
+        twilight_self.addMove("headline\theadline3\t2\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card+"\t");
+      } else {
+        twilight_self.addMove("headline\theadline2\t2\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card+"\t");
+      }
+    }
+  //
+  // NORMAL HEADLINE ORDER
+  //
+  } else {
+    if (this.game.player == 1) {
+      twilight_self.addMove("headline\theadline2\t2\t"+twilight_self.game.state.headline_hash+"\t\t\t");
+    } else {
+      twilight_self.addMove("headline\theadline3\t1\t"+twilight_self.game.state.headline_hash+"\t\t\t");
+    }
   }
-  //twilight_self.saveGame(twilight_self.game.id);
 
   twilight_self.updateStatus("simultaneous blind pick... encrypting selected card");
   twilight_self.game.turn = [];
-
-  let extra       = {};
-  extra.headline_hash = twilight_self.game.state.headline_hash;
-  extra.target    = twilight_self.returnNextPlayer(twilight_self.game.player);
 
   $('.card').off();
   $('.showcard').off();
   twilight_self.hideCard();
 
-  twilight_self.sendMessage("game", extra);
+  twilight_self.endTurn();
 
   return;
 
@@ -4590,7 +4422,11 @@ Twilight.prototype.removeInfluence = function removeInfluence(country, inf, play
     this.showInfluence(country, "us");
   }
 
+<<<<<<< HEAD
   this.updateLog(player.toUpperCase() + "</span> <span>removes </span> " + inf + "<span> from</span> <span>" + this.countries[country].name);
+=======
+  this.updateLog(player.toUpperCase() + "</span> <span>removes</span> " + inf + " <span>from</span> <span>" + this.countries[country].name);
+>>>>>>> eed3313fc3ee863bb2dd2f24e07bfbbb42580fbb
 
   this.showInfluence(country, player, mycallback);
 
@@ -5600,11 +5436,6 @@ Twilight.prototype.returnState = function returnState() {
   state.dealt = 0;
   state.placement = 0;
   state.headline  = 0;
-  state.headline1 = 0;
-  state.headline2 = 0;
-  state.headline3 = 0;
-  state.headline4 = 0;
-  state.headline5 = 0;
   state.headline_hash = "";
   state.headline_card = "";
   state.headline_xor = "";
