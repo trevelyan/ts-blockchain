@@ -5453,7 +5453,7 @@ Twilight.prototype.returnState = function returnState() {
   state.space_race_ussr = 0;
 
   state.animal_in_space = "";
-  state.man_in_earth_orbit = "ussr";
+  state.man_in_earth_orbit = "";
   state.eagle_has_landed = "";
   state.eagle_has_landed_bonus_taken = 0;
   state.space_shuttle = "";
