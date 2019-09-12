@@ -2516,6 +2516,17 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     // USSR picks
     //
     if (stage == "headline1") {
+
+      //
+      // both players reset headline info
+      //
+      this.game.state.headline_hash  		= "";
+      this.game.state.headline_xor   		= "";
+      this.game.state.headline_card  		= "";
+      this.game.state.headline_opponent_hash  	= "";
+      this.game.state.headline_opponent_xor   	= "";
+      this.game.state.headline_opponent_card  	= "";
+
       if (this.game.player == player) {
         this.updateLog("USSR selecting headline card");
 	this.addMove("resolve\theadline");
@@ -2523,6 +2534,7 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
       } else {
         this.updateStatusAndListCards(`Waiting for USSR to pick headline card`);
       }
+
       return 0;
     }
 
