@@ -13671,7 +13671,7 @@ Twilight.prototype.hideCard = function hideCard() {
 //
 // OVERWRITES GAME.JS MODULE TO ADD CARD HOVERING
 //
-Twilight.prototype.updateLog = function updateLog(str, length = 100) {
+Twilight.prototype.updateLog = function updateLog(str, length = 150) {
 
   let twilight_self = this;
 
