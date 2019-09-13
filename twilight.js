@@ -686,12 +686,10 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
       }
       if (mv[0] === "turn") {
-
         this.game.state.turn_in_round++;
         this.game.state.events.china_card_eligible = 0;
         this.game.queue.splice(qe, 1);
         this.updateActionRound();
-
       }
       if (mv[0] === "discard") {
         if (mv[2] === "china") {
@@ -7658,6 +7656,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   }
 
 
+
   ////////////////////
   // Five Year Plan //
   ////////////////////
@@ -13672,7 +13671,7 @@ Twilight.prototype.hideCard = function hideCard() {
 //
 // OVERWRITES GAME.JS MODULE TO ADD CARD HOVERING
 //
-Twilight.prototype.updateLog = function updateLog(str, length = 75) {
+Twilight.prototype.updateLog = function updateLog(str, length = 100) {
 
   let twilight_self = this;
 
