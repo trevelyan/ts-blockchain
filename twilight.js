@@ -12035,7 +12035,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     if (this.isControlled("ussr", "philippines") == 1) { total_ussr++; }
     if (this.game.state.events.formosan == 0) {
       if (this.isControlled("us", "taiwan") == 1) { total_us++; }
-      if (this.isControlled("ussr", "taiwan") == 1) { total_us++; }
+      if (this.isControlled("ussr", "taiwan") == 1) { total_ussr++; }
     }
 
     //
