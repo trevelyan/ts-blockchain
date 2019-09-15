@@ -686,12 +686,10 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
       }
       if (mv[0] === "turn") {
-
         this.game.state.turn_in_round++;
         this.game.state.events.china_card_eligible = 0;
         this.game.queue.splice(qe, 1);
         this.updateActionRound();
-
       }
       if (mv[0] === "discard") {
         if (mv[2] === "china") {
@@ -1900,7 +1898,7 @@ console.log("resolving earlier: " + this.game.queue[z]);
           if (this.game.player == 1) {
             this.game.deck[0].hand = ["cia","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
           } else {
-            this.game.deck[0].hand = ["u2","wwby","unintervention","onesmallstep","handshake","lonegunman","europe","nasser","sadat"];
+            this.game.deck[0].hand = ["defectors","wwby","unintervention","onesmallstep","handshake","lonegunman","europe","nasser","sadat"];
           }
         }
 
@@ -2516,6 +2514,17 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     // USSR picks
     //
     if (stage == "headline1") {
+
+      //
+      // both players reset headline info
+      //
+      this.game.state.headline_hash  		= "";
+      this.game.state.headline_xor   		= "";
+      this.game.state.headline_card  		= "";
+      this.game.state.headline_opponent_hash  	= "";
+      this.game.state.headline_opponent_xor   	= "";
+      this.game.state.headline_opponent_card  	= "";
+
       if (this.game.player == player) {
         this.updateLog("USSR selecting headline card");
 	this.addMove("resolve\theadline");
@@ -2523,6 +2532,7 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
       } else {
         this.updateStatusAndListCards(`Waiting for USSR to pick headline card`);
       }
+
       return 0;
     }
 
@@ -2733,8 +2743,6 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     let my_card = this.game.state.headline_card;
     let opponent_card = this.game.state.headline_opponent_card;
 
-console.log("HERE: " + my_card + " -- " + opponent_card);
-
     if (this.game.player == 1) {
       if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
         player_to_go = 1;
@@ -2791,13 +2799,10 @@ console.log("HERE: " + my_card + " -- " + opponent_card);
       this.updateLog("<span>US headlines</span> <span class=\"logcard\" id=\"defectors\">Defectors</span>");
 
       this.game.turn = [];
-      this.game.queue.push("discard\tus\tdefectors");
       if (my_card != "defectors") {
         this.updateLog("<span>USSR headlines</span> <span class=\"logcard\" id=\""+my_card+"\">"+this.game.deck[0].cards[my_card].name+"</span>");
-        this.game.queue.push("discard\tussr\t"+my_card);
       } else {
         this.updateLog("<span>USSR headlines</span> <span class=\"logcard\" id=\""+opponent_card+"\">"+this.game.deck[0].cards[opponent_card].name+"</span>");
-        this.game.queue.push("discard\tussr\t"+opponent_card);
       }
 
       this.updateLog("Defectors cancels USSR headline.");
@@ -2807,10 +2812,10 @@ console.log("HERE: " + my_card + " -- " + opponent_card);
       // only one player should trigger next round
       //
       if (this.game.player == 1) {
-        let extra         = {};
-          extra.skipqueue = 0;
-          extra.target    = 1;
-        this.sendMessage("game", extra);
+        this.addMove("resolve\theadline");
+        this.addMove("discard\tus\tdefectors");
+        this.addMove("discard\tussr\t"+my_card);
+        this.endTurn();
       }
 
     } else {
@@ -7644,6 +7649,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     }
     return 1;
   }
+
 
 
   ////////////////////
@@ -13660,7 +13666,7 @@ Twilight.prototype.hideCard = function hideCard() {
 //
 // OVERWRITES GAME.JS MODULE TO ADD CARD HOVERING
 //
-Twilight.prototype.updateLog = function updateLog(str, length = 75) {
+Twilight.prototype.updateLog = function updateLog(str, length = 150) {
 
   let twilight_self = this;
 
