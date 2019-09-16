@@ -3058,6 +3058,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
     $('.card').on('click', function() {
 
       let action2 = $(this).attr("id");
+      let influence_placed = [];
 
       //
       // prevent ops hang
@@ -3073,8 +3074,12 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         if (j == 1) {
           twilight_self.uneventOpponentControlledCountries(player, card);
         }
-        twilight_self.playerPlaceInfluence(player, () => {
+        // TODO: ADD INFLUENCE RESET
+        twilight_self.playerPlaceInfluence(player, (country, player) => {
 
+          // use this for reset
+          influence_placed.push({country, player});
+          console.log(influence_placed);
           j--;
 
           //
@@ -3226,6 +3231,9 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
       }
       $('#back_button').off();
       $('#back_button').on('click', () => {
+        // If the placement array is full, then
+        // undo all of the influence placed this turn
+        influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
         twilight_self.playOps(player, ops, card);
       });
     });
@@ -3346,8 +3354,8 @@ Twilight.prototype.playerTurnHeadlineSelected = function playerTurnHeadlineSelec
   //
   // HEADLINE PEEKING / man in earth orbit
   //
-  if (this.game.state.man_in_earth_orbit != "") { 
-    if (this.game.state.man_in_earth_orbit === "us") { 
+  if (this.game.state.man_in_earth_orbit != "") {
+    if (this.game.state.man_in_earth_orbit === "us") {
       if (this.game.player == 1) {
         twilight_self.addMove("headline\theadline2\t2\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card+"\t");
       } else {
@@ -4543,7 +4551,7 @@ Twilight.prototype.showInfluence = function showInfluence(country, player, mycal
   //
   this.game.countries = this.countries;
 
-  if (mycallback != null) { mycallback(); }
+  if (mycallback != null) { mycallback(country, player); }
 
 }
 
