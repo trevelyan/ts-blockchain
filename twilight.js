@@ -5663,7 +5663,7 @@ Twilight.prototype.returnState = function returnState() {
   state.events.missile_envy       = 0; // to whom
   state.events.flowerpower        = 0;
   state.events.beartrap           = 0;
-  state.events.quagmire           = 1;
+  state.events.quagmire           = 0;
 
   // events - late war
   state.events.awacs              = 0;
