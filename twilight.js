@@ -705,6 +705,20 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             this.game.state.events.china_card = 1;
           }
         } else {
+
+	  //
+	  // remove from hand if present
+	  //
+	  this.removeCardFromHand(mv[2]);
+
+	  //
+	  // missile envy is an exception, non-player triggers
+	  //
+	  if (mv[2] == "missileenvy" && this.game.state.events.missile_envy != this.game.player) {
+	    this.game.state.events.missile_envy = 0;
+	    this.game.state.events.missileenvy = 0;
+	  }
+
           for (var i in this.game.deck[0].cards) {
             if (mv[2] == i) {
               if (this.game.deck[0].cards[mv[2]] != undefined) {
@@ -950,6 +964,8 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
         this.game.state.events.missile_envy = sender;
 
+alert("\n\n\nSET MISSILE_ENVY TO: " + sender);
+
         let opponent_card = 0;
         if (this.game.deck[0].cards[card].player == "us" && sender == 2) { opponent_card = 1; }
         if (this.game.deck[0].cards[card].player == "ussr" && sender == 1) { opponent_card = 1; }
@@ -963,7 +979,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (opponent_card == 1) {
           this.game.queue.push("discard\t"+discarder+"\t"+card);
           this.game.queue.push("ops\t"+receiver+"\t"+card+"\t"+this.game.deck[0].cards[card].ops);
-          this.game.queue.push("notify\t"+discarder.toUpperCase() + " offers card " + this.game.deck[0].cards[card].name + ": play for OPS");
+          this.game.queue.push("notify\t"+discarder.toUpperCase() + " offers " + this.game.deck[0].cards[card].name + " for OPS");
         }
 
         //
@@ -972,7 +988,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         if (opponent_card == 0) {
           this.game.queue.push("discard\t"+discarder+"\t"+card);
           this.game.queue.push("event\t"+receiver+"\t"+card);
-          this.game.queue.push("notify\t"+discarder.toUpperCase() + " offers card " + this.game.deck[0].cards[card].name + ": event triggers");
+          this.game.queue.push("notify\t"+discarder.toUpperCase() + " offers " + this.game.deck[0].cards[card].name + " for EVENT");
         }
 
         //
@@ -992,7 +1008,6 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
         let roll = this.rollDice(6);
 
-        //this.updateLog(mv[1].toUpperCase() + " discards <span class=\"logcard\" id=\""+mv[2]+"\">" + this.game.deck[0].cards[mv[2]].name + "</span>");
         this.updateLog(mv[1].toUpperCase() + " </span>rolls a<span> " + roll);
 
         if (roll < 5) {
@@ -1896,9 +1911,9 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["cia","rustinredsquare", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
+            this.game.deck[0].hand = ["missileenvy","fiveyearplan", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
           } else {
-            this.game.deck[0].hand = ["defectors","wwby","unintervention","onesmallstep","handshake","lonegunman","europe","nasser","sadat"];
+            this.game.deck[0].hand = ["grainsales","wwby","unintervention","onesmallstep","handshake","lonegunman","europe","nasser","sadat"];
           }
         }
 
@@ -2505,6 +2520,8 @@ console.log("HEADLINE: " + stage + " -- " + player + " -- " + hash + " -- " + xo
 
 Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, player, hash="", xor="", card="") {
 
+  this.game.state.headline = 1;
+
   //
   // NO HEADLINE PEEKING
   //
@@ -2836,8 +2853,9 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
       if (player_to_go == this.game.player) {
 	this.addMove("resolve\theadline");
 	this.addMove("headline\theadline7\t"+2+"\t"+this.game.state.headline_hash+"\t"+this.game.state.headline_xor+"\t"+this.game.state.headline_card);
-        this.addMove("discard\t"+card_player+"\t"+my_card);
         this.addMove("event\t"+card_player+"\t"+my_card);
+        this.addMove("discard\t"+card_player+"\t"+my_card);
+        this.addMove("discard\t"+opponent+"\t"+opponent_card);
         this.removeCardFromHand(my_card);
         this.endTurn();
       }
@@ -2889,11 +2907,8 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     if (this.game.player == 2) { player = "us"; opponent = "ussr"; }
     let card_player = player;
 
-    this.game.state.headline  = 0;
-
     if (player_to_go == this.game.player) {
       this.addMove("resolve\theadline");
-      this.addMove("discard\t"+card_player+"\t"+my_card);
       this.addMove("event\t"+card_player+"\t"+my_card);
       this.removeCardFromHand(my_card);
       this.endTurn();
@@ -2941,6 +2956,7 @@ Twilight.prototype.playMove = function playMove(msg) {
 
 console.log("MOVES REMAINING: " + moves_remaining);
 console.log("SCORING CARDS: " + scoring_cards_available);
+console.log("WE ARE HERE WITH MISSILE_ENVY == " + this.game.state.events.missile_envy);
 
   //
   // player 1 moves
@@ -2966,9 +2982,7 @@ console.log("SCORING CARDS: " + scoring_cards_available);
           if (this.game.state.events.beartrap == 1 && this.game.state.events.redscare_player1 == 1) {
             this.playerTurn();
           } else {
-            this.game.state.events.missile_envy = 0;
             this.playerTurn("missileenvy");
-            this.game.state.events.missileenvy = 0;
           }
         }
       } else {
@@ -2988,13 +3002,15 @@ console.log("SCORING CARDS: " + scoring_cards_available);
   // player 2 moves
   //
   if (this.game.state.turn == 1) {
+
     if (this.game.player == 2) {
 
       if (this.game.state.turn_in_round == 0) {
-            this.removeCardFromHand(this.game.state.headline_card);
+        this.removeCardFromHand(this.game.state.headline_card);
       }
 
       if (this.game.state.events.missile_envy == 2) {
+
         //
         // moves remaining will be 0 last turn
         //
@@ -3008,9 +3024,7 @@ console.log("SCORING CARDS: " + scoring_cards_available);
           if (this.game.state.events.quagmire == 1 && this.game.state.events.redscare_player2 == 1) {
             this.playerTurn();
           } else {
-            this.game.state.events.missile_envy = 0;
             this.playerTurn("missileenvy");
-            this.game.state.events.missileenvy = 0;
           }
 
         }
@@ -3385,7 +3399,6 @@ Twilight.prototype.playerTurnHeadlineSelected = function playerTurnHeadlineSelec
   $('.card').off();
   $('.showcard').off();
   twilight_self.hideCard();
-
   twilight_self.endTurn();
 
   return;
@@ -3416,6 +3429,8 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   if (this.game.player == 2) { player = "us"; opponent = "ussr"; }
 
   is_this_missile_envy_noneventable = this.game.state.events.missileenvy;
+
+console.log("IS_THIS_MISSILE_ENVY_NONEVENTABLE: " + is_this_missile_envy_noneventable);
 
   let user_message = "";
   if (selected_card == null) {
@@ -3493,6 +3508,8 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       user_message = "Select a card for Quagmire: ";
     }
 
+console.log("\n\nHERE WE ARE: " + this.game.state.events.missileenvy + " == " + this.game.state.events.missile_envy);
+
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
       if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
         cards_available++;
@@ -3502,42 +3519,52 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
       }
     }
 
-
     //
-    // do we have any cards to play?
+    // handle missile envy if needed
     //
-    if (cards_available > 0 && scoring_cards_available <= moves_remaining) {
-      this.updateStatus(user_message);
-      playable_cards = [];
-      for (i = 0; i < this.game.deck[0].hand.length; i++) {
-        if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
-          if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
-            playable_cards.push(this.game.deck[0].hand[i]);
-          }
-        }
+    if (this.game.state.events.missile_envy == this.game.player) {
+      if (this.modifyOps(2, "missileenvy") >= 2) {
+	playable_cards = [];
+	playable_cards.push("missileenvy");
       }
     } else {
-      if (scoring_cards_available > 0) {
-        if (this.game.state.events.beartrap == 1) {
-          user_message = "Bear Trap restricts you to Scoring Cards: ";
-        } else {
-          user_message = "Quagmire restricts you to Scoring Cards: ";
-        }
+
+      //
+      // do we have any cards to play?
+      //
+      if (cards_available > 0 && scoring_cards_available <= moves_remaining) {
+        this.updateStatus(user_message);
+        playable_cards = [];
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
-            if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+            if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
               playable_cards.push(this.game.deck[0].hand[i]);
             }
           }
         }
       } else {
-        if (this.game.state.events.beartrap == 1) {
-          user_message = "No cards playable due to Bear Trap: ";
+        if (scoring_cards_available > 0) {
+          if (this.game.state.events.beartrap == 1) {
+            user_message = "Bear Trap restricts you to Scoring Cards: ";
+          } else {
+            user_message = "Quagmire restricts you to Scoring Cards: ";
+          }
+          for (i = 0; i < this.game.deck[0].hand.length; i++) {
+            if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
+              if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) {
+                playable_cards.push(this.game.deck[0].hand[i]);
+              }
+            }
+          }
         } else {
-          user_message = "No cards playable due to Quagmire: ";
+          if (this.game.state.events.beartrap == 1) {
+            user_message = "No cards playable due to Bear Trap: ";
+          } else {
+            user_message = "No cards playable due to Quagmire: ";
+          }
+          playable_cards = [];
+          playable_cards.push("skip turn");
         }
-        playable_cards = [];
-        playable_cards.push("skip turn");
       }
     }
   }
@@ -3577,14 +3604,29 @@ Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
   $('.card').on('click', function() {
 
     let card = $(this).attr("id");
+
     //
     // mobile clients have sanity check on card check
     //
     if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
       twilight_self.mobileCardSelect(card, player, function() {
+
+        // cancel missile envy if played appropriately
+        if (twilight_self.game.state.events.missile_envy != 0 && twilight_self.game.state.events.missileenvy != 0 && card == "missileenvy") {
+          twilight_self.game.state.events.missile_envy = 0;
+          twilight_self.game.state.events.missileenvy = 0;
+        }
+
         twilight_self.playerTurnCardSelected(card, player);
       }, "select");
       return;
+    }
+
+
+    // cancel missile envy if played appropriately
+    if (twilight_self.game.state.events.missile_envy != 0 && twilight_self.game.state.events.missileenvy != 0 && card == "missileenvy") {
+      twilight_self.game.state.events.missile_envy = 0;
+      twilight_self.game.state.events.missileenvy = 0;
     }
 
     twilight_self.playerTurnCardSelected(card, player);
@@ -8007,6 +8049,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     if (player == "us") { instigator = 2; opponent = "ussr"; }
     this.game.state.events.missileenvy = 1;
 
+alert("THIS IS WHERE WE ARE: " + instigator + " -- " + opponent + " -- " + player);
+
     //
     //
     //
@@ -8014,6 +8058,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.updateStatus("Opponent is returning card for Missile Envy");
       return 0;
     }
+
 
     //
     // targeted player provided list if multiple options available
@@ -8046,7 +8091,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
         if (i < this.game.deck[0].hand.length) {
 
-            let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
+          let card = this.game.deck[0].cards[this.game.deck[0].hand[i]];
 
           if (card != "china") {
             if (card.ops == selected_ops) {
@@ -11018,6 +11063,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     this.showInfluence("canada", "ussr");
     return 1;
   }
+
+
 
 
   //
