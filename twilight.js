@@ -38,7 +38,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   //
   // default to graphics
@@ -3089,8 +3089,12 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         if (j == 1) {
           twilight_self.uneventOpponentControlledCountries(player, card);
         }
-        twilight_self.playerPlaceInfluence(player, () => {
+        // TODO: ADD INFLUENCE RESET
+        twilight_self.playerPlaceInfluence(player, (country, player) => {
 
+          // use this for reset
+          // past_moves.push({country, player});
+          // console.log(past_moves);
           j--;
 
           //
@@ -3109,7 +3113,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
           let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
           twilight_self.updateStatus(html);
 
-        if (j <= 0) {
+          if (j <= 0) {
             if (twilight_self.isRegionBonus(card) == 1) {
               twilight_self.updateStatus("Place regional bonus");
               j++;
@@ -3121,6 +3125,15 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
               return;
             }
           }
+
+          let back_button_function = () => {
+            // If the placement array is full, then
+            // undo all of the influence placed this turn
+            twilight_self.undoMove(action2, ops - j);
+            twilight_self.playOps(player, ops, card);
+          }
+
+          twilight_self.bindBackButtonFunction(back_button_function);
         });
 
       }
@@ -3240,10 +3253,16 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
           }
         });
       }
-      $('#back_button').off();
-      $('#back_button').on('click', () => {
+
+      let binded_back_function = () => {
+        // If the placement array is full, then
+        // undo all of the influence placed this turn
+        // influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
+        twilight_self.undoMove(action2, ops - j);
         twilight_self.playOps(player, ops, card);
-      });
+      }
+
+      twilight_self.bindBackButtonFunction(binded_back_function);
     });
   }
 
@@ -3264,6 +3283,10 @@ Twilight.prototype.formatPlayOpsStatus = function formatPlayOpsStatus(player, op
   return html;
 }
 
+Twilight.prototype.bindBackButtonFunction = function bindBackButtonFunction(binded_function) {
+  $('#back_button').off();
+  $('#back_button').on('click', binded_function);
+}
 
 
 
@@ -3366,8 +3389,8 @@ Twilight.prototype.playerTurnHeadlineSelected = function playerTurnHeadlineSelec
   //
   // HEADLINE PEEKING / man in earth orbit
   //
-  if (this.game.state.man_in_earth_orbit != "") { 
-    if (this.game.state.man_in_earth_orbit === "us") { 
+  if (this.game.state.man_in_earth_orbit != "") {
+    if (this.game.state.man_in_earth_orbit === "us") {
       if (this.game.player == 1) {
         twilight_self.addMove("headline\theadline2\t2\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card+"\t");
       } else {
@@ -4638,7 +4661,7 @@ Twilight.prototype.showInfluence = function showInfluence(country, player, mycal
   //
   this.game.countries = this.countries;
 
-  if (mycallback != null) { mycallback(); }
+  if (mycallback != null) { mycallback(country, player); }
 
 }
 
@@ -4754,6 +4777,7 @@ Twilight.prototype.playerRealign = function playerRealign(player, card, mycallba
     }
   }
 }
+
 Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, mycallback=null) {
 
   // reset off
@@ -4873,8 +4897,8 @@ Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, 
                   if (removeinf) {
 
                     if (countryname === "cuba") {
-                          twilight_self.removeInfluence("cuba", 2, "ussr");
-                          twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
+                      twilight_self.removeInfluence("cuba", 2, "ussr");
+                      twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
                       twilight_self.addMove("unlimit\tcmc");
                       twilight_self.addMove("notify\tUSSR has cancelled the Cuban Missile Crisis");
                     }
@@ -5289,6 +5313,10 @@ Twilight.prototype.addMove = function addMove(mv) {
   this.moves.push(mv);
 }
 
+Twilight.prototype.removeMove = function removeMove() {
+  return this.moves.pop();
+}
+
 Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
   //
@@ -5331,6 +5359,30 @@ Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
   this.sendMessage("game", extra);
 
 }
+
+Twilight.prototype.undoMove = function undoMove(move_type, num_of_moves) {
+  switch(move_type) {
+    case 'place':
+      // iterate through the queue and remove past moves
+      // cycle through past moves to know what to revert
+      for (let i = 0; i < num_of_moves; i++) {
+        let last_move = this.removeMove();
+        last_move = last_move.split('\t');
+        let country = last_move[3];
+        let ops = last_move[4];
+        let player = last_move[2];
+
+        this.removeInfluence(country, ops, player);
+      }
+
+      // use this to clear the "resolve ops" move
+      this.removeMove();
+    default:
+      break;
+  }
+}
+
+
 Twilight.prototype.endGame = function endGame(winner, method) {
 
   this.game.over = 1;
