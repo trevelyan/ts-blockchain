@@ -964,8 +964,6 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
 
         this.game.state.events.missile_envy = sender;
 
-alert("\n\n\nSET MISSILE_ENVY TO: " + sender);
-
         let opponent_card = 0;
         if (this.game.deck[0].cards[card].player == "us" && sender == 2) { opponent_card = 1; }
         if (this.game.deck[0].cards[card].player == "ussr" && sender == 1) { opponent_card = 1; }
@@ -8040,8 +8038,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     let opponent = "us";
     if (player == "us") { instigator = 2; opponent = "ussr"; }
     this.game.state.events.missileenvy = 1;
-
-alert("THIS IS WHERE WE ARE: " + instigator + " -- " + opponent + " -- " + player);
 
     //
     //
