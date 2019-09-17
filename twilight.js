@@ -44,6 +44,7 @@ function Twilight(app) {
   // default to graphics
   //
   this.interface = 1;
+  this.dont_show_confirm = 0;
 
   //
   // adjust board zoom
@@ -243,9 +244,12 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   // check user preferences to update interface, if text
   //
   if (this.app.options != undefined) {
-    if (this.app.options.gamepref != undefined) {
-      if (this.app.options.gamepref.interface == 0) {
+    if (this.app.options.gameprefs != undefined) {
+      if (this.app.options.gameprefs.interface == 0) {
         this.interface = 0;
+      }
+      if (this.app.options.gameprefs.dont_show_confirm == 1) {
+        this.dont_show_confirm = 1;
       }
     }
   }
@@ -3247,6 +3251,10 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
 
 }
 
+Twilight.prototype.confirmEvent = function confirmEvent() {
+  return confirm("Confirm your desire to play this event");
+}
+
 Twilight.prototype.formatPlayOpsStatus = function formatPlayOpsStatus(player, ops) {
   let html = `<span>${player.toUpperCase()} plays ${ops} OPS:</span><p></p><ul>`;
   if (this.game.state.limit_placement == 0) { html += '<li class="card" id="place">place influence</li>'; }
@@ -3963,6 +3971,47 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
 
         // our event or both
         //
+        if (twilight_self.dont_show_confirm == 0) {
+          let fr =
+            `
+            Confirm you want to play this event
+            <ul>
+            <li class="card" id="playevent">play event</li>
+            <li class="card" id="pickagain">pick again</li>
+            </ul>
+            <input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"> Don't show me this again
+            `;
+
+          twilight_self.updateStatus(fr);
+
+          $('.card').off();
+          $('.card').on('click', function() {
+
+            let action = $(this).attr("id");
+            $('.card').off();
+
+            if (action == "playevent") {
+              twilight_self.playerTriggerEvent(player, card);
+              return;
+            }
+            if (action == "pickagain") {
+              twilight_self.playerTurn(original_selected_card);
+              return;
+            }
+
+          });
+
+          $('input:checkbox').change(function() {
+            if ($(this).is(':checked')) {
+              twilight_self.dont_show_confirm = 1;
+              twilight_self.saveGamePreference('dont_show_confirm', 1);
+            }
+          })
+
+          return;
+        }
+
+        // play normally when not confirmed
         twilight_self.playerTriggerEvent(player, card);
         return;
 
