@@ -244,9 +244,12 @@ Twilight.prototype.initializeGame = function initializeGame(game_id) {
   // check user preferences to update interface, if text
   //
   if (this.app.options != undefined) {
-    if (this.app.options.gamepref != undefined) {
-      if (this.app.options.gamepref.interface == 0) {
+    if (this.app.options.gameprefs != undefined) {
+      if (this.app.options.gameprefs.interface == 0) {
         this.interface = 0;
+      }
+      if (this.app.options.gameprefs.dont_show_confirm == 1) {
+        this.dont_show_confirm = 1;
       }
     }
   }
@@ -3972,7 +3975,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
             <li class="card" id="playevent">play event</li>
             <li class="card" id="pickagain">pick again</li>
             </ul>
-            <input type="checkbox" name="dontshowme" value="true"> Don't show me this again
+            <input type="checkbox" name="dontshowme" value="true" style="width: 20px;height: 1.5em;"> Don't show me this again
             `;
 
           twilight_self.updateStatus(fr);
