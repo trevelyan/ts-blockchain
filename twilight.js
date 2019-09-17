@@ -38,7 +38,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   //
   // default to graphics
@@ -3072,7 +3072,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
     $('.card').on('click', function() {
 
       let action2 = $(this).attr("id");
-      let influence_placed = [];
+      let past_moves = [];
 
       //
       // prevent ops hang
@@ -3092,8 +3092,8 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         twilight_self.playerPlaceInfluence(player, (country, player) => {
 
           // use this for reset
-          influence_placed.push({country, player});
-          console.log(influence_placed);
+          past_moves.push({country, player});
+          console.log(past_moves);
           j--;
 
           //
@@ -3112,7 +3112,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
           let html = twilight_self.formatStatusHeader("Place " + j + " influence", true)
           twilight_self.updateStatus(html);
 
-        if (j <= 0) {
+          if (j <= 0) {
             if (twilight_self.isRegionBonus(card) == 1) {
               twilight_self.updateStatus("Place regional bonus");
               j++;
@@ -3124,6 +3124,15 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
               return;
             }
           }
+
+          $('#back_button').off();
+          $('#back_button').on('click', () => {
+            // If the placement array is full, then
+            // undo all of the influence placed this turn
+            // influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
+            twilight_self.undoMove(action2, past_moves);
+            twilight_self.playOps(player, ops, card);
+          });
         });
 
       }
@@ -3247,7 +3256,8 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
       $('#back_button').on('click', () => {
         // If the placement array is full, then
         // undo all of the influence placed this turn
-        influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
+        // influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
+        twilight_self.undoMove(action2, past_moves);
         twilight_self.playOps(player, ops, card);
       });
     });
@@ -5244,6 +5254,10 @@ Twilight.prototype.addMove = function addMove(mv) {
   this.moves.push(mv);
 }
 
+Twilight.prototype.removeMove = function removeMove() {
+  this.moves.pop();
+}
+
 Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
   this.updateStatus("Waiting for information from peers....");
@@ -5280,6 +5294,26 @@ Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
   this.sendMessage("game", extra);
 
 }
+
+Twilight.prototype.undoMove = function undoMove(move_type, past_moves) {
+  switch(move_type) {
+    case 'place':
+      // iterate through the queue and remove past moves
+      // cycle through past moves to know what to revert
+      for (let i = 0; i < past_moves.length; i++) {
+        let {country, player} = past_moves[i];
+        this.removeInfluence(country, 1, player);
+        this.removeMove();
+      }
+
+      // use this to clear the "resolve ops" move
+      this.removeMove();
+    default:
+      break;
+  }
+}
+
+
 Twilight.prototype.endGame = function endGame(winner, method) {
 
   this.game.over = 1;
