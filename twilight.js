@@ -3072,7 +3072,6 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
     $('.card').on('click', function() {
 
       let action2 = $(this).attr("id");
-      let past_moves = [];
 
       //
       // prevent ops hang
@@ -3125,14 +3124,14 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
             }
           }
 
-          $('#back_button').off();
-          $('#back_button').on('click', () => {
+          let back_button_function = () => {
             // If the placement array is full, then
             // undo all of the influence placed this turn
-            // influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
             twilight_self.undoMove(action2, ops - j);
             twilight_self.playOps(player, ops, card);
-          });
+          }
+
+          twilight_self.bindBackButtonFunction(back_button_function);
         });
 
       }
@@ -3252,14 +3251,16 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
           }
         });
       }
-      $('#back_button').off();
-      $('#back_button').on('click', () => {
+
+      let binded_back_function = () => {
         // If the placement array is full, then
         // undo all of the influence placed this turn
         // influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
         twilight_self.undoMove(action2, ops - j);
         twilight_self.playOps(player, ops, card);
-      });
+      }
+
+      twilight_self.bindBackButtonFunction(binded_back_function);
     });
   }
 
@@ -3276,6 +3277,10 @@ Twilight.prototype.formatPlayOpsStatus = function formatPlayOpsStatus(player, op
   return html;
 }
 
+Twilight.prototype.bindBackButtonFunction = function bindBackButtonFunction(binded_function) {
+  $('#back_button').off();
+  $('#back_button').on('click', binded_function);
+}
 
 
 
@@ -5306,9 +5311,9 @@ Twilight.prototype.undoMove = function undoMove(move_type, num_of_moves) {
         last_move = last_move.split('\t');
         let country = last_move[3];
         let ops = last_move[4];
-        let player = last_move[2]
+        let player = last_move[2];
+
         this.removeInfluence(country, ops, player);
-        // this.removeMove();
       }
 
       // use this to clear the "resolve ops" move
