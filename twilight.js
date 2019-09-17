@@ -3092,8 +3092,8 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         twilight_self.playerPlaceInfluence(player, (country, player) => {
 
           // use this for reset
-          past_moves.push({country, player});
-          console.log(past_moves);
+          // past_moves.push({country, player});
+          // console.log(past_moves);
           j--;
 
           //
@@ -3130,7 +3130,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
             // If the placement array is full, then
             // undo all of the influence placed this turn
             // influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
-            twilight_self.undoMove(action2, past_moves);
+            twilight_self.undoMove(action2, ops - j);
             twilight_self.playOps(player, ops, card);
           });
         });
@@ -3257,7 +3257,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         // If the placement array is full, then
         // undo all of the influence placed this turn
         // influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
-        twilight_self.undoMove(action2, past_moves);
+        twilight_self.undoMove(action2, ops - j);
         twilight_self.playOps(player, ops, card);
       });
     });
@@ -4719,6 +4719,7 @@ Twilight.prototype.playerRealign = function playerRealign(player, card, mycallba
     }
   }
 }
+
 Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, mycallback=null) {
 
   // reset off
@@ -4838,8 +4839,8 @@ Twilight.prototype.playerPlaceInfluence = function playerPlaceInfluence(player, 
                   if (removeinf) {
 
                     if (countryname === "cuba") {
-                          twilight_self.removeInfluence("cuba", 2, "ussr");
-                          twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
+                      twilight_self.removeInfluence("cuba", 2, "ussr");
+                      twilight_self.addMove("remove\tussr\tussr\tcuba\t2");
                       twilight_self.addMove("unlimit\tcmc");
                       twilight_self.addMove("notify\tUSSR has cancelled the Cuban Missile Crisis");
                     }
@@ -5255,7 +5256,7 @@ Twilight.prototype.addMove = function addMove(mv) {
 }
 
 Twilight.prototype.removeMove = function removeMove() {
-  this.moves.pop();
+  return this.moves.pop();
 }
 
 Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
@@ -5295,15 +5296,19 @@ Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
 }
 
-Twilight.prototype.undoMove = function undoMove(move_type, past_moves) {
+Twilight.prototype.undoMove = function undoMove(move_type, num_of_moves) {
   switch(move_type) {
     case 'place':
       // iterate through the queue and remove past moves
       // cycle through past moves to know what to revert
-      for (let i = 0; i < past_moves.length; i++) {
-        let {country, player} = past_moves[i];
-        this.removeInfluence(country, 1, player);
-        this.removeMove();
+      for (let i = 0; i < num_of_moves; i++) {
+        let last_move = this.removeMove();
+        last_move = last_move.split('\t');
+        let country = last_move[3];
+        let ops = last_move[4];
+        let player = last_move[2]
+        this.removeInfluence(country, ops, player);
+        // this.removeMove();
       }
 
       // use this to clear the "resolve ops" move
