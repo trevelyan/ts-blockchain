@@ -2124,7 +2124,10 @@ console.log("HEADLINE: " + stage + " -- " + player + " -- " + hash + " -- " + xo
 
           if (this.game.player != bonus_player) {
             this.updateStatus(this.game.state.eagle_has_landed.toUpperCase() + " </span> <span>is deciding whether to discard a card");
-            this.saveGame(this.game.id);
+	    //
+	    // commented-out 2019-09-18
+	    //
+            //this.saveGame(this.game.id);
             return 0;
           }
 
@@ -2167,7 +2170,10 @@ console.log("HEADLINE: " + stage + " -- " + player + " -- " + hash + " -- " + xo
                 twilight_self.updateStatus("<span>No cards available to discard! Please wait for next turn...</span>");
                 twilight_self.addMove("notify\tUS has no cards available to discard");
                 twilight_self.endTurn(1);
-                 twilight_self.saveGame(twilight_self.game.id);
+	        //
+	        // commented-out 2019-09-18
+	        //
+                //twilight_self.saveGame(twilight_self.game.id);
                 return;
               }
 
