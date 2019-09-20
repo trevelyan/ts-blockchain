@@ -3260,14 +3260,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         });
       }
 
-      let binded_back_function = () => {
-        // If the placement array is full, then
-        // undo all of the influence placed this turn
-        // influence_placed.forEach(placement => twilight_self.removeInfluence(placement.country, 1, placement.player));
-        twilight_self.undoMove(action2, ops - j);
-        twilight_self.playOps(player, ops, card);
-      }
-
+      let binded_back_function = () => twilight_self.playOps(player, ops, card);
       twilight_self.bindBackButtonFunction(binded_back_function);
     });
   }
