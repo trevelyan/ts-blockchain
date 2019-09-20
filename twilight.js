@@ -11864,6 +11864,7 @@ Twilight.prototype.scoreRegion = function scoreRegion(card) {
     //
     let vp_adjustment = vp_us - vp_ussr;
     this.game.state.vp += vp_adjustment;
+    if (vp_adjustment > 9000 || vp_adjustment < -9000) { vp_adjustment = 'WIN' }
     this.updateLog("<span>Europe: </span> " + vp_adjustment + " <span>VP</span>");
 
   }
