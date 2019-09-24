@@ -1473,7 +1473,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         }
 
         let user_message = "<span>Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.</span><p></p><ul>";
-            user_message += '<li class="card" id="taketear"><span>ake coup or realign</span></li>';
+            user_message += '<li class="card" id="taketear"><span>make coup or realign</span></li>';
             user_message += '<li class="card" id="skiptear"><span>skip coup</span></li>';
             user_message += '</ul>';
         twilight_self.updateStatus(user_message);
