@@ -2769,14 +2769,14 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     let opponent_card = this.game.state.headline_opponent_card;
 
     if (this.game.player == 1) {
-      if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
+      if (this.returnOpsOfCard(my_card) > this.returnOpsOfCard(opponent_card)) {
         player_to_go = 1;
       } else {
         player_to_go = 2;
       }
     }
     if (this.game.player == 2) {
-      if (this.game.deck[0].cards[my_card].ops >= this.game.deck[0].cards[opponent_card].ops) {
+      if (this.returnOpsOfCard(my_card) >= this.returnOpsOfCard(opponent_card)) {
         player_to_go = 2;
       } else {
         player_to_go = 1;
@@ -2888,7 +2888,7 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     if (this.game.player == 1) {
       if (this.game.deck[0].cards[my_card] == undefined) { player_to_go = 2; } else {
         if (this.game.deck[0].cards[opponent_card] == undefined) { player_to_go = 1; } else {
-          if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
+          if (this.returnOpsOfCard(my_card) > this.returnOpsOfCard(opponent_card)) {
             player_to_go = 2;
           } else {
             player_to_go = 1;
@@ -2900,7 +2900,7 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     if (this.game.player == 2) {
       if (this.game.deck[0].cards[my_card] == undefined) { player_to_go = 1; } else {
         if (this.game.deck[0].cards[opponent_card] == undefined) { player_to_go = 2; } else {
-          if (this.game.deck[0].cards[my_card].ops >= this.game.deck[0].cards[opponent_card].ops) {
+          if (this.returnOpsOfCard(my_card) >= this.returnOpsOfCard(opponent_card)) {
             player_to_go = 1;
           } else {
             player_to_go = 2;
@@ -6402,7 +6402,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 
     this.addMove("resolve\tindreds");
-    if (yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
+    if (hungary_us >= hungary_ussr && yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
       this.endTurn();
       return 0;
     } else {
