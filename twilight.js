@@ -38,7 +38,7 @@ function Twilight(app) {
   // hardcodes the hands for each player (editable) during
   // placement for easier interactive card testing.
   //
-  this.is_testing = 0;
+  this.is_testing = 1;
 
   //
   // default to graphics
@@ -2448,6 +2448,11 @@ console.log("HEADLINE: " + stage + " -- " + player + " -- " + hash + " -- " + xo
         //
         this.game.state.events.china_card_eligible = 0;
 
+	//
+	// back button functions again
+	//
+        this.game.state.back_button_cancelled = 0;
+
 
         //
         // NORAD
@@ -2962,10 +2967,6 @@ Twilight.prototype.playMove = function playMove(msg) {
     }
   }
 
-console.log("MOVES REMAINING: " + moves_remaining);
-console.log("SCORING CARDS: " + scoring_cards_available);
-console.log("WE ARE HERE WITH MISSILE_ENVY == " + this.game.state.events.missile_envy);
-
   //
   // player 1 moves
   //
@@ -3132,20 +3133,23 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
             }
           }
 
-          let back_button_function = () => {
+
+          twilight_self.bindBackButtonFunction(function() {
+	    //
             // If the placement array is full, then
             // undo all of the influence placed this turn
-            twilight_self.undoMove(action2, ops - j);
-            twilight_self.playOps(player, ops, card);
-          }
+	    //
+            if (twilight_self.undoMove(action2, ops - j)) { 
+              twilight_self.playOps(player, ops, card);
+	    }
+	  });
 
-          twilight_self.bindBackButtonFunction(back_button_function);
         });
 
       }
 
       if (action2 == "coup") {
-
+ 
         let html = twilight_self.formatStatusHeader("Pick a country to coup", true);
         twilight_self.updateStatus(html);
         twilight_self.playerCoupCountry(player, ops, card);
@@ -3260,8 +3264,10 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         });
       }
 
-      let binded_back_function = () => twilight_self.playOps(player, ops, card);
-      twilight_self.bindBackButtonFunction(binded_back_function);
+      twilight_self.bindBackButtonFunction(function() {
+	twilight_self.playOps(player, ops, card);
+      });
+
     });
   }
 
@@ -3282,9 +3288,9 @@ Twilight.prototype.formatPlayOpsStatus = function formatPlayOpsStatus(player, op
   return html;
 }
 
-Twilight.prototype.bindBackButtonFunction = function bindBackButtonFunction(binded_function) {
+Twilight.prototype.bindBackButtonFunction = function bindBackButtonFunction(mycallback) {
   $('#back_button').off();
-  $('#back_button').on('click', binded_function);
+  $('#back_button').on('click', mycallback);
 }
 
 
@@ -3795,7 +3801,11 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       let html = ``;
 
       // true means we want to include the back button in our functionality
-      html += twilight_self.formatStatusHeader(status_header, true);
+      if (this.game.state.back_button_cancelled == 1) {
+        html += twilight_self.formatStatusHeader(status_header, false);
+      } else {
+        html += twilight_self.formatStatusHeader(status_header, true);
+      }
       html += `<p></p><ul><li class="card" id="event">score region</li></ul>`
       twilight_self.updateStatus(html);
     } else {
@@ -3819,10 +3829,20 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       }
 
 
-      let announcement = twilight_self.formatStatusHeader(
-        `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
-        true
-      );
+      let announcement = "";
+
+      if (this.game.state.back_button_cancelled == 1) {
+        announcement = twilight_self.formatStatusHeader(
+          `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
+          false
+        );
+      } else {
+        announcement = twilight_self.formatStatusHeader(
+          `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
+          true
+        );
+
+      }
       announcement += `<p></p><ul>`;
 
       //
@@ -5319,6 +5339,11 @@ Twilight.prototype.removeMove = function removeMove() {
 Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
   //
+  // cancel back button on subsequent cards picks
+  //
+  this.game.state.back_button_cancelled = 1;
+
+  //
   // show active events
   //
   this.updateEventTiles();
@@ -5359,7 +5384,9 @@ Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
 }
 
+
 Twilight.prototype.undoMove = function undoMove(move_type, num_of_moves) {
+
   switch(move_type) {
     case 'place':
       // iterate through the queue and remove past moves
@@ -5370,14 +5397,15 @@ Twilight.prototype.undoMove = function undoMove(move_type, num_of_moves) {
         let country = last_move[3];
         let ops = last_move[4];
         let player = last_move[2];
-
         this.removeInfluence(country, ops, player);
       }
 
       // use this to clear the "resolve ops" move
       this.removeMove();
+      return 1;
     default:
       break;
+      return 0;
   }
 }
 
@@ -5587,6 +5615,7 @@ Twilight.prototype.returnState = function returnState() {
   var state = {};
 
   state.dealt = 0;
+  state.back_button_cancelled = 0;
   state.placement = 0;
   state.headline  = 0;
   state.headline_hash = "";
@@ -14098,6 +14127,20 @@ Twilight.prototype.returnQuickLinkGameOptions = function returnQuickLinkGameOpti
   }
 
   return new_options;
+}
+
+
+
+Twilight.prototype.formatStatusHeader = function formatStatusHeader(status_header, include_back_button=false) {
+  let back_button_html = `<i class="fa fa-arrow-left" id="back_button"></i>`;
+  return `
+  <div>
+    ${include_back_button ? back_button_html : ""}
+    <div style="text-align: center;">
+      ${status_header}
+    </div>
+  </div>
+  `
 }
 
 
