@@ -3558,10 +3558,8 @@ console.log("IS_THIS_MISSILE_ENVY_NONEVENTABLE: " + is_this_missile_envy_noneven
       user_message = "Select a card for Quagmire: ";
     }
 
-console.log("\n\nHERE WE ARE: " + this.game.state.events.missileenvy + " == " + this.game.state.events.missile_envy);
-
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
+      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
         cards_available++;
       }
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
@@ -3573,7 +3571,7 @@ console.log("\n\nHERE WE ARE: " + this.game.state.events.missileenvy + " == " + 
     // handle missile envy if needed
     //
     if (this.game.state.events.missile_envy == this.game.player) {
-      if (this.modifyOps(2, "missileenvy") >= 2) {
+      if (this.modifyOps(2, "missileenvy", this.game.player, 0) >= 2) {
 	playable_cards = [];
 	playable_cards.push("missileenvy");
       }
@@ -3587,7 +3585,7 @@ console.log("\n\nHERE WE ARE: " + this.game.state.events.missileenvy + " == " + 
         playable_cards = [];
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
-            if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
+            if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
               playable_cards.push(this.game.deck[0].hand[i]);
             }
           }
@@ -3828,7 +3826,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       twilight_self.updateStatus(html);
     } else {
 
-      let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card);
+      let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, twilight_self.game.player, 0);
 
 
       //
@@ -3849,7 +3847,7 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
 
       let announcement = "";
 
-      if (this.game.state.back_button_cancelled == 1) {
+      if (twilight_self.game.state.back_button_cancelled == 1) {
         announcement = twilight_self.formatStatusHeader(
           `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
           false
@@ -7323,7 +7321,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
-          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]);
+          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0);
           if (avops >= 3) { available = 1; }
         }
       }
@@ -7347,7 +7345,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         if (action == "discard") {
           let choicehtml = "<span>Choose a card to discard:</span><p></p><ul>";
           for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
-            if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops, twilight_self.game.deck[0].hand[i]) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
+            if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops, twilight_self.game.deck[0].hand[i], twilight_self.game.player, 0) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
               choicehtml += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
             }
           }
@@ -7360,10 +7358,10 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
             let card = $(this).attr("id");
 
-                if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+            if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
               twilight_self.mobileCardSelect(card, player, function() {
                 twilight_self.removeCardFromHand(card);
-                  twilight_self.addMove("notify\tus discarded "+card);
+                twilight_self.addMove("notify\tus discarded "+card);
                 twilight_self.endTurn();
               }, "discard");
               return 0;
@@ -10236,7 +10234,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     let user_message = "<span>Choose a card to discard or USSR doubles influence in two countries in South America:</span><p></p><ul>";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) > 2 && this.game.deck[0].hand[i] != "china") {
+      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) > 2 && this.game.deck[0].hand[i] != "china") {
         user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
         cards_available++;
       }
@@ -11458,7 +11456,7 @@ Twilight.prototype.limitToRegionBonus = function limitToRegionBonus() {
   }
   return;
 }
-Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0) {
+Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0, updatelog=1) {
 
   if (playernum == 0) { playernum = this.game.player; }
 
@@ -11467,19 +11465,27 @@ Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0) {
   }
 
   if (this.game.state.events.brezhnev == 1 && playernum == 1) {
-    this.updateLog("USSR gets Brezhnev bonus +1");
+    if (updatelog == 1) {
+      this.updateLog("USSR gets Brezhnev bonus +1");
+    }
     ops++;
   }
   if (this.game.state.events.containment == 1 && playernum == 2) {
-    this.updateLog("US gets Containment bonus +1");
+    if (updatelog == 1) {
+      this.updateLog("US gets Containment bonus +1");
+    }
     ops++;
   }
   if (this.game.state.events.redscare_player1 == 1 && playernum == 1) {
-    this.updateLog("USSR is affected by Red Purge");
+    if (updatelog == 1) {
+      this.updateLog("USSR is affected by Red Purge");
+    }
     ops--;
   }
   if (this.game.state.events.redscare_player2 == 1 && playernum == 2) {
-    this.updateLog("US is affected by Red Scare");
+    if (updatelog == 1) {
+      this.updateLog("US is affected by Red Scare");
+    }
     ops--;
   }
   if (ops <= 0) { return 1; }
