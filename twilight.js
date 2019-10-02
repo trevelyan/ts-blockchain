@@ -1473,7 +1473,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
         }
 
         let user_message = "<span>Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.</span><p></p><ul>";
-            user_message += '<li class="card" id="taketear"><span>ake coup or realign</span></li>';
+            user_message += '<li class="card" id="taketear"><span>make coup or realign</span></li>';
             user_message += '<li class="card" id="skiptear"><span>skip coup</span></li>';
             user_message += '</ul>';
         twilight_self.updateStatus(user_message);
@@ -1991,6 +1991,10 @@ console.log("resolving earlier: " + this.game.queue[z]);
 	  player = parseInt(mv[2]);
 	}
 
+        if (stage === "headline1") {
+	  this.game.state.defectors_pulled_in_headline = 0;
+        }
+
         if (mv.length > 3) { hash = mv[3]; }
         if (mv.length > 4) { xor = mv[4]; }
 	if (mv.length > 5) { card = mv[5]; }
@@ -2448,6 +2452,10 @@ console.log("HEADLINE: " + stage + " -- " + player + " -- " + hash + " -- " + xo
         //
         this.game.state.events.china_card_eligible = 0;
 
+	//
+	// back button functions again
+	//
+        this.game.state.back_button_cancelled = 0;
 
         //
         // NORAD
@@ -2769,14 +2777,14 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     let opponent_card = this.game.state.headline_opponent_card;
 
     if (this.game.player == 1) {
-      if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
+      if (this.returnOpsOfCard(my_card) > this.returnOpsOfCard(opponent_card)) {
         player_to_go = 1;
       } else {
         player_to_go = 2;
       }
     }
     if (this.game.player == 2) {
-      if (this.game.deck[0].cards[my_card].ops >= this.game.deck[0].cards[opponent_card].ops) {
+      if (this.returnOpsOfCard(my_card) >= this.returnOpsOfCard(opponent_card)) {
         player_to_go = 2;
       } else {
         player_to_go = 1;
@@ -2888,7 +2896,7 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     if (this.game.player == 1) {
       if (this.game.deck[0].cards[my_card] == undefined) { player_to_go = 2; } else {
         if (this.game.deck[0].cards[opponent_card] == undefined) { player_to_go = 1; } else {
-          if (this.game.deck[0].cards[my_card].ops > this.game.deck[0].cards[opponent_card].ops) {
+          if (this.returnOpsOfCard(my_card) > this.returnOpsOfCard(opponent_card)) {
             player_to_go = 2;
           } else {
             player_to_go = 1;
@@ -2900,7 +2908,7 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     if (this.game.player == 2) {
       if (this.game.deck[0].cards[my_card] == undefined) { player_to_go = 1; } else {
         if (this.game.deck[0].cards[opponent_card] == undefined) { player_to_go = 2; } else {
-          if (this.game.deck[0].cards[my_card].ops >= this.game.deck[0].cards[opponent_card].ops) {
+          if (this.returnOpsOfCard(my_card) >= this.returnOpsOfCard(opponent_card)) {
             player_to_go = 1;
           } else {
             player_to_go = 2;
@@ -2915,11 +2923,20 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     if (this.game.player == 2) { player = "us"; opponent = "ussr"; }
     let card_player = player;
 
-    if (player_to_go == this.game.player) {
-      this.addMove("resolve\theadline");
-      this.addMove("event\t"+card_player+"\t"+my_card);
-      this.removeCardFromHand(my_card);
-      this.endTurn();
+    if (player == "ussr" && this.game.state.defectors_pulled_in_headline == 1) {
+      if (player_to_go == this.game.player) {
+        this.addMove("resolve\theadline");
+        this.addMove("notify\tDefectors cancels USSR headline. Tough luck, there.");
+        this.removeCardFromHand(my_card);
+        this.endTurn();
+      }
+    } else {
+      if (player_to_go == this.game.player) {
+        this.addMove("resolve\theadline");
+        this.addMove("event\t"+card_player+"\t"+my_card);
+        this.removeCardFromHand(my_card);
+        this.endTurn();
+      }
     }
 
     return 0;
@@ -2961,10 +2978,6 @@ Twilight.prototype.playMove = function playMove(msg) {
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]].scoring == 1) { scoring_cards_available++; }
     }
   }
-
-console.log("MOVES REMAINING: " + moves_remaining);
-console.log("SCORING CARDS: " + scoring_cards_available);
-console.log("WE ARE HERE WITH MISSILE_ENVY == " + this.game.state.events.missile_envy);
 
   //
   // player 1 moves
@@ -3132,20 +3145,23 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
             }
           }
 
-          let back_button_function = () => {
+
+          twilight_self.bindBackButtonFunction(function() {
+	    //
             // If the placement array is full, then
             // undo all of the influence placed this turn
-            twilight_self.undoMove(action2, ops - j);
-            twilight_self.playOps(player, ops, card);
-          }
+	    //
+            if (twilight_self.undoMove(action2, ops - j)) { 
+              twilight_self.playOps(player, ops, card);
+	    }
+	  });
 
-          twilight_self.bindBackButtonFunction(back_button_function);
         });
 
       }
 
       if (action2 == "coup") {
-
+ 
         let html = twilight_self.formatStatusHeader("Pick a country to coup", true);
         twilight_self.updateStatus(html);
         twilight_self.playerCoupCountry(player, ops, card);
@@ -3260,8 +3276,10 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         });
       }
 
-      let binded_back_function = () => twilight_self.playOps(player, ops, card);
-      twilight_self.bindBackButtonFunction(binded_back_function);
+      twilight_self.bindBackButtonFunction(function() {
+	twilight_self.playOps(player, ops, card);
+      });
+
     });
   }
 
@@ -3282,9 +3300,9 @@ Twilight.prototype.formatPlayOpsStatus = function formatPlayOpsStatus(player, op
   return html;
 }
 
-Twilight.prototype.bindBackButtonFunction = function bindBackButtonFunction(binded_function) {
+Twilight.prototype.bindBackButtonFunction = function bindBackButtonFunction(mycallback) {
   $('#back_button').off();
-  $('#back_button').on('click', binded_function);
+  $('#back_button').on('click', mycallback);
 }
 
 
@@ -3430,6 +3448,12 @@ Twilight.prototype.playerTurnHeadlineSelected = function playerTurnHeadlineSelec
 Twilight.prototype.playerTurn = function playerTurn(selected_card=null) {
 
   //
+  // remove back button from forced gameplay
+  //
+  if (selected_card != null) { this.game.state.back_button_cancelled = 1; }
+
+
+  //
   // show active events
   //
   this.updateEventTiles();
@@ -3534,10 +3558,8 @@ console.log("IS_THIS_MISSILE_ENVY_NONEVENTABLE: " + is_this_missile_envy_noneven
       user_message = "Select a card for Quagmire: ";
     }
 
-console.log("\n\nHERE WE ARE: " + this.game.state.events.missileenvy + " == " + this.game.state.events.missile_envy);
-
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
+      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
         cards_available++;
       }
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
@@ -3549,7 +3571,7 @@ console.log("\n\nHERE WE ARE: " + this.game.state.events.missileenvy + " == " + 
     // handle missile envy if needed
     //
     if (this.game.state.events.missile_envy == this.game.player) {
-      if (this.modifyOps(2, "missileenvy") >= 2) {
+      if (this.modifyOps(2, "missileenvy", this.game.player, 0) >= 2) {
 	playable_cards = [];
 	playable_cards.push("missileenvy");
       }
@@ -3563,7 +3585,7 @@ console.log("\n\nHERE WE ARE: " + this.game.state.events.missileenvy + " == " + 
         playable_cards = [];
         for (i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
-            if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) >= 2 && this.game.deck[0].hand[i] != "china") {
+            if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
               playable_cards.push(this.game.deck[0].hand[i]);
             }
           }
@@ -3795,12 +3817,16 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       let html = ``;
 
       // true means we want to include the back button in our functionality
-      html += twilight_self.formatStatusHeader(status_header, true);
+      if (this.game.state.back_button_cancelled == 1) {
+        html += twilight_self.formatStatusHeader(status_header, false);
+      } else {
+        html += twilight_self.formatStatusHeader(status_header, true);
+      }
       html += `<p></p><ul><li class="card" id="event">score region</li></ul>`
       twilight_self.updateStatus(html);
     } else {
 
-      let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card);
+      let ops = twilight_self.modifyOps(twilight_self.game.deck[0].cards[card].ops, card, twilight_self.game.player, 0);
 
 
       //
@@ -3819,10 +3845,20 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
       }
 
 
-      let announcement = twilight_self.formatStatusHeader(
-        `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
-        true
-      );
+      let announcement = "";
+
+      if (twilight_self.game.state.back_button_cancelled == 1) {
+        announcement = twilight_self.formatStatusHeader(
+          `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
+          false
+        );
+      } else {
+        announcement = twilight_self.formatStatusHeader(
+          `<span>${player.toUpperCase()}</span> <span>playing</span> <span>${twilight_self.game.deck[0].cards[card].name}</span>`,
+          true
+        );
+
+      }
       announcement += `<p></p><ul>`;
 
       //
@@ -5319,6 +5355,11 @@ Twilight.prototype.removeMove = function removeMove() {
 Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
   //
+  // cancel back button on subsequent cards picks
+  //
+  this.game.state.back_button_cancelled = 1;
+
+  //
   // show active events
   //
   this.updateEventTiles();
@@ -5359,7 +5400,9 @@ Twilight.prototype.endTurn = function endTurn(nextTarget=0) {
 
 }
 
+
 Twilight.prototype.undoMove = function undoMove(move_type, num_of_moves) {
+
   switch(move_type) {
     case 'place':
       // iterate through the queue and remove past moves
@@ -5370,14 +5413,15 @@ Twilight.prototype.undoMove = function undoMove(move_type, num_of_moves) {
         let country = last_move[3];
         let ops = last_move[4];
         let player = last_move[2];
-
         this.removeInfluence(country, ops, player);
       }
 
       // use this to clear the "resolve ops" move
       this.removeMove();
+      return 1;
     default:
       break;
+      return 0;
   }
 }
 
@@ -5587,6 +5631,8 @@ Twilight.prototype.returnState = function returnState() {
   var state = {};
 
   state.dealt = 0;
+  state.back_button_cancelled = 0;
+  state.defectors_pulled_in_headline = 0;
   state.placement = 0;
   state.headline  = 0;
   state.headline_hash = "";
@@ -6190,11 +6236,25 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
   // Defectors
   //
   if (card == "defectors") {
-    if (this.game.state.headline == 0 && this.game.state.turn == 0) {
-      this.game.state.vp += 1;
-      this.updateLog("US gains 1 VP from Defectors");
-      this.updateDefcon();
+
+    if (this.game.state.headline == 0) {
+      if (this.game.state.turn == 0) {
+        this.game.state.vp += 1;
+        this.updateLog("US gains 1 VP from Defectors");
+        this.updateDefcon();
+      }
+      return 1;
     }
+
+    //
+    // Defectors can be PULLED in the headline phase by 5 Year Plan or Grain Sales, in which 
+    // case it can only cancel the USSR headline if the USSR headline has not already gone.
+    // what an insanely great but complicated game dynamic at play here....
+    //
+    if (this.game.state.headline == 1) {
+      this.game.state.defectors_pulled_in_headline = 1;
+    }
+
     return 1;
   }
 
@@ -6402,7 +6462,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
 
     this.addMove("resolve\tindreds");
-    if (yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
+    if (hungary_us >= hungary_ussr && yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
       this.endTurn();
       return 0;
     } else {
@@ -6700,10 +6760,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("remove\tus\tussr\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
               twilight_self.addMove("milops\tus\t2");
               if (twilight_self.game.state.events.flowerpower == 1) {
-                twilight_self.addMove("vp\tus\t2\t1");
-              } else {
-                twilight_self.addMove("vp\tus\t2");
+                twilight_self.addMove("vp\tussr\t2\t1");
               }
+              twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "us");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "ussr");
               twilight_self.endTurn();
@@ -6714,9 +6773,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("milops\tussr\t2");
               if (twilight_self.game.state.events.flowerpower == 1) {
                 twilight_self.addMove("vp\tussr\t2\t1");
-              } else {
-                twilight_self.addMove("vp\tussr\t2");
               }
+              twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].us, "ussr");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].us, "us");
               twilight_self.endTurn();
@@ -6748,10 +6806,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("remove\tus\tussr\tindia\t"+twilight_self.countries['india'].ussr);
               twilight_self.addMove("milops\tus\t2");
               if (twilight_self.game.state.events.flowerpower == 1) {
-                twilight_self.addMove("vp\tus\t2\t1");
-              } else {
-                twilight_self.addMove("vp\tus\t2");
+                twilight_self.addMove("vp\tussr\t2\t1");
               }
+              twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].ussr, "us");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].ussr, "ussr");
               twilight_self.endTurn();
@@ -6762,9 +6819,8 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("milops\tussr\t2");
               if (twilight_self.game.state.events.flowerpower == 1) {
                 twilight_self.addMove("vp\tussr\t2\t1");
-              } else {
-                twilight_self.addMove("vp\tussr\t2");
               }
+              twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].us, "ussr");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].us, "us");
                twilight_self.endTurn();
@@ -7265,7 +7321,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       for (let i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.game.deck[0].hand[i] != "china") {
-          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]);
+          let avops = this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0);
           if (avops >= 3) { available = 1; }
         }
       }
@@ -7289,7 +7345,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
         if (action == "discard") {
           let choicehtml = "<span>Choose a card to discard:</span><p></p><ul>";
           for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
-            if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops, twilight_self.game.deck[0].hand[i]) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
+            if (twilight_self.modifyOps(twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].ops, twilight_self.game.deck[0].hand[i], twilight_self.game.player, 0) >= 3 && twilight_self.game.deck[0].hand[i] != "china") {
               choicehtml += '<li class="card showcard" id="'+twilight_self.game.deck[0].hand[i]+'">'+twilight_self.game.deck[0].cards[twilight_self.game.deck[0].hand[i]].name+'</li>';
             }
           }
@@ -7302,10 +7358,10 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
             let card = $(this).attr("id");
 
-                if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
+            if (twilight_self.app.browser.isMobileBrowser(navigator.userAgent)) {
               twilight_self.mobileCardSelect(card, player, function() {
                 twilight_self.removeCardFromHand(card);
-                  twilight_self.addMove("notify\tus discarded "+card);
+                twilight_self.addMove("notify\tus discarded "+card);
                 twilight_self.endTurn();
               }, "discard");
               return 0;
@@ -10178,7 +10234,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     let user_message = "<span>Choose a card to discard or USSR doubles influence in two countries in South America:</span><p></p><ul>";
     for (i = 0; i < this.game.deck[0].hand.length; i++) {
-      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i]) > 2 && this.game.deck[0].hand[i] != "china") {
+      if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], this.game.player, 0) > 2 && this.game.deck[0].hand[i] != "china") {
         user_message += '<li class="card showcard" id="'+this.game.deck[0].hand[i]+'">'+this.game.deck[0].cards[this.game.deck[0].hand[i]].name+'</li>';
         cards_available++;
       }
@@ -10280,10 +10336,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("remove\tus\tussr\tiran\t"+twilight_self.countries['iran'].ussr);
               twilight_self.addMove("milops\tus\t2");
               if (twilight_self.game.state.events.flowerpower == 1) {
-                twilight_self.addMove("vp\tus\t2\t1");
-              } else {
-                twilight_self.addMove("vp\tus\t2");
+                twilight_self.addMove("vp\tussr\t2\t1");
               }
+              twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("iran", twilight_self.countries['iran'].ussr, "us");
               twilight_self.removeInfluence("iran", twilight_self.countries['iran'].ussr, "ussr");
               twilight_self.endTurn();
@@ -10293,10 +10348,9 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("remove\tussr\tus\tiran\t"+twilight_self.countries['iran'].us);
               twilight_self.addMove("milops\tussr\t2");
               if (twilight_self.game.state.events.flowerpower == 1) {
-                twilight_self.addMove("vp\tus\t2\t1");
-              } else {
-                twilight_self.addMove("vp\tus\t2");
+                twilight_self.addMove("vp\tussr\t2\t1");
               }
+              twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("iran", twilight_self.countries['iran'].us, "ussr");
               twilight_self.removeInfluence("iran", twilight_self.countries['iran'].us, "us");
               twilight_self.endTurn();
@@ -10306,9 +10360,15 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
             if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
+              if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tussr\t2\t1");
+              }
               twilight_self.endTurn();
             } else {
               twilight_self.addMove("milops\tussr\t2");
+              if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tussr\t2\t1");
+              }
               twilight_self.endTurn();
             }
 
@@ -10342,17 +10402,23 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("iraq", twilight_self.countries['iraq'].us, "ussr");
               twilight_self.removeInfluence("iraq", twilight_self.countries['iraq'].us, "us");
-               twilight_self.endTurn();
+              twilight_self.endTurn();
               twilight_self.showInfluence("iraq", "ussr");
             }
           } else {
 
             if (player == "us") {
               twilight_self.addMove("milops\tus\t2");
+              if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tussr\t2\t1");
+              }
               twilight_self.endTurn();
             } else {
               twilight_self.addMove("milops\tussr\t2");
-               twilight_self.endTurn();
+              if (twilight_self.game.state.events.flowerpower == 1) {
+                twilight_self.addMove("vp\tussr\t2\t1");
+              }
+              twilight_self.endTurn();
             }
           }
         }
@@ -11390,7 +11456,7 @@ Twilight.prototype.limitToRegionBonus = function limitToRegionBonus() {
   }
   return;
 }
-Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0) {
+Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0, updatelog=1) {
 
   if (playernum == 0) { playernum = this.game.player; }
 
@@ -11399,19 +11465,27 @@ Twilight.prototype.modifyOps = function modifyOps(ops,card="",playernum=0) {
   }
 
   if (this.game.state.events.brezhnev == 1 && playernum == 1) {
-    this.updateLog("USSR gets Brezhnev bonus +1");
+    if (updatelog == 1) {
+      this.updateLog("USSR gets Brezhnev bonus +1");
+    }
     ops++;
   }
   if (this.game.state.events.containment == 1 && playernum == 2) {
-    this.updateLog("US gets Containment bonus +1");
+    if (updatelog == 1) {
+      this.updateLog("US gets Containment bonus +1");
+    }
     ops++;
   }
   if (this.game.state.events.redscare_player1 == 1 && playernum == 1) {
-    this.updateLog("USSR is affected by Red Purge");
+    if (updatelog == 1) {
+      this.updateLog("USSR is affected by Red Purge");
+    }
     ops--;
   }
   if (this.game.state.events.redscare_player2 == 1 && playernum == 2) {
-    this.updateLog("US is affected by Red Scare");
+    if (updatelog == 1) {
+      this.updateLog("US is affected by Red Scare");
+    }
     ops--;
   }
   if (ops <= 0) { return 1; }
@@ -14098,6 +14172,20 @@ Twilight.prototype.returnQuickLinkGameOptions = function returnQuickLinkGameOpti
   }
 
   return new_options;
+}
+
+
+
+Twilight.prototype.formatStatusHeader = function formatStatusHeader(status_header, include_back_button=false) {
+  let back_button_html = `<i class="fa fa-arrow-left" id="back_button"></i>`;
+  return `
+  <div>
+    ${include_back_button ? back_button_html : ""}
+    <div style="text-align: center;">
+      ${status_header}
+    </div>
+  </div>
+  `
 }
 
 
