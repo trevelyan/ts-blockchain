@@ -11741,7 +11741,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
 
       if (this.game.state.events.formosan == 1) {
         if (scoring.us.bg == 7 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 9; }
-        if (scoring.us.bg == 6 && scoring.us.total > scoring.ussr.total && this.isControlled("taiwan", "us") == 0) { scoring.us.vp = 9; }
+        if (scoring.us.bg == 6 && scoring.us.total > scoring.ussr.total && this.isControlled("us", "taiwan") == 0) { scoring.us.vp = 9; }
         if (scoring.ussr.bg == 6 && scoring.ussr.total > scoring.us.total) { vp_ussr = 9; }
       } else {
         if (scoring.us.bg == 6 && scoring.us.total > scoring.ussr.total) { scoring.us.vp = 9; }
