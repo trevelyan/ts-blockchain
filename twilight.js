@@ -3146,7 +3146,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
           }
 
 
-          twilight_self.bindBackButtonFunction(function() {
+          twilight_self.bindBackButtonFunction(() => {
 	    //
             // If the placement array is full, then
             // undo all of the influence placed this turn
@@ -3276,7 +3276,7 @@ Twilight.prototype.playOps = function playOps(player, ops, card) {
         });
       }
 
-      twilight_self.bindBackButtonFunction(function() {
+      twilight_self.bindBackButtonFunction(() => {
 	twilight_self.playOps(player, ops, card);
       });
 
@@ -5410,10 +5410,22 @@ Twilight.prototype.undoMove = function undoMove(move_type, num_of_moves) {
       for (let i = 0; i < num_of_moves; i++) {
         let last_move = this.removeMove();
         last_move = last_move.split('\t');
+        let player = last_move[2];
         let country = last_move[3];
         let ops = last_move[4];
-        let player = last_move[2];
+
+	let opponent = "us";
+	if (player == "us") { opponent = "ussr"; }
         this.removeInfluence(country, ops, player);
+
+	//
+	// if the country is now enemy controlled, it must have taken an extra move
+	// for the play to place there....
+	//
+        if (this.isControlled(opponent, country) == 1) {
+	  i++;
+        }
+
       }
 
       // use this to clear the "resolve ops" move
