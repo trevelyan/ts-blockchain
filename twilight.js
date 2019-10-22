@@ -6771,9 +6771,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tus\tus\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
               twilight_self.addMove("remove\tus\tussr\tpakistan\t"+twilight_self.countries['pakistan'].ussr);
               twilight_self.addMove("milops\tus\t2");
-              if (twilight_self.game.state.events.flowerpower == 1) {
-                twilight_self.addMove("vp\tussr\t2\t1");
-              }
               twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "us");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].ussr, "ussr");
@@ -6783,9 +6780,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tussr\tussr\tpakistan\t"+twilight_self.countries['pakistan'].us);
               twilight_self.addMove("remove\tussr\tus\tpakistan\t"+twilight_self.countries['pakistan'].us);
               twilight_self.addMove("milops\tussr\t2");
-              if (twilight_self.game.state.events.flowerpower == 1) {
-                twilight_self.addMove("vp\tussr\t2\t1");
-              }
               twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("pakistan", twilight_self.countries['pakistan'].us, "ussr");
               twilight_self.removeInfluence("pakistan", twilight_self.countries['pakistan'].us, "us");
@@ -6817,9 +6811,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tus\tus\tindia\t"+twilight_self.countries['india'].ussr);
               twilight_self.addMove("remove\tus\tussr\tindia\t"+twilight_self.countries['india'].ussr);
               twilight_self.addMove("milops\tus\t2");
-              if (twilight_self.game.state.events.flowerpower == 1) {
-                twilight_self.addMove("vp\tussr\t2\t1");
-              }
               twilight_self.addMove("vp\tus\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].ussr, "us");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].ussr, "ussr");
@@ -6829,9 +6820,6 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
               twilight_self.addMove("place\tussr\tussr\tindia\t"+twilight_self.countries['india'].us);
               twilight_self.addMove("remove\tussr\tus\tindia\t"+twilight_self.countries['india'].us);
               twilight_self.addMove("milops\tussr\t2");
-              if (twilight_self.game.state.events.flowerpower == 1) {
-                twilight_self.addMove("vp\tussr\t2\t1");
-              }
               twilight_self.addMove("vp\tussr\t2");
               twilight_self.placeInfluence("india", twilight_self.countries['india'].us, "ussr");
               twilight_self.removeInfluence("india", twilight_self.countries['india'].us, "us");
@@ -6882,14 +6870,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.updateLog("USSR wins the Arab-Israeli War");
       this.placeInfluence("israel", this.countries['israel'].us, "ussr");
       this.removeInfluence("israel", this.countries['israel'].us, "us");
-      if (this.game.state.events.flowerpower == 1) {
-	//
-	// 2 VP for Flower Power and 2 VP for winning
-	//
-        this.game.state.vp_outstanding -= 4;
-      } else {
-        this.game.state.vp -= 2;
-      }
+      this.game.state.vp -= 2;
       this.game.state.milops_ussr += 2;
       this.updateVictoryPoints();
       this.updateMilitaryOperations();
@@ -6927,11 +6908,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
       this.updateLog("North Korea wins the Korean War");
       this.placeInfluence("southkorea", this.countries['southkorea'].us, "ussr");
       this.removeInfluence("southkorea", this.countries['southkorea'].us, "us");
-      if (this.game.state.events.flowerpower == 1) {
-        this.game.state.vp_outstanding -= 2;
-      } else {
-        this.game.state.vp -= 2;
-      }
+      this.game.state.vp -= 2;
       this.game.state.milops_ussr += 2;
       this.updateMilitaryOperations();
       this.updateVictoryPoints();
