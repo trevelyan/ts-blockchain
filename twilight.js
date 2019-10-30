@@ -53,7 +53,6 @@ function Twilight(app) {
   this.gameboardMobileZoom = 0.67;
 
 
-
   return this;
 
 }
@@ -546,6 +545,7 @@ console.log("\n\n\n\n");
   $('.scoring_card').off();
   $('.scoring_card')
     .mouseover(function() {
+
       let region = this.id;
       let scoring = twilight_self.calculateScoring(region);
       let total_vp = scoring.us.vp - scoring.ussr.vp;
@@ -4123,7 +4123,12 @@ Twilight.prototype.playerTurnCardSelected = function playerTurnCardSelected(card
               }
             }
 
-            twilight_self.updateStatus('Playing opponent card:<p></p><ul><li class="card" id="before">event before ops</li><li class="card" id="after">event after ops</li></ul>');
+            let html = twilight_self.formatStatusHeader('Playing opponent card:', true);
+                html += '<p></p><ul><li class="card" id="before">event before ops</li><li class="card" id="after">event after ops</li></ul>';
+            twilight_self.updateStatus(html);
+            twilight_self.bindBackButtonFunction(() => {
+ 	       twilight_self.playerTurnCardSelected(card, player);
+            });
 
             $('.card').off();
             $('.card').on('click', function() {
@@ -11087,19 +11092,22 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
       if (i == "costarica" || i == "cuba" || i == "honduras") {
 
-        $(divname).off();
-        $(divname).on('click', function() {
+        if (this.countries[i].us > 0) {
 
-          let c = $(this).attr('id');
+          $(divname).off();
+          $(divname).on('click', function() {
 
-          twilight_self.addMove("resolve\tortega");
-          twilight_self.addMove("unlimit\tmilops");
-          twilight_self.addMove("coup\tussr\t"+c+"\t2");
-          twilight_self.addMove("limit\tmilops");
-          twilight_self.addMove("notify\tUSSR launches coup in "+c);
-          twilight_self.endTurn();
+            let c = $(this).attr('id');
 
-        });
+            twilight_self.addMove("resolve\tortega");
+            twilight_self.addMove("unlimit\tmilops");
+            twilight_self.addMove("coup\tussr\t"+c+"\t2");
+            twilight_self.addMove("limit\tmilops");
+            twilight_self.addMove("notify\tUSSR launches coup in "+c);
+            twilight_self.endTurn();
+
+          });
+        }
 
       } else {
 
@@ -11575,12 +11583,17 @@ Twilight.prototype.determineRegionVictor = function determineRegionVictor(scorin
 }
 
 Twilight.prototype.calculateScoring = function calculateScoring(region) {
+
   var scoring = {
     us: {total: 0, bg: 0, vp: 0},
     ussr: {total: 0, bg: 0, vp: 0},
   }
 
   switch (region) {
+
+    ////////////
+    // EUROPE //
+    ////////////
     case "europe":
       let eu_bg_countries = ["italy", "france", "westgermany", "eastgermany", "poland"];
       let eu_countries = [
@@ -11618,6 +11631,10 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       if (this.isControlled("ussr", "canada") == 1) { scoring.ussr.vp++; }
       break;
 
+
+    /////////////
+    // MIDEAST //
+    /////////////
     case "mideast":
       let me_bg_countries = [
         "libya",
@@ -11657,6 +11674,11 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
 
       // scoring transform
       break;
+
+
+    /////////////
+    // SE ASIA //
+    /////////////
     case "seasia":
       let seasia_countries = [
         "burma",
@@ -11710,6 +11732,10 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring = this.determineRegionVictor(scoring, af_scoring_range, af_bg_countries.length);
 
       break;
+
+    /////////////////////
+    // CENTRAL AMERICA //
+    /////////////////////
     case "centralamerica":
       let ca_bg_countries = [
         "mexico",
@@ -11741,6 +11767,10 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       if (this.isControlled("ussr", "cuba") == 1) { scoring.ussr.vp++; }
 
       break;
+
+    ///////////////////
+    // SOUTH AMERICA //
+    ///////////////////
     case "southamerica":
       let sa_bg_countries = [
         "venezuela",
@@ -11766,6 +11796,11 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring = this.determineRegionVictor(scoring, sa_scoring_range, sa_bg_countries.length);
 
       break;
+
+
+    //////////
+    // ASIA //
+    //////////
     case "asia":
       let as_bg_countries = [
         "northkorea",
@@ -11790,6 +11825,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
 
       scoring = this.calculateControlledBattlegroundCountries(scoring, as_bg_countries);
 
+
       if (this.game.state.events.formosan == 1) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.bg++; }
       }
@@ -11798,6 +11834,7 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
       scoring.ussr.total = scoring.ussr.bg;
 
       scoring = this.calculateControlledCountries(scoring, as_countries);
+
 
       if (this.game.state.events.formosan == 0) {
         if (this.isControlled("us", "taiwan") == 1) { scoring.us.total++; }
@@ -11824,10 +11861,13 @@ Twilight.prototype.calculateScoring = function calculateScoring(region) {
         if (scoring.ussr.bg == 6 && scoring.ussr.total > scoring.us.total) { vp_ussr = 9; }
       }
 
-      if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = as_scoring_range.domination; }
+
+      if (scoring.us.vp >= 9 && scoring.us.total > scoring.ussr.total) {}
+      else if (scoring.us.bg > scoring.ussr.bg && scoring.us.total > scoring.us.bg && scoring.us.total > scoring.ussr.total) { scoring.us.vp = as_scoring_range.domination; }
       else if (scoring.us.total > 0) { scoring.us.vp = as_scoring_range.presence; }
 
-      if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = as_scoring_range.domination; }
+      if (scoring.ussr.bg == 6 && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = 9; }
+      else if (scoring.ussr.bg > scoring.us.bg && scoring.ussr.total > scoring.ussr.bg && scoring.ussr.total > scoring.us.total) { scoring.ussr.vp = as_scoring_range.domination; }
       else if (scoring.ussr.total > 0) { scoring.ussr.vp = as_scoring_range.presence; }
 
       scoring.us.vp = scoring.us.vp + scoring.us.bg;
@@ -13925,6 +13965,14 @@ Twilight.prototype.hideCard = function hideCard() {
 Twilight.prototype.updateLog = function updateLog(str, length = 150) {
 
   let twilight_self = this;
+
+  //
+  // workaround repeat messages
+  //
+  if (str === this.last_log_msg) {
+    if (str.indexOf("is affected by") > 0) { return; }  }
+
+  this.last_log_msg = str;
 
   if (str) {
     this.game.log.unshift(str);
