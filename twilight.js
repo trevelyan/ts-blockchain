@@ -63,6 +63,7 @@ util.inherits(Twilight, Game);
 
 
 
+
 //
 // Missile Envy is a bit messy
 //
@@ -760,7 +761,7 @@ console.log("QUEUE: " + JSON.stringify(this.game.queue));
             this.game.state.vp -= 6;
             this.updateVictoryPoints();
             if (this.game.state.vp > 0) {
-                  this.endGame("us","Wargames");
+                this.endGame("us","Wargames");
             }
             if (this.game.state.vp < 0) {
                 this.endGame("ussr","Wargames");
@@ -1639,11 +1640,20 @@ console.log("\n\n\n");
         if (mv[1] == "lower") {
             this.lowerDefcon();
           if (this.game.state.defcon <= 0) {
+            if (this.game.state.headline == 1) {
+	      if (this.game.state.player_to_go == 1) {
+		this.endGame("us", "headline defcon suicide!");
+	      } else {
+		this.endGame("ussr", "headline defcon suicide!");
+	      }
+	      return;
+	    }
             if (this.game.state.turn == 0) {
               this.endGame("ussr", "defcon");
             } else {
               this.endGame("us", "defcon");
             }
+	    return;
           }
         }
         if (mv[1] == "raise") {
@@ -1913,9 +1923,9 @@ console.log("resolving earlier: " + this.game.queue[z]);
 
         if (this.is_testing == 1) {
           if (this.game.player == 1) {
-            this.game.deck[0].hand = ["missileenvy","fiveyearplan", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
+            this.game.deck[0].hand = ["wwby","fiveyearplan", "berlinagreement", "junta", "che","degaulle","nato","naziscientist","missileenvy","formosan"];
           } else {
-            this.game.deck[0].hand = ["grainsales","wwby","unintervention","onesmallstep","handshake","lonegunman","asia","nasser","sadat"];
+            this.game.deck[0].hand = ["duckandcover","degaulle","lonegunman","cubanmissile","handshake","lonegunman","asia","nasser","sadat"];
           }
         }
 
@@ -2764,7 +2774,7 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
   //
   // default to ussr
   //
-  let player_to_go = 1;
+  this.game.state.player_to_go = 1;
 
   //
   // headline execution starts here
@@ -2778,16 +2788,16 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
 
     if (this.game.player == 1) {
       if (this.returnOpsOfCard(my_card) > this.returnOpsOfCard(opponent_card)) {
-        player_to_go = 1;
+        this.game.state.player_to_go = 1;
       } else {
-        player_to_go = 2;
+        this.game.state.player_to_go = 2;
       }
     }
     if (this.game.player == 2) {
       if (this.returnOpsOfCard(my_card) >= this.returnOpsOfCard(opponent_card)) {
-        player_to_go = 2;
+        this.game.state.player_to_go = 2;
       } else {
-        player_to_go = 1;
+        this.game.state.player_to_go = 1;
       }
     }
 
@@ -2866,7 +2876,7 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
 
 
 
-      if (player_to_go == this.game.player) {
+      if (this.game.state.player_to_go == this.game.player) {
 	this.addMove("resolve\theadline");
 	this.addMove("headline\theadline7\t"+2+"\t"+this.game.state.headline_hash+"\t"+this.game.state.headline_xor+"\t"+this.game.state.headline_card);
         this.addMove("event\t"+card_player+"\t"+my_card);
@@ -2894,24 +2904,24 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     // we switch to the other player now
     //
     if (this.game.player == 1) {
-      if (this.game.deck[0].cards[my_card] == undefined) { player_to_go = 2; } else {
-        if (this.game.deck[0].cards[opponent_card] == undefined) { player_to_go = 1; } else {
+      if (this.game.deck[0].cards[my_card] == undefined) { this.game.state.player_to_go = 2; } else {
+        if (this.game.deck[0].cards[opponent_card] == undefined) { this.game.state.player_to_go = 1; } else {
           if (this.returnOpsOfCard(my_card) > this.returnOpsOfCard(opponent_card)) {
-            player_to_go = 2;
+            this.game.state.player_to_go = 2;
           } else {
-            player_to_go = 1;
+            this.game.state.player_to_go = 1;
           }
         }
       }
     }
 
     if (this.game.player == 2) {
-      if (this.game.deck[0].cards[my_card] == undefined) { player_to_go = 1; } else {
-        if (this.game.deck[0].cards[opponent_card] == undefined) { player_to_go = 2; } else {
+      if (this.game.deck[0].cards[my_card] == undefined) { this.game.state.player_to_go = 1; } else {
+        if (this.game.deck[0].cards[opponent_card] == undefined) { this.game.state.player_to_go = 2; } else {
           if (this.returnOpsOfCard(my_card) >= this.returnOpsOfCard(opponent_card)) {
-            player_to_go = 1;
+            this.game.state.player_to_go = 1;
           } else {
-            player_to_go = 2;
+            this.game.state.player_to_go = 2;
           }
           }
       }
@@ -2924,14 +2934,14 @@ Twilight.prototype.playHeadlineModern = function playHeadlineModern(stage, playe
     let card_player = player;
 
     if (player == "ussr" && this.game.state.defectors_pulled_in_headline == 1) {
-      if (player_to_go == this.game.player) {
+      if (this.game.state.player_to_go == this.game.player) {
         this.addMove("resolve\theadline");
         this.addMove("notify\tDefectors cancels USSR headline. Tough luck, there.");
         this.removeCardFromHand(my_card);
         this.endTurn();
       }
     } else {
-      if (player_to_go == this.game.player) {
+      if (this.game.state.player_to_go == this.game.player) {
         this.addMove("resolve\theadline");
         this.addMove("event\t"+card_player+"\t"+my_card);
         this.removeCardFromHand(my_card);
@@ -5184,9 +5194,11 @@ Twilight.prototype.playCoup = function playCoup(player, countryname, ops, mycall
   //
   if (player == "ussr" && this.game.state.events.cubanmissilecrisis == 1) {
     this.endGame("us","Cuban Missile Crisis");
+    return;
   }
   if (player == "us" && this.game.state.events.cubanmissilecrisis == 2) {
     this.endGame("ussr","Cuban Missile Crisis");
+    return;
   }
 
 
@@ -5661,6 +5673,7 @@ Twilight.prototype.returnState = function returnState() {
   state.opponent_cards_in_hand = 0;
   state.event_before_ops = 0;
   state.event_name = "";
+  state.player_to_go = 1; // used in headline to track phasing player (primarily for assigning losses for defcon lowering stunts)
 
   state.vp_outstanding = 0; // vp not settled yet
 
@@ -7832,7 +7845,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
 
     let vpchange = 5-this.game.state.defcon;
 
-    if (this.game.state.defcon <= 1) {
+    if (this.game.state.defcon <= 1 && this.game.over != 1) {
       if (this.game.state.turn == 0) {
         this.endGame("us", "defcon");
       } else {
@@ -9787,7 +9800,7 @@ Twilight.prototype.playEvent = function playEvent(player, card) {
     this.lowerDefcon();
     this.updateDefcon();
 
-    if (this.game.state.defcon <= 1) {
+    if (this.game.state.defcon <= 1 && this.game.over != 1) {
       if (this.game.state.turn == 0) {
         this.endGame("us", "defcon");
       } else {
@@ -12877,11 +12890,25 @@ Twilight.prototype.lowerDefcon = function lowerDefcon() {
   }
 
 
+console.log("LOWERING DEFCON: " + this.game.state.defcon + " -- " + this.game.state.headline + " -- " + this.game.state.player_to_go);
+
   if (this.game.state.defcon == 1) {
+    if (this.game.state.headline == 1) {
+      //
+      // phasing player in headline loses
+      //
+      if (this.game.state.player_to_go == 1) {
+        this.endGame("us", "<span>USSR triggers thermonuclear war</span>");
+      }
+      if (this.game.state.player_to_go == 2) {
+        this.endGame("ussr", "<span>US triggers thermonuclear war</span>");
+      }
+      return;
+    }
     if (this.game.state.turn == 0) {
-      this.endGame("us", "<span>USSR triggers thermonuclear war</span>");
+      this.endGame("us", "<span>USSR triggers thermonuclear war 1</span>");
     } else {
-      this.endGame("ussr", "<span>US triggers thermonuclear war</span>");
+      this.endGame("ussr", "<span>US triggers thermonuclear war 2</span>");
     }
   }
 
